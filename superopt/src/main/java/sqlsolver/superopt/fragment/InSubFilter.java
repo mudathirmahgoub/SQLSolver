@@ -1,9 +1,10 @@
 package sqlsolver.superopt.fragment;
 
-public interface InSubFilter extends AttrsFilter {
+public interface InSubFilter extends AttrsFilter
+{
   @Override
-  default OpKind kind() {
+  default OpKind kind()
+  {
     return OpKind.IN_SUB_FILTER;
   }
-
 }

@@ -1,8 +1,10 @@
 package sqlsolver.superopt.fragment;
 
 /** Identity-based immutable class. */
-public interface Symbol {
-  enum Kind {
+public interface Symbol
+{
+  enum Kind
+  {
     TABLE,
     ATTRS,
     PRED,
@@ -14,7 +16,8 @@ public interface Symbol {
 
   Symbols ctx();
 
-  static Symbol mk(Kind kind, Symbols ctx) {
+  static Symbol mk(Kind kind, Symbols ctx)
+  {
     return new SymbolImpl(kind, ctx);
   }
 }

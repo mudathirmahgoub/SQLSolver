@@ -5,7 +5,6 @@ import static sqlsolver.superopt.util.VectorSupport.*;
 import static sqlsolver.superopt.util.Z3Support.*;
 
 import java.util.*;
-
 import sqlsolver.sql.plan.Value;
 import sqlsolver.superopt.liastar.LiaStar;
 
@@ -15,7 +14,8 @@ import sqlsolver.superopt.liastar.LiaStar;
  */
 // TODO: coefficient var names have prefix "sls_lambda_" or "sls_lambda1/2/3_";
 //  this requires those names are not used in the target LIA formula
-public class SlsAugmenter {
+public class SlsAugmenter
+{
   public static final String MSG_SLS_UNKNOWN = "the corresponding SLS is unknown";
 
   private final SemiLinearSet sls;
@@ -34,7 +34,8 @@ public class SlsAugmenter {
    * @param slsVector the vector of vars corresponding to SLS dimensions
    * @param target the target
    */
-  public SlsAugmenter(List<String> slsVector, LiaStar target) {
+  public SlsAugmenter(List<String> slsVector, LiaStar target)
+  {
     sls = new SemiLinearSet();
     updatedLSIndex = -1;
     this.slsVector = slsVector;
@@ -46,14 +47,17 @@ public class SlsAugmenter {
    * Find a vector that augments the SLS towards target (i.e. a vector outside SLS but satisfying
    * the target) and add it to the SLS. Return false if there is no such vector.
    */
-  public boolean augment() {
+  public boolean augment()
+  {
     // too large SLS
-    if (sls.largestLinearSetSize() > slsVector.size()){
+    if (sls.largestLinearSetSize() > slsVector.size())
+    {
       reportUnknownSls();
     }
     // try to find an augmentation vector
     final List<Long> augmentation = finder.find();
-    if (augmentation == null) {
+    if (augmentation == null)
+    {
       return false;
     }
     // augment SLS with the vector found
@@ -63,33 +67,42 @@ public class SlsAugmenter {
     return true;
   }
 
-  public SemiLinearSet sls() {
+  public SemiLinearSet sls()
+  {
     return sls;
   }
 
-  private void reportUnknownSls() {
+  private void reportUnknownSls()
+  {
     throw new RuntimeException(MSG_SLS_UNKNOWN);
   }
 
-  private void saturate() {
+  private void saturate()
+  {
     // repeat these operations until convergence
-    while (merge() || shiftDown() || offsetDown()) {}
+    while (merge() || shiftDown() || offsetDown())
+    {
+    }
     // convergence
     updatedLSIndex = -1;
   }
 
   // try to perform a Merge (merge two LS into one)
   // return false if no operation is performed
-  private boolean merge() {
+  private boolean merge()
+  {
     // take the updated LS
     final int index1 = updatedLSIndex;
     // traverse each possible pair of linear sets
-    for (int index2 = 0, bound = sls.size(); index2 < bound; index2++) {
+    for (int index2 = 0, bound = sls.size(); index2 < bound; index2++)
+    {
       // skip the same LS
-      if (index1 == index2) {
+      if (index1 == index2)
+      {
         continue;
       }
-      if (mergeInto(index1, index2) || mergeInto(index2, index1)) {
+      if (mergeInto(index1, index2) || mergeInto(index2, index1))
+      {
         return true;
       }
     }
@@ -97,14 +110,16 @@ public class SlsAugmenter {
   }
 
   // try to merge LS_index1 into LS_index2
-  private boolean mergeInto(int index1, int index2) {
+  private boolean mergeInto(int index1, int index2)
+  {
     // for the linear set (shift1, offsets1) and (shift2, offsets2)
     final LinearSet ls1 = sls.get(index1);
     final List<Long> shift1 = ls1.getShift();
     final LinearSet ls2 = sls.get(index2);
     final List<Long> shift2 = ls2.getShift();
     // if shift2 <= shift1
-    if (!constLeAbs(shift2, shift1)) {
+    if (!constLeAbs(shift2, shift1))
+    {
       return false;
     }
     // check validity of "forall lambda1, lambda2, lambda3.
@@ -135,7 +150,8 @@ public class SlsAugmenter {
     universalVars.addAll(lambda2);
     universalVars.add(lambda3Name);
     // check its validity
-    if (isValidLia(toCheckLia, universalVars)) {
+    if (isValidLia(toCheckLia, universalVars))
+    {
       // the two linear sets can be merged.
       // merge them into LS(shift2,offsets1+offsets2+{shift1-shift2})
       sls.remove(ls1);
@@ -153,7 +169,8 @@ public class SlsAugmenter {
 
   // try to perform a ShiftDown (decrease shift vector with an offset vector)
   // return false if no operation is performed
-  private boolean shiftDown() {
+  private boolean shiftDown()
+  {
     // take the updated LS
     final int index = updatedLSIndex;
     // for the linear set (shift, offsets) and offset in offsets
@@ -164,9 +181,11 @@ public class SlsAugmenter {
     final LinearSet ls = sls.get(index);
     final List<Long> shift = ls.getShift();
     final List<List<Long>> offsets = ls.getOffsets();
-    for (List<Long> offset : offsets) {
+    for (List<Long> offset : offsets)
+    {
       // we need an offset vector "<=" the shift vector
-      if (!constLeAbs(offset, shift)) {
+      if (!constLeAbs(offset, shift))
+      {
         continue;
       }
       // construct "target(shift - offset + lambda * offsets)"
@@ -178,7 +197,8 @@ public class SlsAugmenter {
       final LiaStar toCheckLia = apply(target, slsVector, argVector);
       final Set<String> universalVars = new HashSet<>(lambda);
       // check its validity
-      if (isValidLia(toCheckLia, universalVars)) {
+      if (isValidLia(toCheckLia, universalVars))
+      {
         // offset is a desired vector
         // replace LS(shift,offsets) with LS(shift-offset,offsets)
         sls.remove(ls);
@@ -193,7 +213,8 @@ public class SlsAugmenter {
 
   // try to perform a OffsetDown (decrease offset of a linear set)
   // return false if no operation is performed
-  private boolean offsetDown() {
+  private boolean offsetDown()
+  {
     // take the updated LS
     int index = updatedLSIndex;
     // for the linear set (shift, offsets) and offset1,offset2 in offsets
@@ -206,16 +227,20 @@ public class SlsAugmenter {
     final List<Long> shift = ls.getShift();
     final List<List<Long>> offsets = ls.getOffsets();
     // TODO: O(N^2) -> O(N)?
-    for (int i = 0, bound = offsets.size(); i < bound; i++) {
-      for (int j = 0; j < bound; j++) {
+    for (int i = 0, bound = offsets.size(); i < bound; i++)
+    {
+      for (int j = 0; j < bound; j++)
+      {
         // skip the same offset vector
-        if (i == j) {
+        if (i == j)
+        {
           continue;
         }
         // offset2 should be "<=" offset1
         final List<Long> offset1 = offsets.get(i);
         final List<Long> offset2 = offsets.get(j);
-        if (!constLeAbs(offset2, offset1)) {
+        if (!constLeAbs(offset2, offset1))
+        {
           continue;
         }
         // construct "target(shift + lambda * offsets')"
@@ -223,7 +248,8 @@ public class SlsAugmenter {
         final List<List<Long>> offsetsPrime = new ArrayList<>(offsets);
         offsetsPrime.remove(i);
         final List<Long> newOffset = constMinus(offset1, offset2);
-        if (!offsetsPrime.contains(newOffset)) {
+        if (!offsetsPrime.contains(newOffset))
+        {
           offsetsPrime.add(newOffset);
         }
         final List<String> lambda = createVarVector("sls_lambda", 0, offsetsPrime.size());
@@ -233,7 +259,8 @@ public class SlsAugmenter {
         final LiaStar toCheckLia = apply(target, slsVector, argVector);
         final Set<String> universalVars = new HashSet<>(lambda);
         // check its validity
-        if (isValidLia(toCheckLia, universalVars)) {
+        if (isValidLia(toCheckLia, universalVars))
+        {
           // (shift,offsets') is the desired linear set
           sls.remove(ls);
           updatedLSIndex = sls.size();

@@ -11,10 +11,13 @@ import sqlsolver.superopt.fragment.Op;
  * <p>The fragment with only single Join will not be matched, because we wanna the substitution
  * "InnerJoin(x,y) <=> LeftJoin(x,y)"
  */
-public class AllJoin extends BaseMatchingRule {
+public class AllJoin extends BaseMatchingRule
+{
   @Override
-  public boolean enter(Op op) {
-    if (!(op instanceof Join) && !(op instanceof Input)) {
+  public boolean enter(Op op)
+  {
+    if (!(op instanceof Join) && !(op instanceof Input))
+    {
       matched = false;
       return false;
     }
@@ -22,12 +25,13 @@ public class AllJoin extends BaseMatchingRule {
   }
 
   @Override
-  public boolean match(Fragment g) {
+  public boolean match(Fragment g)
+  {
     final Op head = g.root();
 
-    if (head.kind().isJoin()
-        && head.predecessors()[0] instanceof Input
-        && head.predecessors()[1] instanceof Input) return false;
+    if (head.kind().isJoin() && head.predecessors()[0] instanceof Input
+        && head.predecessors()[1] instanceof Input)
+      return false;
 
     matched = true;
     g.acceptVisitor(this);

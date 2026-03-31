@@ -1,20 +1,20 @@
 package sqlsolver.superopt.optimizer;
 
+import java.util.AbstractList;
+import java.util.List;
 import sqlsolver.common.tree.TreeContext;
 import sqlsolver.common.tree.TreeSupport;
 import sqlsolver.sql.plan.PlanContext;
 import sqlsolver.sql.plan.PlanNode;
 
-import java.util.AbstractList;
-import java.util.List;
-
-class FilterChain extends AbstractList<PlanNode> implements List<PlanNode> {
+class FilterChain extends AbstractList<PlanNode> implements List<PlanNode>
+{
   private PlanContext plan;
   private final int chainParent, chainChild, chainPosition;
   private final int[] filterIds;
 
-  FilterChain(
-      PlanContext plan, int chainParent, int chainChild, int chainPosition, int[] filterIds) {
+  FilterChain(PlanContext plan, int chainParent, int chainChild, int chainPosition, int[] filterIds)
+  {
     this.plan = plan;
     this.chainParent = chainParent;
     this.chainChild = chainChild;
@@ -22,9 +22,11 @@ class FilterChain extends AbstractList<PlanNode> implements List<PlanNode> {
     this.filterIds = filterIds;
   }
 
-  static FilterChain mk(PlanContext plan, int chainHead) {
+  static FilterChain mk(PlanContext plan, int chainHead)
+  {
     int cursor = chainHead, length = 0;
-    while (plan.kindOf(cursor).isFilter()) {
+    while (plan.kindOf(cursor).isFilter())
+    {
       ++length;
       cursor = plan.childOf(cursor, 0);
     }
@@ -35,7 +37,8 @@ class FilterChain extends AbstractList<PlanNode> implements List<PlanNode> {
     // <=> [p,q,r]
     final int chainChild = cursor;
     final int[] filterIds = new int[length];
-    while ((--length) >= 0) {
+    while ((--length) >= 0)
+    {
       cursor = plan.parentOf(cursor);
       filterIds[length] = cursor;
     }
@@ -47,50 +50,62 @@ class FilterChain extends AbstractList<PlanNode> implements List<PlanNode> {
   }
 
   @Override
-  public PlanNode get(int index) {
+  public PlanNode get(int index)
+  {
     return plan.nodeAt(filterIds[index]);
   }
 
   @Override
-  public int size() {
+  public int size()
+  {
     return filterIds.length;
   }
 
   @Override
-  public PlanNode set(int index, PlanNode element) {
+  public PlanNode set(int index, PlanNode element)
+  {
     final int oldNodeId = filterIds[index];
     filterIds[index] = plan.nodeIdOf(element);
     return plan.nodeAt(oldNodeId);
   }
 
-  FilterChain setPlan(PlanContext plan) {
+  FilterChain setPlan(PlanContext plan)
+  {
     this.plan = plan;
     return this;
   }
 
-  PlanContext plan() {
+  PlanContext plan()
+  {
     return plan;
   }
 
-  int chainPosition() {
+  int chainPosition()
+  {
     return chainPosition;
   }
 
-  int chainChild() {
+  int chainChild()
+  {
     return chainChild;
   }
 
-  int chainParent() {
+  int chainParent()
+  {
     return chainParent;
   }
 
-  int at(int idx) {
+  int at(int idx)
+  {
     return filterIds[idx];
   }
 
-  PlanContext assemble() {
-    for (int filterId : filterIds) {
-      if (plan.parentOf(filterId) != TreeContext.NO_SUCH_NODE) plan.detachNode(filterId);
+  PlanContext assemble()
+  {
+    for (int filterId : filterIds)
+    {
+      if (plan.parentOf(filterId) != TreeContext.NO_SUCH_NODE)
+        plan.detachNode(filterId);
     }
     plan.detachNode(chainChild);
 
@@ -102,7 +117,8 @@ class FilterChain extends AbstractList<PlanNode> implements List<PlanNode> {
     return plan;
   }
 
-  FilterChain derive(int[] filters) {
+  FilterChain derive(int[] filters)
+  {
     return new FilterChain(plan, chainParent, chainChild, chainPosition, filters);
   }
 }

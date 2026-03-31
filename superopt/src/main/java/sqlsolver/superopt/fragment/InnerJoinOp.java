@@ -1,15 +1,18 @@
 package sqlsolver.superopt.fragment;
 
-class InnerJoinOp extends JoinOp implements InnerJoin {
+class InnerJoinOp extends JoinOp implements InnerJoin
+{
   InnerJoinOp() {}
 
   @Override
-  public boolean accept0(OpVisitor visitor) {
+  public boolean accept0(OpVisitor visitor)
+  {
     return visitor.enterInnerJoin(this);
   }
 
   @Override
-  public void leave0(OpVisitor visitor) {
+  public void leave0(OpVisitor visitor)
+  {
     visitor.leaveInnerJoin(this);
   }
 }

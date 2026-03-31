@@ -1,38 +1,41 @@
 package sqlsolver.superopt.uexpr.normalizer;
 
-import sqlsolver.superopt.uexpr.*;
-import sqlsolver.superopt.util.Timeout;
-
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import static sqlsolver.common.utils.IterableSupport.*;
 import static sqlsolver.common.utils.ListSupport.concat;
 import static sqlsolver.common.utils.ListSupport.filter;
 import static sqlsolver.superopt.uexpr.UExprSupport.*;
 
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import sqlsolver.superopt.uexpr.*;
+import sqlsolver.superopt.util.Timeout;
+
 /**
  * This class provides the basic normalization for U-Expression.
  */
-public class UNormalization {
+public class UNormalization
+{
   public boolean isModified;
   public UTerm expr;
   protected final UExprConcreteTranslator.QueryTranslator translator;
 
-  public UNormalization(UTerm expr) {
+  public UNormalization(UTerm expr)
+  {
     this.isModified = false;
     this.expr = expr;
     this.translator = null;
   }
 
-  public UNormalization(UTerm expr, UExprConcreteTranslator.QueryTranslator translator) {
+  public UNormalization(UTerm expr, UExprConcreteTranslator.QueryTranslator translator)
+  {
     this.isModified = false;
     this.expr = expr;
     this.translator = translator;
   }
 
-  public static boolean isNormalForm(UTerm expr) {
+  public static boolean isNormalForm(UTerm expr)
+  {
     return isNormalFormExpr(expr);
   }
 
@@ -41,57 +44,63 @@ public class UNormalization {
    * Rs(ts) * ||E1|| * not(E2)). If m = 0, Ti = [b1] * .. * [bt] * R1(t1) * .. * Rs(ts) * ||E1|| *
    * not(E2). isNormalFormExpr() checks an E, isNormalFormTerm() checks a T.
    */
-  private static boolean isNormalFormExpr(UTerm expr) {
-    switch (expr.kind()) {
+  private static boolean isNormalFormExpr(UTerm expr)
+  {
+    switch (expr.kind())
+    {
       case ADD:
-        for (UTerm subTerm : expr.subTerms()) {
-          if (!isNormalFormTerm(subTerm)) return false;
+        for (UTerm subTerm : expr.subTerms())
+        {
+          if (!isNormalFormTerm(subTerm))
+            return false;
         }
         return true;
-      case MULTIPLY:
-        return isNormalFormTerm(expr);
-      case SUMMATION:
-        return isNormalFormTerm(((USum) expr).body());
-      case SQUASH, NEGATION:
-        return isNormalFormExpr(((UUnary) expr).body());
+      case MULTIPLY: return isNormalFormTerm(expr);
+      case SUMMATION: return isNormalFormTerm(((USum) expr).body());
+      case SQUASH, NEGATION: return isNormalFormExpr(((UUnary) expr).body());
       case TABLE, PRED:
         // To be considered..., whether we need to consider a single [b] or R(t) to be an E or T?
         // Or wrap them in a UMul() during normalization?
         return true;
-      default:
-        return false;
+      default: return false;
     }
   }
 
-  private static boolean isNormalFormTerm(UTerm term) {
-    switch (term.kind()) {
+  private static boolean isNormalFormTerm(UTerm term)
+  {
+    switch (term.kind())
+    {
       case MULTIPLY:
         // int squashNum = 0, negNum = 0;
-        for (UTerm factor : term.subTerms()) {
-          if (factor.kind().isBinary() || factor.kind() == UKind.SUMMATION) return false;
-          if (factor.kind().isUnary()) {
+        for (UTerm factor : term.subTerms())
+        {
+          if (factor.kind().isBinary() || factor.kind() == UKind.SUMMATION)
+            return false;
+          if (factor.kind().isUnary())
+          {
             // if (factor.kind() == SQUASH) ++squashNum;
             // else ++negNum;
-            if (!isNormalFormExpr(((UUnary) factor).body())) return false;
+            if (!isNormalFormExpr(((UUnary) factor).body()))
+              return false;
           }
         }
         // return squashNum <= 1 && negNum <= 1;
         return true;
       case SUMMATION:
         final UTerm body = ((USum) term).body();
-        if (body.kind() != UKind.MULTIPLY) return false;
+        if (body.kind() != UKind.MULTIPLY)
+          return false;
         return isNormalFormTerm(body);
-      case SQUASH, NEGATION:
-        return isNormalFormExpr(((UUnary) term).body());
-      case TABLE, PRED:
-        return true;
-      default:
-        return false;
+      case SQUASH, NEGATION: return isNormalFormExpr(((UUnary) term).body());
+      case TABLE, PRED: return true;
+      default: return false;
     }
   }
 
-  public UTerm normalizeTerm() {
-    do {
+  public UTerm normalizeTerm()
+  {
+    do
+    {
       isModified = false;
       // A round of normalizations
 
@@ -118,7 +127,8 @@ public class UNormalization {
     return expr;
   }
 
-  protected UTerm performNormalizeRule(Function<UTerm, UTerm> transformation) {
+  protected UTerm performNormalizeRule(Function<UTerm, UTerm> transformation)
+  {
     expr = transformation.apply(expr);
     Timeout.checkTimeout();
     // Routine normalizations
@@ -135,29 +145,35 @@ public class UNormalization {
    * Rename all the vars between different summation if their boundedVars have same name
    * e.g. sum{t1} + sum{t1} => sum{t1} + sum{t2}     t1 and t2 have the same schema
    */
-  void renameSameBoundedVarSummation(UTerm expr, Set<UVar> varSet) {
-    for (UTerm subTerm : expr.subTerms())
-      renameSameBoundedVarSummation(subTerm, varSet);
+  void renameSameBoundedVarSummation(UTerm expr, Set<UVar> varSet)
+  {
+    for (UTerm subTerm : expr.subTerms()) renameSameBoundedVarSummation(subTerm, varSet);
     final UKind kind = expr.kind();
-    if (kind != UKind.SUMMATION) return;
+    if (kind != UKind.SUMMATION)
+      return;
 
     final USum sum = (USum) expr;
     final Set<UVar> boundedVars = sum.boundedVars();
     final Map<UVar, UVar> replaceMap = new HashMap<>();
 
-    for (final UVar boundedVar : boundedVars) {
+    for (final UVar boundedVar : boundedVars)
+    {
       assert boundedVar.kind() == UVar.VarKind.BASE;
-      if (varSet.contains(boundedVar)) {
+      if (varSet.contains(boundedVar))
+      {
         final UVar newVar = mkFreshBaseVar();
         translator.putTupleVarSchema(newVar, translator.getTupleVarSchema(boundedVar));
         varSet.add(newVar);
         replaceMap.put(boundedVar, newVar);
-      } else {
+      }
+      else
+      {
         varSet.add(boundedVar);
       }
     }
 
-    for (final Map.Entry<UVar, UVar> entry : replaceMap.entrySet()) {
+    for (final Map.Entry<UVar, UVar> entry : replaceMap.entrySet())
+    {
       sum.replaceVarInplace(entry.getKey(), entry.getValue(), true);
     }
   }
@@ -165,30 +181,37 @@ public class UNormalization {
   /**
    * ADD/MUL[ E1, .., ADD/MUL[Ei, .., Ej], .., En ] -> ADD/MUL[E1, .., Ei, .., Ej, .., En]
    */
-  UTerm flatAddAndMul(UTerm expr) {
+  UTerm flatAddAndMul(UTerm expr)
+  {
     expr = transformSubTerms(expr, this::flatAddAndMul);
 
     final UKind kind = expr.kind();
-    if (!kind.isBinary()) return expr;
+    if (!kind.isBinary())
+      return expr;
 
     final List<UTerm> subTerms = expr.subTerms();
-    for (int i = 0, bound = subTerms.size(); i < bound; ++i) {
+    for (int i = 0, bound = subTerms.size(); i < bound; ++i)
+    {
       final UTerm subTerm = subTerms.get(i);
-      if (subTerm.kind() == kind) subTerms.addAll(subTerm.subTerms());
+      if (subTerm.kind() == kind)
+        subTerms.addAll(subTerm.subTerms());
     }
 
     // This will not remove the flattened sub-terms since the kind of sub-terms must be
     // different from `kind` here, because `flatAddAndMul` starts from the innermost layer
     // of U-expression. e.g. ADD(x1, ADD(ADD(x3, x4), x5), x2) does not exists.
-    if (subTerms.removeIf(t -> t.kind() == kind)) isModified = true;
+    if (subTerms.removeIf(t -> t.kind() == kind))
+      isModified = true;
     return expr;
   }
 
   /**
    * Remove ADD/MUL with only one element
    */
-  UTerm flatSingletonAddAndMul(UTerm expr) {
-    if (expr.kind() == UKind.SUMMATION && ((USum) expr).body().subTerms().size() == 1) {
+  UTerm flatSingletonAddAndMul(UTerm expr)
+  {
+    if (expr.kind() == UKind.SUMMATION && ((USum) expr).body().subTerms().size() == 1)
+    {
       // Ignore cases for summation's single-subTerm body (which is always an ADD or MUL)
       UTerm singletonSubTerm = ((USum) expr).body().subTerms().get(0);
       singletonSubTerm = transformSubTerms(singletonSubTerm, this::flatSingletonAddAndMul);
@@ -198,9 +221,11 @@ public class UNormalization {
     expr = transformSubTerms(expr, this::flatSingletonAddAndMul);
 
     final UKind kind = expr.kind();
-    if (!kind.isBinary()) return expr;
+    if (!kind.isBinary())
+      return expr;
 
-    if (expr.subTerms().size() == 1) {
+    if (expr.subTerms().size() == 1)
+    {
       isModified = true;
       return expr.subTerms().get(0);
     }
@@ -210,44 +235,57 @@ public class UNormalization {
   /**
    * E * \sum{t}f(t) -> \sum{t}(E * f(t))
    */
-  UTerm promoteSummation(UTerm expr) {
+  UTerm promoteSummation(UTerm expr)
+  {
     expr = transformSubTerms(expr, this::promoteSummation);
-    if (expr.kind() != UKind.MULTIPLY) return expr;
+    if (expr.kind() != UKind.MULTIPLY)
+      return expr;
 
     Set<UVar> freeVars = null;
     final ListIterator<UTerm> iter = expr.subTerms().listIterator();
-    while (iter.hasNext()) {
+    while (iter.hasNext())
+    {
       final UTerm factor = iter.next();
-      if (factor.kind() == UKind.SUMMATION) {
+      if (factor.kind() == UKind.SUMMATION)
+      {
         final USum sum = (USum) factor;
-        if (freeVars == null) freeVars = new HashSet<>(sum.boundedVars().size());
+        if (freeVars == null)
+          freeVars = new HashSet<>(sum.boundedVars().size());
         freeVars.addAll(sum.boundedVars());
         iter.set(sum.body());
       }
     }
-    if (freeVars != null) {
+    if (freeVars != null)
+    {
       isModified = true;
       return USum.mk(freeVars, expr.copy());
-    } else return expr;
+    }
+    else
+      return expr;
   }
 
   /**
    * \sum{x}(f(x) * \sum{y}(g(y))) -> Sum[x,y](f(x)*g(y))
    */
-  UTerm mergeSummation(UTerm expr) {
+  UTerm mergeSummation(UTerm expr)
+  {
     expr = transformSubTerms(expr, this::mergeSummation);
-    if (expr.kind() != UKind.SUMMATION) return expr;
+    if (expr.kind() != UKind.SUMMATION)
+      return expr;
 
     final USum summation = (USum) expr;
-    if (summation.body().kind() != UKind.MULTIPLY) return expr;
+    if (summation.body().kind() != UKind.MULTIPLY)
+      return expr;
 
     final Set<UVar> boundedVars = summation.boundedVars();
 
     // Sum[x](Prod(..,Sum[y](..),..) -> Sum[x,y](..,..,..)
     final List<UTerm> subTerms = summation.body().subTerms();
-    for (int i = 0, bound = subTerms.size(); i < bound; i++) {
+    for (int i = 0, bound = subTerms.size(); i < bound; i++)
+    {
       final UTerm subTerm = subTerms.get(i);
-      if (subTerm.kind() != UKind.SUMMATION) continue;
+      if (subTerm.kind() != UKind.SUMMATION)
+        continue;
 
       final USum subSummation = (USum) subTerm;
       boundedVars.addAll(subSummation.boundedVars());
@@ -263,19 +301,26 @@ public class UNormalization {
    * ||E1 * ||E|| * E2|| -> ||E1 * E * E2|| <p/>
    * not(E1 * ||E|| * E2) -> not(E1 * E * E2)
    */
-  UTerm eliminateSquash(UTerm expr) {
+  UTerm eliminateSquash(UTerm expr)
+  {
     return eliminateSquash0(expr, false);
   }
 
-  private UTerm eliminateSquash0(UTerm expr, boolean isActivated) {
+  private UTerm eliminateSquash0(UTerm expr, boolean isActivated)
+  {
     final UKind kind = expr.kind();
-    if (isActivated && kind == UKind.SQUASH) {
+    if (isActivated && kind == UKind.SQUASH)
+    {
       isModified = true;
       return eliminateSquash0(((USquash) expr).body(), true);
-    } else {
+    }
+    else
+    {
       final boolean activated;
-      if (kind == UKind.PRED) activated = false;
-      else activated = isActivated || kind == UKind.SQUASH || kind == UKind.NEGATION;
+      if (kind == UKind.PRED)
+        activated = false;
+      else
+        activated = isActivated || kind == UKind.SQUASH || kind == UKind.NEGATION;
       return transformSubTerms(expr, t -> eliminateSquash0(t, activated));
     }
   }
@@ -283,14 +328,17 @@ public class UNormalization {
   /**
    * not(not(E)) -> E
    */
-  UTerm eliminateNegation(UTerm expr) {
+  UTerm eliminateNegation(UTerm expr)
+  {
     expr = transformSubTerms(expr, this::eliminateNegation);
 
     final UKind kind = expr.kind();
-    if (kind != UKind.NEGATION) return expr;
+    if (kind != UKind.NEGATION)
+      return expr;
 
     final UNeg neg = (UNeg) expr;
-    if (neg.body().kind() == UKind.NEGATION) {
+    if (neg.body().kind() == UKind.NEGATION)
+    {
       isModified = true;
       return ((UNeg) neg.body()).body();
     }
@@ -301,20 +349,25 @@ public class UNormalization {
   /**
    * ||E1|| * ||E2|| -> ||E1 * E2||
    */
-  UTerm combineSquash(UTerm expr) {
+  UTerm combineSquash(UTerm expr)
+  {
     expr = transformSubTerms(expr, this::combineSquash);
 
     final UKind kind = expr.kind();
-    if (kind != UKind.MULTIPLY) return expr;
+    if (kind != UKind.MULTIPLY)
+      return expr;
 
     final List<UTerm> subTerms = expr.subTerms();
     final List<UTerm> squashedTerms = new ArrayList<>();
-    for (int i = 0, bound = subTerms.size(); i < bound; ++i) {
+    for (int i = 0, bound = subTerms.size(); i < bound; ++i)
+    {
       final UTerm subTerm = subTerms.get(i);
-      if (subTerm.kind() != UKind.SQUASH) continue;
+      if (subTerm.kind() != UKind.SQUASH)
+        continue;
       squashedTerms.add(((USquash) subTerm).body());
     }
-    if (squashedTerms.size() > 1) {
+    if (squashedTerms.size() > 1)
+    {
       final USquash combinedSquash = USquash.mk(UMul.mk(squashedTerms));
       subTerms.removeIf(t -> t.kind() == UKind.SQUASH);
       subTerms.add(combinedSquash);
@@ -327,40 +380,59 @@ public class UNormalization {
   /**
    * ||\sum{t1}f(t1)|| * ||\sum{t2}(f(t2)*g(t2))|| -> ||\sum{y2}(f(t2)*g(t2))||
    */
-  UTerm removeSummationSquash(UTerm expr) {
+  UTerm removeSummationSquash(UTerm expr)
+  {
     expr = transformSubTerms(expr, this::removeSummationSquash);
 
     final UKind kind = expr.kind();
-    if (kind != UKind.MULTIPLY) return expr;
+    if (kind != UKind.MULTIPLY)
+      return expr;
 
     final List<UTerm> subTerms = expr.subTerms();
     final List<UTerm> squashedSummationTerms = new ArrayList<>();
     final Map<UTerm, Boolean> deletedMap = new HashMap<>();
-    for (UTerm subTerm : subTerms) {
+    for (UTerm subTerm : subTerms)
+    {
       deletedMap.put(subTerm, false);
-      if (subTerm.kind() != UKind.SQUASH) continue;
-      if (((USquash) subTerm).body().kind() != UKind.SUMMATION) continue;
+      if (subTerm.kind() != UKind.SQUASH)
+        continue;
+      if (((USquash) subTerm).body().kind() != UKind.SUMMATION)
+        continue;
       squashedSummationTerms.add(subTerm);
     }
-    if (squashedSummationTerms.size() > 1) {
-      for (int i = 0, bound = squashedSummationTerms.size(); i < bound; ++i) {
+    if (squashedSummationTerms.size() > 1)
+    {
+      for (int i = 0, bound = squashedSummationTerms.size(); i < bound; ++i)
+      {
         final UTerm firstTerm = squashedSummationTerms.get(i);
         final USum firstSummation = (USum) ((USquash) firstTerm).body();
-        if (firstSummation.boundedVars().size() > 1) continue;
-        for (int j = i + 1; j < bound; ++j) {
+        if (firstSummation.boundedVars().size() > 1)
+          continue;
+        for (int j = i + 1; j < bound; ++j)
+        {
           final UTerm secondTerm = squashedSummationTerms.get(j);
           final USum secondSummation = (USum) ((USquash) secondTerm).body();
-          if (secondSummation.boundedVars().size() > 1) continue;
+          if (secondSummation.boundedVars().size() > 1)
+            continue;
           boolean find = false;
-          if (containTargetTerm(firstSummation.body(), secondSummation.body(),
-                  (UVar) firstSummation.boundedVars().toArray()[0], (UVar) secondSummation.boundedVars().toArray()[0], false)) {
+          if (containTargetTerm(firstSummation.body(),
+                  secondSummation.body(),
+                  (UVar) firstSummation.boundedVars().toArray()[0],
+                  (UVar) secondSummation.boundedVars().toArray()[0],
+                  false))
+          {
             deletedMap.put(secondTerm, true);
             isModified = true;
             find = true;
           }
-          if (find) continue;
-          if (containTargetTerm(firstSummation.body(), secondSummation.body(),
-                  (UVar) firstSummation.boundedVars().toArray()[0], (UVar) secondSummation.boundedVars().toArray()[0], true)) {
+          if (find)
+            continue;
+          if (containTargetTerm(firstSummation.body(),
+                  secondSummation.body(),
+                  (UVar) firstSummation.boundedVars().toArray()[0],
+                  (UVar) secondSummation.boundedVars().toArray()[0],
+                  true))
+          {
             deletedMap.put(firstTerm, true);
             isModified = true;
           }
@@ -372,23 +444,32 @@ public class UNormalization {
     return expr;
   }
 
-  private static boolean containTargetTerm(UTerm firstTerm, UTerm secondTerm, UVar firstBoundedVar, UVar secondBoundedVar, boolean firstIsTarget) {
+  private static boolean containTargetTerm(UTerm firstTerm,
+      UTerm secondTerm,
+      UVar firstBoundedVar,
+      UVar secondBoundedVar,
+      boolean firstIsTarget)
+  {
     UTerm srcTerm = firstIsTarget ? secondTerm : firstTerm;
     UTerm tgtTerm = firstIsTarget ? firstTerm : secondTerm;
     UVar srcBoundedVar = firstIsTarget ? secondBoundedVar : firstBoundedVar;
     UVar tgtBoundedVar = firstIsTarget ? firstBoundedVar : secondBoundedVar;
-    if (srcTerm.kind() == UKind.MULTIPLY && tgtTerm.kind() == UKind.MULTIPLY) {
-      for (UTerm subTgtTerm : tgtTerm.subTerms()) {
+    if (srcTerm.kind() == UKind.MULTIPLY && tgtTerm.kind() == UKind.MULTIPLY)
+    {
+      for (UTerm subTgtTerm : tgtTerm.subTerms())
+      {
         UTerm subTgtTermCopy = subTgtTerm.copy();
         if (subTgtTerm.isUsing(tgtBoundedVar))
           subTgtTermCopy.replaceVarInplace(tgtBoundedVar, srcBoundedVar, false);
-        if (!srcTerm.subTerms().contains(subTgtTermCopy)) {
+        if (!srcTerm.subTerms().contains(subTgtTermCopy))
+        {
           return false;
         }
       }
       return true;
     }
-    if (srcTerm.kind() == UKind.MULTIPLY && tgtTerm.kind() != UKind.MULTIPLY) {
+    if (srcTerm.kind() == UKind.MULTIPLY && tgtTerm.kind() != UKind.MULTIPLY)
+    {
       UTerm tgtTermCopy = tgtTerm.copy();
       if (tgtTerm.isUsing(tgtBoundedVar))
         tgtTermCopy.replaceVarInplace(tgtBoundedVar, srcBoundedVar, false);
@@ -400,19 +481,24 @@ public class UNormalization {
   /**
    * not(E1) * not(E2) -> not(E1 + E2)
    */
-  UTerm combineNegation(UTerm expr) {
+  UTerm combineNegation(UTerm expr)
+  {
     expr = transformSubTerms(expr, this::combineNegation);
 
     final UKind kind = expr.kind();
-    if (kind != UKind.MULTIPLY) return expr;
+    if (kind != UKind.MULTIPLY)
+      return expr;
 
     final List<UTerm> subTerms = expr.subTerms();
     final List<UTerm> negTerms = new ArrayList<>();
-    for (final UTerm subTerm : subTerms) {
-      if (subTerm.kind() != UKind.NEGATION) continue;
+    for (final UTerm subTerm : subTerms)
+    {
+      if (subTerm.kind() != UKind.NEGATION)
+        continue;
       negTerms.add(((UNeg) subTerm).body());
     }
-    if (negTerms.size() > 1) {
+    if (negTerms.size() > 1)
+    {
       final UNeg combinedNeg = UNeg.mk(UAdd.mk(negTerms));
       subTerms.removeIf(t -> t.kind() == UKind.NEGATION);
       subTerms.add(combinedNeg);
@@ -425,27 +511,33 @@ public class UNormalization {
   /**
    * E1 * (E2 + E3) -> E1 * E2 + E1 * E3
    */
-  UTerm distributeAddToMul(UTerm expr) {
+  UTerm distributeAddToMul(UTerm expr)
+  {
     expr = transformSubTerms(expr, this::distributeAddToMul);
 
     final UKind kind = expr.kind();
-    if (kind != UKind.MULTIPLY) return expr;
+    if (kind != UKind.MULTIPLY)
+      return expr;
 
     final List<UTerm> subTerms = expr.subTerms();
     UAdd subAdd = null;
-    for (int i = 0, bound = subTerms.size(); i < bound; ++i) {
+    for (int i = 0, bound = subTerms.size(); i < bound; ++i)
+    {
       final UTerm subTerm = subTerms.get(i);
-      if (subTerm.kind() == UKind.ADD) {
+      if (subTerm.kind() == UKind.ADD)
+      {
         subAdd = (UAdd) subTerm;
         break;
       }
     }
 
     // Get one of the subTerm to be ADD
-    if (subAdd != null) {
+    if (subAdd != null)
+    {
       subTerms.remove(subAdd);
       final List<UTerm> addTerms = new ArrayList<>();
-      for (int i = 0, bound = subAdd.subTerms().size(); i < bound; ++i) {
+      for (int i = 0, bound = subAdd.subTerms().size(); i < bound; ++i)
+      {
         final UTerm subAddFactor = subAdd.subTerms().get(i);
         final List<UTerm> subMulFactors = UExprSupport.copyTermList(subTerms);
         subMulFactors.add(subAddFactor);
@@ -462,22 +554,28 @@ public class UNormalization {
    * \sum{t} (f1(t) + f2(t)) -> \sum{t}f1(t) + \sum{t}f2(t) Cases like \sum{t} (E1 * (f1(t) + f2(t))
    * * E2) are transformed into \sum{t} (E1 * E2 * f1(t) + E1 * E2 * f2(t)) by `distributeAddToMul`.
    */
-  UTerm distributeAddToSummation(UTerm expr) {
+  UTerm distributeAddToSummation(UTerm expr)
+  {
     expr = transformSubTerms(expr, this::distributeAddToSummation);
 
     final UKind kind = expr.kind();
-    if (kind != UKind.SUMMATION) return expr;
+    if (kind != UKind.SUMMATION)
+      return expr;
 
     // Check the pattern: \sum(ADD(.., ..))
     final UTerm body = ((USum) expr).body();
-    if (body.kind() == UKind.ADD) {
+    if (body.kind() == UKind.ADD)
+    {
       final List<UTerm> subTerms = body.subTerms();
       final List<UTerm> addFactors = new ArrayList<>();
-      for (UTerm term : subTerms) {
+      for (UTerm term : subTerms)
+      {
         final UTerm subTerm = term.copy();
         final Set<UVar> usedVars = new HashSet<>();
-        for (UVar var : ((USum) expr).boundedVars()) {
-          if (subTerm.isUsing(var)) usedVars.add(var);
+        for (UVar var : ((USum) expr).boundedVars())
+        {
+          if (subTerm.isUsing(var))
+            usedVars.add(var);
         }
         addFactors.add(USum.mk(usedVars, subTerm));
       }
@@ -491,51 +589,47 @@ public class UNormalization {
   /**
    * Remove constants in expression
    */
-  UTerm removeConstants(UTerm expr) {
+  UTerm removeConstants(UTerm expr)
+  {
     expr = transformSubTerms(expr, this::removeConstants);
 
-    switch (expr.kind()) {
-      case ADD -> {
+    switch (expr.kind())
+    {
+      case ADD
+          -> {
         if (expr.subTerms().removeIf(subTerm -> subTerm.equals(UConst.ZERO))) isModified = true;
         if (expr.subTerms().isEmpty()) {
-          isModified = true;
-          expr = UConst.zero();
+          isModified = true; expr = UConst.zero();
         }
-      }
-      case MULTIPLY -> {
+      } case MULTIPLY
+          -> {
         if (expr.subTerms().removeIf(subTerm -> subTerm.equals(UConst.ONE))) isModified = true;
         if (expr.subTerms().isEmpty()) {
-          isModified = true;
-          expr = UConst.one();
+          isModified = true; expr = UConst.one();
+        } if (any(expr.subTerms(), t -> t.equals(UConst.ZERO))) {
+          isModified = true; expr = UConst.zero();
         }
-        if (any(expr.subTerms(), t -> t.equals(UConst.ZERO))) {
-          isModified = true;
-          expr = UConst.zero();
-        }
-      }
-      case PRED -> {
-        UPred pred = (UPred) expr;
-        if (pred.isPredKind(UPred.PredKind.EQ)) {
-          assert expr.subTerms().size() == 2;
-          List<UTerm> subTerms = expr.subTerms();
+      } case PRED
+          -> {
+        UPred pred = (UPred) expr; if (pred.isPredKind(UPred.PredKind.EQ)) {
+          assert expr.subTerms().size() == 2; List<UTerm> subTerms = expr.subTerms();
           if (subTerms.get(0).kind() == UKind.CONST && subTerms.get(1).kind() == UKind.CONST) {
             UConst firstConst = (UConst) subTerms.get(0);
             UConst secondConst = (UConst) subTerms.get(1);
-            if (firstConst.value() == secondConst.value())
-              expr = UConst.one();
-            else
-              expr = UConst.zero();
+            if (firstConst.value() == secondConst.value()) expr = UConst.one();
+            else expr = UConst.zero();
           }
         }
-      }
-      case SQUASH, NEGATION -> {
-        final UTerm body = ((UUnary) expr).body();
-        if (body.kind() == UKind.CONST && ((UConst) body).isZeroOneVal()) {
-          isModified = true;
-          if (expr.kind() == UKind.SQUASH) expr = body;
-          else expr = body.equals(UConst.ONE) ? UConst.zero() : UConst.one();
-        }
-      }
+      } case SQUASH,
+          NEGATION
+          -> {
+            final UTerm body = ((UUnary) expr).body();
+            if (body.kind() == UKind.CONST && ((UConst) body).isZeroOneVal()) {
+              isModified = true; if (expr.kind() == UKind.SQUASH) expr = body;
+              else expr = body.equals(UConst.ONE) ? UConst.zero():
+        UConst.one();
+    }
+  }
       case SUMMATION -> {
         final UTerm body = ((USum) expr).body();
         assert body.kind().isBinary();
@@ -620,124 +714,156 @@ public class UNormalization {
         List<UTerm> newSubTerms = new ArrayList<>();
         int count = 0;
         int foldingVal = 0;
-        for (UTerm subTerm : subTerms) {
-          if (subTerm.equals(UConst.nullVal())) return expr;
-          if (subTerm.kind() == UKind.CONST) {
+        for (UTerm subTerm : subTerms)
+        {
+          if (subTerm.equals(UConst.nullVal()))
+            return expr;
+          if (subTerm.kind() == UKind.CONST)
+          {
             foldingVal += ((UConst) subTerm).value();
             count++;
-          } else
+          }
+          else
             newSubTerms.add(subTerm);
         }
-        if (count <= 1) return expr;
+        if (count <= 1)
+          return expr;
         isModified = true;
         newSubTerms.add(UConst.mk(foldingVal));
         return UAdd.mk(newSubTerms);
-      }
+}
       case MULTIPLY -> {
         List<UTerm> subTerms = expr.subTerms();
         List<UTerm> newSubTerms = new ArrayList<>();
         int count = 0;
         int foldingVal = 1;
-        for (UTerm subTerm : subTerms) {
-          if (subTerm.equals(UConst.nullVal())) return expr;
-          if (subTerm.kind() == UKind.CONST) {
+        for (UTerm subTerm : subTerms)
+        {
+          if (subTerm.equals(UConst.nullVal()))
+            return expr;
+          if (subTerm.kind() == UKind.CONST)
+          {
             foldingVal *= ((UConst) subTerm).value();
             count++;
-          } else
+          }
+          else
             newSubTerms.add(subTerm);
         }
-        if (count <= 1) return expr;
+        if (count <= 1)
+          return expr;
         isModified = true;
         newSubTerms.add(UConst.mk(foldingVal));
         return UMul.mk(newSubTerms);
-      }
-      default -> {
-      }
-    }
+        }
+        default -> {}
+        }
 
-    return expr;
-  }
+        return expr;
+        }
 
-  /**
-   * Remove duplicate factors in multiplication.
-   * e.g. [IsNull(a)] * [IsNull(a)] => [IsNull(a)]
-   */
-  UTerm removeRedundantFactors(UTerm expr) {
-    return removeRedundantFactors(expr, false);
-  }
+        /**
+         * Remove duplicate factors in multiplication.
+         * e.g. [IsNull(a)] * [IsNull(a)] => [IsNull(a)]
+         */
+        UTerm removeRedundantFactors(UTerm expr)
+        {
+          return removeRedundantFactors(expr, false);
+        }
 
-  UTerm removeRedundantFactors(UTerm expr, boolean isUnderSet) {
-    final boolean isUnderSetFinal;
-    if (expr instanceof UPred || expr instanceof UFunc) {
-      isUnderSetFinal = false;
-    } else if (expr.kind().isUnary()) {
-      isUnderSetFinal = true;
-    } else {
-      isUnderSetFinal = isUnderSet;
-    }
-    expr = transformSubTerms(expr, t -> removeRedundantFactors(t, isUnderSetFinal));
-    if (expr.kind() != UKind.MULTIPLY) return expr;
+        UTerm removeRedundantFactors(UTerm expr, boolean isUnderSet)
+        {
+          final boolean isUnderSetFinal;
+          if (expr instanceof UPred || expr instanceof UFunc)
+          {
+            isUnderSetFinal = false;
+          }
+          else if (expr.kind().isUnary())
+          {
+            isUnderSetFinal = true;
+          }
+          else
+          {
+            isUnderSetFinal = isUnderSet;
+          }
+          expr = transformSubTerms(expr, t -> removeRedundantFactors(t, isUnderSetFinal));
+          if (expr.kind() != UKind.MULTIPLY)
+            return expr;
 
-    final List<UTerm> removableTerms;
-    if (isUnderSetFinal) {
-      removableTerms = filter(expr.subTerms(), UTerm::returnsNatural);
-    } else {
-      removableTerms = filter(expr.subTerms(), t -> t.kind() == UKind.PRED
-              || t.kind() == UKind.SQUASH
-              || t.kind() == UKind.NEGATION);
-    }
-    final List<UTerm> nonRemovableTerms = filter(expr.subTerms(), t -> !removableTerms.contains(t));
+          final List<UTerm> removableTerms;
+          if (isUnderSetFinal)
+          {
+            removableTerms = filter(expr.subTerms(), UTerm::returnsNatural);
+          }
+          else
+          {
+            removableTerms = filter(expr.subTerms(),
+                t
+                -> t.kind() == UKind.PRED || t.kind() == UKind.SQUASH
+                    || t.kind() == UKind.NEGATION);
+          }
+          final List<UTerm> nonRemovableTerms =
+              filter(expr.subTerms(), t -> !removableTerms.contains(t));
 
-    final Set<UTerm> uniqueSubTermSet = new LinkedHashSet<>(removableTerms);
-    final List<UTerm> uniqueSubTerms = new ArrayList<>(uniqueSubTermSet);
+          final Set<UTerm> uniqueSubTermSet = new LinkedHashSet<>(removableTerms);
+          final List<UTerm> uniqueSubTerms = new ArrayList<>(uniqueSubTermSet);
 
-    if (uniqueSubTerms.size() != removableTerms.size()) {
-      isModified = true;
-      return UMul.mk(concat(nonRemovableTerms, uniqueSubTerms));
-    }
+          if (uniqueSubTerms.size() != removableTerms.size())
+          {
+            isModified = true;
+            return UMul.mk(concat(nonRemovableTerms, uniqueSubTerms));
+          }
 
-    return expr;
-  }
+          return expr;
+        }
 
-  /**
-   * Remove duplicate same equal.
-   * e.g. [a = a] => 1
-   */
-  UTerm removeRedundantSameEqual(UTerm expr) {
-    expr = transformSubTerms(expr, this::removeRedundantSameEqual);
-    if (expr.kind() != UKind.PRED || !((UPred) expr).isPredKind(UPred.PredKind.EQ)) return expr;
+        /**
+         * Remove duplicate same equal.
+         * e.g. [a = a] => 1
+         */
+        UTerm removeRedundantSameEqual(UTerm expr)
+        {
+          expr = transformSubTerms(expr, this::removeRedundantSameEqual);
+          if (expr.kind() != UKind.PRED || !((UPred) expr).isPredKind(UPred.PredKind.EQ))
+            return expr;
 
-    final UPred pred = (UPred) expr;
+          final UPred pred = (UPred) expr;
 
-//    if (!pred.args().get(0).kind().isTermAtomic() || !pred.args().get(1).kind().isTermAtomic()) return expr;
+          //    if (!pred.args().get(0).kind().isTermAtomic() ||
+          //    !pred.args().get(1).kind().isTermAtomic()) return expr;
 
-    assert pred.args().size() == 2;
+          assert pred.args().size() == 2;
 
-    if (pred.args().get(0).equals(pred.args().get(1))) {
-      isModified = true;
-      return UConst.one();
-    }
+          if (pred.args().get(0).equals(pred.args().get(1)))
+          {
+            isModified = true;
+            return UConst.one();
+          }
 
-    return expr;
-  }
+          return expr;
+        }
 
-  /**
-   * Apply function to reduce redundant function
-   * e.g. upper(lower(a)) -> upper(a)
-   */
-  UTerm removeRedundantFunction(UTerm expr) {
-    expr = transformSubTerms(expr, this::removeRedundantFunction);
+        /**
+         * Apply function to reduce redundant function
+         * e.g. upper(lower(a)) -> upper(a)
+         */
+        UTerm removeRedundantFunction(UTerm expr)
+        {
+          expr = transformSubTerms(expr, this::removeRedundantFunction);
 
-    final UKind kind = expr.kind();
-    if (kind != UKind.FUNC) return expr;
+          final UKind kind = expr.kind();
+          if (kind != UKind.FUNC)
+            return expr;
 
-    final UFunc func = (UFunc) expr;
-    final UName funcName = func.funcName();
-    final List<UTerm> arguments = func.args();
-    if (arguments.size() == 0) return expr;
-    if (arguments.get(0).kind() != UKind.FUNC) return expr;
+          final UFunc func = (UFunc) expr;
+          final UName funcName = func.funcName();
+          final List<UTerm> arguments = func.args();
+          if (arguments.size() == 0)
+            return expr;
+          if (arguments.get(0).kind() != UKind.FUNC)
+            return expr;
 
-    switch (funcName.toString().toUpperCase()) {
+          switch (funcName.toString().toUpperCase())
+          {
       case "UPPER", "LOWER" -> {
         assert arguments.size() == 1;
         final UFunc subFunc = (UFunc) arguments.get(0);

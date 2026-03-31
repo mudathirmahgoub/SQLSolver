@@ -1,6 +1,7 @@
 package sqlsolver.superopt.fragment;
 
-public interface SymbolNaming {
+public interface SymbolNaming
+{
   SymbolNaming name(Symbols symbols);
 
   void setName(Symbol symbol, String name);
@@ -9,11 +10,13 @@ public interface SymbolNaming {
 
   Symbol symbolOf(String name);
 
-  static SymbolNaming mk() {
+  static SymbolNaming mk()
+  {
     return new SymbolNamingImpl();
   }
 
-  static SymbolNaming mk(Symbols symbols) {
+  static SymbolNaming mk(Symbols symbols)
+  {
     return mk().name(symbols);
   }
 }

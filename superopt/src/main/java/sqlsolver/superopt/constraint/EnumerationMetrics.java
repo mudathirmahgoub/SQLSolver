@@ -1,13 +1,13 @@
 package sqlsolver.superopt.constraint;
 
+import java.util.List;
 import sqlsolver.common.utils.IntMetric;
 import sqlsolver.common.utils.LongMetric;
 import sqlsolver.common.utils.Metric;
 import sqlsolver.common.utils.Metrics;
 
-import java.util.List;
-
-public class EnumerationMetrics implements Metrics<EnumerationMetrics>, AutoCloseable {
+public class EnumerationMetrics implements Metrics<EnumerationMetrics>, AutoCloseable
+{
   public final IntMetric numEnumeratorInvocations = new IntMetric("#Enum", 1);
   public final IntMetric numTotalConstraintSets = new IntMetric("#TotalConstraints");
   public final IntMetric numEnumeratedConstraintSets = new IntMetric("#EnumConstraints");
@@ -26,45 +26,48 @@ public class EnumerationMetrics implements Metrics<EnumerationMetrics>, AutoClos
   public final LongMetric elapsedNeq = new LongMetric("Neq(ms)");
   public final LongMetric elapsedUnknown = new LongMetric("Unknown(ms)");
 
-  private final List<Metric> metrics =
-      List.of(
-          numEnumeratorInvocations,
-          numTotalConstraintSets,
-          numEnumeratedConstraintSets,
-          numProverInvocations,
-          numCacheHitEq,
-          numCacheHitNeq,
-          numEq,
-          numNeq,
-          numUnknown,
-          numUnknown0,
-          numUnknown1,
-          numRelaxed,
-          numReinforced,
-          elapsedEnum,
-          elapsedEq,
-          elapsedNeq,
-          elapsedUnknown);
+  private final List<Metric> metrics = List.of(numEnumeratorInvocations,
+      numTotalConstraintSets,
+      numEnumeratedConstraintSets,
+      numProverInvocations,
+      numCacheHitEq,
+      numCacheHitNeq,
+      numEq,
+      numNeq,
+      numUnknown,
+      numUnknown0,
+      numUnknown1,
+      numRelaxed,
+      numReinforced,
+      elapsedEnum,
+      elapsedEq,
+      elapsedNeq,
+      elapsedUnknown);
 
-  static EnumerationMetrics open() {
+  static EnumerationMetrics open()
+  {
     return EnumerationMetricsContext.instance().local(true);
   }
 
-  static EnumerationMetrics current() {
+  static EnumerationMetrics current()
+  {
     return EnumerationMetricsContext.instance().local(false);
   }
 
-  public void close() {
+  public void close()
+  {
     EnumerationMetricsContext.instance().updateGlobal();
   }
 
   @Override
-  public List<Metric> metrics() {
+  public List<Metric> metrics()
+  {
     return metrics;
   }
 
   @Override
-  public String toString() {
+  public String toString()
+  {
     return stringify(new StringBuilder()).toString();
   }
 }

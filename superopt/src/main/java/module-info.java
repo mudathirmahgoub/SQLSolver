@@ -1,4 +1,5 @@
-module sqlsolver.superopt {
+module sqlsolver.superopt
+{
   exports sqlsolver.superopt;
   exports sqlsolver.superopt.constraint;
   exports sqlsolver.superopt.logic;

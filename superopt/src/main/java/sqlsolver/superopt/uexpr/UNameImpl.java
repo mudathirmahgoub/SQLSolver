@@ -1,26 +1,33 @@
 package sqlsolver.superopt.uexpr;
 
-record UNameImpl(String str) implements UName {
+record UNameImpl(String str) implements UName
+{
   @Override
-  public UName copy() {
+  public UName copy()
+  {
     return new UNameImpl(str);
   }
 
   @Override
-  public String toString() {
+  public String toString()
+  {
     return str;
   }
 
   @Override
-  public boolean equals(Object obj) {
-    if (this == obj) return true;
-    if (!(obj instanceof UName)) return false;
+  public boolean equals(Object obj)
+  {
+    if (this == obj)
+      return true;
+    if (!(obj instanceof UName))
+      return false;
     final UName that = (UName) obj;
     return this.toString().equals(that.toString());
   }
 
   @Override
-  public int hashCode() {
+  public int hashCode()
+  {
     return str.hashCode();
   }
 }

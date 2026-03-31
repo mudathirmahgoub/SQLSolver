@@ -1,26 +1,29 @@
 package sqlsolver.superopt.optimizer;
 
-import sqlsolver.sql.ast.constants.JoinKind;
-import sqlsolver.sql.plan.*;
-
-import java.util.List;
-
 import static sqlsolver.common.tree.TreeContext.NO_SUCH_NODE;
 import static sqlsolver.common.tree.TreeSupport.indexOfChild;
 
-class ReplaceSubPlan {
+import java.util.List;
+import sqlsolver.sql.ast.constants.JoinKind;
+import sqlsolver.sql.plan.*;
+
+class ReplaceSubPlan
+{
   private final PlanContext replacementPlan;
   private final PlanContext replacedPlan;
 
-  ReplaceSubPlan(PlanContext replacedPlan, PlanContext replacementPlan) {
+  ReplaceSubPlan(PlanContext replacedPlan, PlanContext replacementPlan)
+  {
     this.replacementPlan = replacementPlan;
     this.replacedPlan = replacedPlan;
   }
 
-  int replace(int replacedSubPlan, int replacementSubPlan) {
+  int replace(int replacedSubPlan, int replacementSubPlan)
+  {
     final Values fromValues = replacementPlan.valuesReg().valuesOf(replacementSubPlan);
     final Values toValues = replacedPlan.valuesReg().valuesOf(replacedSubPlan);
-    if (fromValues.size() != toValues.size()) return NO_SUCH_NODE;
+    if (fromValues.size() != toValues.size())
+      return NO_SUCH_NODE;
 
     final int toRoot = replacedPlan.root();
     final int newSubPlan = copyNode(replacementSubPlan);
@@ -30,7 +33,8 @@ class ReplaceSubPlan {
     replacedPlan.setChild(parent, childIdx, newSubPlan);
 
     final ValueRefReBinder reBinder = new ValueRefReBinder(replacedPlan);
-    if (!reBinder.rebindToRoot(newSubPlan)) return NO_SUCH_NODE;
+    if (!reBinder.rebindToRoot(newSubPlan))
+      return NO_SUCH_NODE;
 
     final PlanNode newSubPlanNode = replacedPlan.nodeAt(newSubPlan);
     replacedPlan.deleteDetached(toRoot);
@@ -39,41 +43,34 @@ class ReplaceSubPlan {
     return replacedPlan.nodeIdOf(newSubPlanNode);
   }
 
-  private int copyNode(int node) {
-    switch (replacementPlan.kindOf(node)) {
-      case Input:
-        return copyInput(node);
-      case Filter:
-        return copyFilter(node);
-      case InSub:
-        return copyInSub(node);
-      case Join:
-        return copyJoin(node);
-      case Proj:
-        return copyProj(node);
-      case Agg:
-        return copyAgg(node);
-      case SetOp:
-        return copySetOp(node);
-      case Sort:
-        return copySort(node);
-      case Limit:
-        return copyLimit(node);
-      case Exists:
-        return copyExists(node);
-      default:
-        throw new IllegalArgumentException("unsupported node");
+  private int copyNode(int node)
+  {
+    switch (replacementPlan.kindOf(node))
+    {
+      case Input: return copyInput(node);
+      case Filter: return copyFilter(node);
+      case InSub: return copyInSub(node);
+      case Join: return copyJoin(node);
+      case Proj: return copyProj(node);
+      case Agg: return copyAgg(node);
+      case SetOp: return copySetOp(node);
+      case Sort: return copySort(node);
+      case Limit: return copyLimit(node);
+      case Exists: return copyExists(node);
+      default: throw new IllegalArgumentException("unsupported node");
     }
   }
 
-  private int copyInput(int fromNode) {
+  private int copyInput(int fromNode)
+  {
     final InputNode inputNode = (InputNode) replacementPlan.nodeAt(fromNode);
     final int toNode = replacedPlan.bindNode(inputNode);
     replacedPlan.valuesReg().bindValues(toNode, replacementPlan.valuesReg().valuesOf(fromNode));
     return toNode;
   }
 
-  private int copyFilter(int fromNode) {
+  private int copyFilter(int fromNode)
+  {
     final int child = copyNode(replacementPlan.childOf(fromNode, 0));
     final SimpleFilterNode filterNode = (SimpleFilterNode) replacementPlan.nodeAt(fromNode);
     final Expression predicate = filterNode.predicate();
@@ -86,7 +83,8 @@ class ReplaceSubPlan {
     return toNode;
   }
 
-  private int copyInSub(int fromNode) {
+  private int copyInSub(int fromNode)
+  {
     final int lhs = copyNode(replacementPlan.childOf(fromNode, 0));
     final int rhs = copyNode(replacementPlan.childOf(fromNode, 1));
 
@@ -107,7 +105,8 @@ class ReplaceSubPlan {
     return toNode;
   }
 
-  private int copyExists(int fromNode) {
+  private int copyExists(int fromNode)
+  {
     final int lhs = copyNode(replacementPlan.childOf(fromNode, 0));
     final int rhs = copyNode(replacementPlan.childOf(fromNode, 1));
 
@@ -125,7 +124,8 @@ class ReplaceSubPlan {
     return toNode;
   }
 
-  private int copyJoin(int fromNode) {
+  private int copyJoin(int fromNode)
+  {
     final int lhs = copyNode(replacementPlan.childOf(fromNode, 0));
     final int rhs = copyNode(replacementPlan.childOf(fromNode, 1));
 
@@ -139,14 +139,16 @@ class ReplaceSubPlan {
     replacedPlan.setChild(toNode, 0, lhs);
     replacedPlan.setChild(toNode, 1, rhs);
     replacedPlan.valuesReg().bindValueRefs(joinCond, refs);
-    if (joinKeys != null) replacedPlan.infoCache().putJoinKindOf(toNode, joinKind);
+    if (joinKeys != null)
+      replacedPlan.infoCache().putJoinKindOf(toNode, joinKind);
     if (joinKeys != null)
       replacedPlan.infoCache().putJoinKeyOf(toNode, joinKeys.getLeft(), joinKeys.getRight());
 
     return toNode;
   }
 
-  private int copyProj(int fromNode) {
+  private int copyProj(int fromNode)
+  {
     final int child = copyNode(replacementPlan.childOf(fromNode, 0));
 
     final ProjNode projNode = (ProjNode) replacementPlan.nodeAt(fromNode);
@@ -158,7 +160,8 @@ class ReplaceSubPlan {
 
     final int toNode = replacedPlan.bindNode(projNode);
     replacedPlan.setChild(toNode, 0, child);
-    for (int i = 0, bound = values.size(); i < bound; ++i) {
+    for (int i = 0, bound = values.size(); i < bound; ++i)
+    {
       final Expression attrExpr = attrExprs.get(i);
       toValuesReg.bindValueRefs(attrExpr, fromValuesReg.valueRefsOf(attrExpr));
       toValuesReg.bindExpr(values.get(i), attrExpr);
@@ -172,7 +175,8 @@ class ReplaceSubPlan {
     return toNode;
   }
 
-  private int copyAgg(int fromNode) {
+  private int copyAgg(int fromNode)
+  {
     final int child = copyNode(replacementPlan.childOf(fromNode, 0));
 
     final AggNode aggNode = (AggNode) replacementPlan.nodeAt(fromNode);
@@ -197,7 +201,8 @@ class ReplaceSubPlan {
     return toNode;
   }
 
-  private int copySetOp(int fromNode) {
+  private int copySetOp(int fromNode)
+  {
     final int lhs = copyNode(replacementPlan.childOf(fromNode, 0));
     final int rhs = copyNode(replacementPlan.childOf(fromNode, 1));
 
@@ -209,7 +214,8 @@ class ReplaceSubPlan {
     return toNode;
   }
 
-  private int copySort(int fromNode) {
+  private int copySort(int fromNode)
+  {
     final int child = copyNode(replacementPlan.childOf(fromNode, 0));
 
     final SortNode sortNode = (SortNode) replacementPlan.nodeAt(fromNode);
@@ -224,7 +230,8 @@ class ReplaceSubPlan {
     return toNode;
   }
 
-  private int copyLimit(int fromNode) {
+  private int copyLimit(int fromNode)
+  {
     final int child = copyNode(replacementPlan.childOf(fromNode, 0));
 
     final LimitNode limitNode = (LimitNode) replacementPlan.nodeAt(fromNode);

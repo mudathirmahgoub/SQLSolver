@@ -1,5 +1,15 @@
 package sqlsolver.superopt.uexpr.normalizer;
 
+import static sqlsolver.common.utils.IterableSupport.*;
+import static sqlsolver.common.utils.ListSupport.filter;
+import static sqlsolver.common.utils.ListSupport.map;
+import static sqlsolver.sql.calcite.CalciteSupport.*;
+import static sqlsolver.superopt.uexpr.UExprConcreteTranslator.VarSchema;
+import static sqlsolver.superopt.uexpr.UExprSupport.*;
+import static sqlsolver.superopt.uexpr.UKind.*;
+
+import java.util.*;
+import java.util.function.Function;
 import org.apache.commons.lang3.tuple.Pair;
 import sqlsolver.common.utils.NameSequence;
 import sqlsolver.common.utils.NaturalCongruence;
@@ -15,21 +25,11 @@ import sqlsolver.superopt.liastar.translator.LiaTranslator;
 import sqlsolver.superopt.uexpr.*;
 import sqlsolver.superopt.util.Z3Support;
 
-import java.util.*;
-import java.util.function.Function;
-
-import static sqlsolver.common.utils.IterableSupport.*;
-import static sqlsolver.common.utils.ListSupport.filter;
-import static sqlsolver.common.utils.ListSupport.map;
-import static sqlsolver.sql.calcite.CalciteSupport.*;
-import static sqlsolver.superopt.uexpr.UKind.*;
-import static sqlsolver.superopt.uexpr.UExprSupport.*;
-import static sqlsolver.superopt.uexpr.UExprConcreteTranslator.VarSchema;
-
 /**
  * This class provides the integrity constraint normalization for U-Expression.
  */
-public class QueryUExprICRewriter extends UNormalization {
+public class QueryUExprICRewriter extends UNormalization
+{
   private final Schema schema;
 
   private static final String VAR_NAME_PREFIX = "y";
@@ -46,35 +46,42 @@ public class QueryUExprICRewriter extends UNormalization {
   private static int selectedIC = -1;
   private static boolean hasIC = true;
 
-  public static void selectIC(int index) {
+  public static void selectIC(int index)
+  {
     selectedIC = index;
   }
 
-  public static int selectedIC() {
+  public static int selectedIC()
+  {
     return selectedIC;
   }
 
-  public static void setHasIC(boolean val) {
+  public static void setHasIC(boolean val)
+  {
     hasIC = val;
   }
 
-  public static boolean hasIC() {
+  public static boolean hasIC()
+  {
     return hasIC;
   }
 
-  public UVar mkFreshICRewriterBaseVar() {
+  public UVar mkFreshICRewriterBaseVar()
+  {
     UVar newVar = UVar.mkBase(UName.mk(tupleVarSeq.next()));
     return newVar;
   }
 
-  public List<UVar> getIcFreshVars() {
+  public List<UVar> getIcFreshVars()
+  {
     return this.icFreshVars;
   }
 
   public QueryUExprICRewriter(UTerm expr,
-                              Schema schema,
-                              UExprConcreteTranslator.QueryTranslator translator,
-                              Map<Integer, VarSchema> constToTuple) {
+      Schema schema,
+      UExprConcreteTranslator.QueryTranslator translator,
+      Map<Integer, VarSchema> constToTuple)
+  {
     super(expr, translator);
     this.schema = schema;
     this.icFreshVars = new ArrayList<>();
@@ -85,8 +92,10 @@ public class QueryUExprICRewriter extends UNormalization {
   }
 
   @Override
-  public UTerm normalizeTerm() {
-    do {
+  public UTerm normalizeTerm()
+  {
+    do
+    {
       expr = new QueryUExprNormalizer(expr, schema, translator).normalizeTerm();
       isModified = false;
 
@@ -97,7 +106,8 @@ public class QueryUExprICRewriter extends UNormalization {
       expr = performNormalizeRule(this::applyUnique);
     } while (isModified);
     // delay free var generation rule, because it will break some rules' application
-    do {
+    do
+    {
       expr = new QueryUExprNormalizer(expr, schema, translator).normalizeTerm();
       isModified = false;
 
@@ -107,7 +117,8 @@ public class QueryUExprICRewriter extends UNormalization {
   }
 
   @Override
-  protected UTerm performNormalizeRule(Function<UTerm, UTerm> transformation) {
+  protected UTerm performNormalizeRule(Function<UTerm, UTerm> transformation)
+  {
     expr = transformation.apply(expr);
     expr = new QueryUExprNormalizer(expr, schema, translator).normalizeTerm();
     return expr;
@@ -120,14 +131,17 @@ public class QueryUExprICRewriter extends UNormalization {
   /**
    * If the expr is a isnull pred on a projVar in the given projVars, return 0.
    */
-  private UTerm removeNotNullByProjVars(UTerm expr, List<UVar> projVars) {
+  private UTerm removeNotNullByProjVars(UTerm expr, List<UVar> projVars)
+  {
     expr = transformSubTerms(expr, t -> removeNotNullByProjVars(t, projVars));
-    if (!isNullPred(expr)) return expr;
+    if (!isNullPred(expr))
+      return expr;
 
     final UPred isNull = (UPred) expr;
     assert isNull.subTerms().size() == 1;
 
-    if (any(projVars, t -> mkIsNullPred(t).equals(isNull))) {
+    if (any(projVars, t -> mkIsNullPred(t).equals(isNull)))
+    {
       isModified = true;
       return UConst.zero();
     }
@@ -139,14 +153,20 @@ public class QueryUExprICRewriter extends UNormalization {
    * Get the single column proj var under the  constraint of targetVar in the context of a table.
    * e.g. T(x) with constraint PRIMARY T.$0 -> return [$0(x)]
    */
-  private List<UVar> getProjVarsOfTableSingleColumn(UVar targetVar, String tableName, List<Constraint> constraints) {
+  private List<UVar> getProjVarsOfTableSingleColumn(
+      UVar targetVar, String tableName, List<Constraint> constraints)
+  {
     final List<UVar> results = new ArrayList<>();
 
-    for (final Constraint constraint : constraints) {
-      if (constraint.columns().size() != 1) continue;
+    for (final Constraint constraint : constraints)
+    {
+      if (constraint.columns().size() != 1)
+        continue;
       final Column column = constraint.columns().get(0);
-      if (Objects.equals(column.tableName(), tableName)) {
-        final String projString = getIndexStringByInfo(tableName, column.name(), translator.getTupleVarSchema(targetVar));
+      if (Objects.equals(column.tableName(), tableName))
+      {
+        final String projString =
+            getIndexStringByInfo(tableName, column.name(), translator.getTupleVarSchema(targetVar));
         results.add(UVar.mkProj(UName.mk(projString), targetVar));
       }
     }
@@ -155,37 +175,43 @@ public class QueryUExprICRewriter extends UNormalization {
   }
 
   /**
-   * Check whether pred is eq pred who has target and the eq term doesn't have the baseVars of target.
+   * Check whether pred is eq pred who has target and the eq term doesn't have the baseVars of
+   * target.
    */
-  private boolean isEqVarFreeTerm(UTerm pred, UVarTerm target) {
+  private boolean isEqVarFreeTerm(UTerm pred, UVarTerm target)
+  {
     // Check whether `pred` is like [a(t) = e] for `target` a(t)
-    if (pred.kind() != UKind.PRED || !((UPred) pred).isPredKind(UPred.PredKind.EQ)) return false;
+    if (pred.kind() != UKind.PRED || !((UPred) pred).isPredKind(UPred.PredKind.EQ))
+      return false;
 
     assert ((UPred) pred).args().size() == 2;
     final UTerm predArg0 = ((UPred) pred).args().get(0), predArg1 = ((UPred) pred).args().get(1);
-    if (!predArg0.equals(target) && !predArg1.equals(target)) return false;
+    if (!predArg0.equals(target) && !predArg1.equals(target))
+      return false;
 
     final UTerm otherTerm = predArg0.equals(target) ? predArg1 : predArg0;
     return all(UVar.getBaseVars(target.var()), v -> !otherTerm.isUsing(v));
   }
 
   /**
-   * Check whether pred is eq pred who has target and the eq term is actually a const (UConst or UString).
+   * Check whether pred is eq pred who has target and the eq term is actually a const (UConst or
+   * UString).
    */
-  private boolean isEqVarConstTerm(UTerm pred, UVarTerm target) {
+  private boolean isEqVarConstTerm(UTerm pred, UVarTerm target)
+  {
     // Check whether `pred` is like [a(t) = e] for `target` a(t)
-    if (pred.kind() != UKind.PRED || !((UPred) pred).isPredKind(UPred.PredKind.EQ)) return false;
+    if (pred.kind() != UKind.PRED || !((UPred) pred).isPredKind(UPred.PredKind.EQ))
+      return false;
 
     assert ((UPred) pred).args().size() == 2;
     final UTerm predArg0 = ((UPred) pred).args().get(0), predArg1 = ((UPred) pred).args().get(1);
-    if (!predArg0.equals(target) && !predArg1.equals(target)) return false;
+    if (!predArg0.equals(target) && !predArg1.equals(target))
+      return false;
 
     final UTerm otherTerm = predArg0.equals(target) ? predArg1 : predArg0;
-    return otherTerm.kind() == CONST
-            || otherTerm.kind() == STRING
-            || ((otherTerm instanceof UVarTerm varTerm)
-                && varTerm.var().is(UVar.VarKind.PROJ)
-                && varTerm.var().isUsing(translator.getVisibleVar()));
+    return otherTerm.kind() == CONST || otherTerm.kind() == STRING
+        || ((otherTerm instanceof UVarTerm varTerm) && varTerm.var().is(UVar.VarKind.PROJ)
+            && varTerm.var().isUsing(translator.getVisibleVar()));
   }
 
   /*
@@ -195,21 +221,30 @@ public class QueryUExprICRewriter extends UNormalization {
   /**
    * NotNull constraint rules.
    */
-  private UTerm applyNotNull(UTerm expr) {
+  private UTerm applyNotNull(UTerm expr)
+  {
     final List<Constraint> notNulls = new ArrayList<>();
-    if (selectedIC < 0) {
-      for (Table table : schema.tables()) {
+    if (selectedIC < 0)
+    {
+      for (Table table : schema.tables())
+      {
         table.constraints(ConstraintKind.NOT_NULL).forEach(notNulls::add);
       }
-    } else {
+    }
+    else
+    {
       // select the selectedIC-th nonempty IC
       int nonemptyICIndex = 0;
-      for (Table table : schema.tables()) {
+      for (Table table : schema.tables())
+      {
         table.constraints(ConstraintKind.NOT_NULL).forEach(notNulls::add);
-        if (!notNulls.isEmpty() && nonemptyICIndex < selectedIC) {
+        if (!notNulls.isEmpty() && nonemptyICIndex < selectedIC)
+        {
           notNulls.clear();
           nonemptyICIndex = nonemptyICIndex + 1;
-        } else if (!notNulls.isEmpty()) {
+        }
+        else if (!notNulls.isEmpty())
+        {
           break;
         }
       }
@@ -223,39 +258,51 @@ public class QueryUExprICRewriter extends UNormalization {
   /**
    * Foreign constraint rules.
    */
-  private UTerm applyForeign(UTerm expr) {
+  private UTerm applyForeign(UTerm expr)
+  {
     final List<Constraint> primarys = new ArrayList<>();
     final List<Constraint> foreigns = new ArrayList<>();
     final List<Constraint> notNulls = new ArrayList<>();
-    for (Table table : schema.tables()) {
+    for (Table table : schema.tables())
+    {
       table.constraints(ConstraintKind.PRIMARY).forEach(primarys::add);
       table.constraints(ConstraintKind.FOREIGN).forEach(foreigns::add);
       table.constraints(ConstraintKind.NOT_NULL).forEach(notNulls::add);
     }
 
     expr = applyForeignRemoveRedundantBoundVar(expr, primarys, foreigns);
-    expr = applyForeignSimplifySumInSet(expr, foreigns, notNulls, new HashMap<>(), NaturalCongruence.mk(), false);
+    expr = applyForeignSimplifySumInSet(
+        expr, foreigns, notNulls, new HashMap<>(), NaturalCongruence.mk(), false);
     return expr;
   }
 
   /**
    * Unique constraint rules.
    */
-  private UTerm applyUnique(UTerm expr) {
+  private UTerm applyUnique(UTerm expr)
+  {
     final List<Constraint> uniques = new ArrayList<>();
-    if (selectedIC < 0) {
-      for (Table table : schema.tables()) {
+    if (selectedIC < 0)
+    {
+      for (Table table : schema.tables())
+      {
         table.constraints(ConstraintKind.UNIQUE).forEach(uniques::add);
       }
-    } else {
+    }
+    else
+    {
       // select the selectedIC-th nonempty IC
       int nonemptyICIndex = 0;
-      for (Table table : schema.tables()) {
+      for (Table table : schema.tables())
+      {
         table.constraints(ConstraintKind.UNIQUE).forEach(uniques::add);
-        if (!uniques.isEmpty() && nonemptyICIndex < selectedIC) {
+        if (!uniques.isEmpty() && nonemptyICIndex < selectedIC)
+        {
           uniques.clear();
           nonemptyICIndex = nonemptyICIndex + 1;
-        } else if (!uniques.isEmpty()) {
+        }
+        else if (!uniques.isEmpty())
+        {
           break;
         }
       }
@@ -270,21 +317,30 @@ public class QueryUExprICRewriter extends UNormalization {
   /**
    * Unique constraint rules.
    */
-  private UTerm applyUniqueDelayed(UTerm expr) {
+  private UTerm applyUniqueDelayed(UTerm expr)
+  {
     final List<Constraint> uniques = new ArrayList<>();
-    if (selectedIC < 0) {
-      for (Table table : schema.tables()) {
+    if (selectedIC < 0)
+    {
+      for (Table table : schema.tables())
+      {
         table.constraints(ConstraintKind.UNIQUE).forEach(uniques::add);
       }
-    } else {
+    }
+    else
+    {
       // select the selectedIC-th nonempty IC
       int nonemptyICIndex = 0;
-      for (Table table : schema.tables()) {
+      for (Table table : schema.tables())
+      {
         table.constraints(ConstraintKind.UNIQUE).forEach(uniques::add);
-        if (!uniques.isEmpty() && nonemptyICIndex < selectedIC) {
+        if (!uniques.isEmpty() && nonemptyICIndex < selectedIC)
+        {
           uniques.clear();
           nonemptyICIndex = nonemptyICIndex + 1;
-        } else if (!uniques.isEmpty()) {
+        }
+        else if (!uniques.isEmpty())
+        {
           break;
         }
       }
@@ -299,21 +355,30 @@ public class QueryUExprICRewriter extends UNormalization {
   /**
    * Primary constraint rules.
    */
-  private UTerm applyPrimary(UTerm expr) {
+  private UTerm applyPrimary(UTerm expr)
+  {
     final List<Constraint> primaries = new ArrayList<>();
-    if (selectedIC < 0) {
-      for (Table table : schema.tables()) {
+    if (selectedIC < 0)
+    {
+      for (Table table : schema.tables())
+      {
         collectPrimaryKeyConstraints(table, primaries);
       }
-    } else {
+    }
+    else
+    {
       // select the selectedIC-th nonempty IC
       int nonemptyICIndex = 0;
-      for (Table table : schema.tables()) {
+      for (Table table : schema.tables())
+      {
         collectPrimaryKeyConstraints(table, primaries);
-        if (!primaries.isEmpty() && nonemptyICIndex < selectedIC) {
+        if (!primaries.isEmpty() && nonemptyICIndex < selectedIC)
+        {
           primaries.clear();
           nonemptyICIndex = nonemptyICIndex + 1;
-        } else if (!primaries.isEmpty()) {
+        }
+        else if (!primaries.isEmpty())
+        {
           break;
         }
       }
@@ -325,13 +390,16 @@ public class QueryUExprICRewriter extends UNormalization {
     return expr;
   }
 
-  private void collectPrimaryKeyConstraints(Table table, List<Constraint> primaries) {
+  private void collectPrimaryKeyConstraints(Table table, List<Constraint> primaries)
+  {
     table.constraints(ConstraintKind.PRIMARY).forEach(primaries::add);
     table.constraints(ConstraintKind.UNIQUE).forEach(u -> {
       // PKs do not need to be counted twice
-      if (u.kind() == ConstraintKind.PRIMARY) return;
+      if (u.kind() == ConstraintKind.PRIMARY)
+        return;
       // UNIQUE columns are regarded as PK if all of them are NOT NULL
-      if (all(u.columns(), column -> column.constraints(ConstraintKind.NOT_NULL).iterator().hasNext()))
+      if (all(u.columns(),
+              column -> column.constraints(ConstraintKind.NOT_NULL).iterator().hasNext()))
         primaries.add(Constraint.build(ConstraintKind.PRIMARY, u.columns()));
     });
   }
@@ -340,27 +408,33 @@ public class QueryUExprICRewriter extends UNormalization {
    * For multiply terms `expr`, consider $0(x) which indicates the not_null column. <p/>
    * Delete the NotNull($0(x)) in it.
    */
-  private UTerm applyNotNullRemoveNotNull(UTerm expr, List<Constraint> notnulls) {
+  private UTerm applyNotNullRemoveNotNull(UTerm expr, List<Constraint> notnulls)
+  {
     expr = transformSubTerms(expr, t -> applyNotNullRemoveNotNull(t, notnulls));
-    if (expr.kind() != UKind.MULTIPLY) return expr;
+    if (expr.kind() != UKind.MULTIPLY)
+      return expr;
 
     final List<UTerm> tables = new ArrayList<>();
     getTargetUExprRecursive(expr, t -> t.kind() == TABLE, tables);
-    for (final UTerm subTerm : tables) {
+    for (final UTerm subTerm : tables)
+    {
       final UTable table = (UTable) subTerm;
       final UName tableName = table.tableName();
       final UVar tableVar = table.var();
 
       // notnulls constraint have exactly one column.
       final List<String> relatedColumns = new ArrayList<>();
-      all(filter(notnulls,
-                      t -> Objects.equals(t.columns().get(0).tableName(), tableName.toString())),
-              t -> relatedColumns.add(t.columns().get(0).name()));
+      all(filter(
+              notnulls, t -> Objects.equals(t.columns().get(0).tableName(), tableName.toString())),
+          t -> relatedColumns.add(t.columns().get(0).name()));
       final List<UVar> relatedProjVars = new ArrayList<>();
       // traverse relatedColumns to add relatedProjVar.
-      for (final String relatedColumn : relatedColumns) {
-        final String projString = getIndexStringByInfo(tableName.toString(), relatedColumn, translator.getTupleVarSchema(tableVar));
-        if (projString == null) continue;
+      for (final String relatedColumn : relatedColumns)
+      {
+        final String projString = getIndexStringByInfo(
+            tableName.toString(), relatedColumn, translator.getTupleVarSchema(tableVar));
+        if (projString == null)
+          continue;
         final UName projName = UName.mk(projString);
         final UVar projVar = UVar.mkProj(projName, tableVar);
         relatedProjVars.add(projVar);
@@ -368,8 +442,10 @@ public class QueryUExprICRewriter extends UNormalization {
       final NaturalCongruence<UTerm> congruence = NaturalCongruence.mk();
       getEqCongruenceRecursive(expr, UExprSupport::isPredOfVarArg, congruence, expr, false);
       final List<UVar> toRemoveNotNullProjVars = new ArrayList<>();
-      all(relatedProjVars, v ->
-              toRemoveNotNullProjVars.addAll(map(congruence.eqClassOf(UVarTerm.mk(v)), t -> ((UVarTerm) t).var())));
+      all(relatedProjVars,
+          v
+          -> toRemoveNotNullProjVars.addAll(
+              map(congruence.eqClassOf(UVarTerm.mk(v)), t -> ((UVarTerm) t).var())));
       expr = removeNotNullByProjVars(expr, toRemoveNotNullProjVars);
     }
 
@@ -378,15 +454,17 @@ public class QueryUExprICRewriter extends UNormalization {
 
   /**
    * \sum{..., x, y, ...} (R(x) * [$i(x) = $j(y)] * T(y)). <p/>
-   * Suppose R's primary key is $i(x) and $j(y) is T's foreign key，delete R(x) and replace $i(x) with any term in congruence,
-   * and add notnull pred for every var in $i(x)'s congruence，delete x finally. <p/>
-   * The condition is that the terms related to x only use R(x) and $i(x) in the summation.
+   * Suppose R's primary key is $i(x) and $j(y) is T's foreign key，delete R(x) and replace $i(x)
+   * with any term in congruence, and add notnull pred for every var in $i(x)'s congruence，delete x
+   * finally. <p/> The condition is that the terms related to x only use R(x) and $i(x) in the
+   * summation.
    */
-  private UTerm applyForeignRemoveRedundantBoundVar(UTerm expr,
-                                                    List<Constraint> primarys,
-                                                    List<Constraint> foreigns) {
+  private UTerm applyForeignRemoveRedundantBoundVar(
+      UTerm expr, List<Constraint> primarys, List<Constraint> foreigns)
+  {
     expr = transformSubTerms(expr, t -> applyForeignRemoveRedundantBoundVar(t, primarys, foreigns));
-    if (expr.kind() != UKind.SUMMATION || ((USum) expr).body().kind() != MULTIPLY) return expr;
+    if (expr.kind() != UKind.SUMMATION || ((USum) expr).body().kind() != MULTIPLY)
+      return expr;
 
     final USum summation = (USum) expr;
     UMul multiply = (UMul) summation.body();
@@ -397,72 +475,93 @@ public class QueryUExprICRewriter extends UNormalization {
     getTargetUExprRecursive(multiply, t -> t.kind() == TABLE, tables);
     getTargetUExprRecursive(multiply, t -> t.kind() != TABLE, notTableTerms);
 
-    for (final UVar boundedVar : boundedVars) {
+    for (final UVar boundedVar : boundedVars)
+    {
       // check whether this boundedVar satisfy the condition.
       // first check whether this boundedVar is in a table.
-      if (all(tables, t -> !t.isUsing(boundedVar))) continue;
+      if (all(tables, t -> !t.isUsing(boundedVar)))
+        continue;
       final List<UTerm> boundedVarRelatedTables = filter(tables, t -> t.isUsing(boundedVar));
       // should only consider one table case
       assert boundedVarRelatedTables.size() == 1;
       final UTable relatedTable = (UTable) boundedVarRelatedTables.get(0);
       // get the primary key column of this table.
-      final List<Constraint> tableRelatedPrimaries = filter(primarys, t -> t.columns().size() == 1
-              && Objects.equals(t.columns().get(0).tableName(), relatedTable.tableName().toString()));
-      if (tableRelatedPrimaries.isEmpty()) continue;
+      final List<Constraint> tableRelatedPrimaries = filter(primarys,
+          t
+          -> t.columns().size() == 1
+              && Objects.equals(
+                  t.columns().get(0).tableName(), relatedTable.tableName().toString()));
+      if (tableRelatedPrimaries.isEmpty())
+        continue;
       assert tableRelatedPrimaries.size() == 1;
       final Column tableRelatedPrimaryColumn = tableRelatedPrimaries.get(0).columns().get(0);
 
       // second check whether only R(x) and $i(x) are used.
       final String projString = getIndexStringByInfo(relatedTable.tableName().toString(),
-              tableRelatedPrimaryColumn.name(),
-              translator.getTupleVarSchema(boundedVar));
-      if (projString == null) continue;
+          tableRelatedPrimaryColumn.name(),
+          translator.getTupleVarSchema(boundedVar));
+      if (projString == null)
+        continue;
       final UVar primaryProjVar = UVar.mkProj(UName.mk(projString), boundedVar);
       // here check only the $i(x) is used.
-      if (any(notTableTerms, t -> t.isUsing(boundedVar) && !t.isUsingProjVar(primaryProjVar))) continue;
+      if (any(notTableTerms, t -> t.isUsing(boundedVar) && !t.isUsingProjVar(primaryProjVar)))
+        continue;
       // get the foreign key column of this table.
-      final List<Constraint> tableRelatedForeigns = filter(foreigns, t -> t.columns().size() == 1
+      final List<Constraint> tableRelatedForeigns = filter(foreigns,
+          t
+          -> t.columns().size() == 1
               && Objects.equals(t.refTable().name(), relatedTable.tableName().toString())
               && t.refColumns().size() == 1
               && t.refColumns().get(0).equals(tableRelatedPrimaryColumn));
       // get the congruence of primaryProjVar
       NaturalCongruence<UTerm> congruence = NaturalCongruence.mk();
       getEqCongruenceRecursive(multiply, UExprSupport::isPredOfVarArg, congruence, multiply, false);
-      final List<UVar> eqVars = map(congruence.eqClassOf(UVarTerm.mk(primaryProjVar)), t -> ((UVarTerm) t).var());
+      final List<UVar> eqVars =
+          map(congruence.eqClassOf(UVarTerm.mk(primaryProjVar)), t -> ((UVarTerm) t).var());
 
       // third check any other boundedVar satisfy the condition.
       final List<UVar> otherBoundedVars = filter(boundedVars, t -> !t.equals(boundedVar));
-      for (final UVar otherBoundedVar : otherBoundedVars) {
-        if (all(tables, t -> !t.isUsing(otherBoundedVar))) continue;
-        final List<UTerm> otherBoundedVarRelatedTables = filter(tables, t -> t.isUsing(otherBoundedVar));
+      for (final UVar otherBoundedVar : otherBoundedVars)
+      {
+        if (all(tables, t -> !t.isUsing(otherBoundedVar)))
+          continue;
+        final List<UTerm> otherBoundedVarRelatedTables =
+            filter(tables, t -> t.isUsing(otherBoundedVar));
         // should only consider one table case
         assert otherBoundedVarRelatedTables.size() == 1;
         final UTable otherRelatedTable = (UTable) otherBoundedVarRelatedTables.get(0);
-        for (final Constraint tableRelatedForeign : tableRelatedForeigns) {
+        for (final Constraint tableRelatedForeign : tableRelatedForeigns)
+        {
           // if this constraint is not this otherBoundedVar's table
-          if (!Objects.equals(tableRelatedForeign.columns().get(0).tableName(), otherRelatedTable.tableName().toString()))
+          if (!Objects.equals(tableRelatedForeign.columns().get(0).tableName(),
+                  otherRelatedTable.tableName().toString()))
             continue;
-          final String foreignProjString = getIndexStringByInfo(otherRelatedTable.tableName().toString(),
+          final String foreignProjString =
+              getIndexStringByInfo(otherRelatedTable.tableName().toString(),
                   tableRelatedForeign.columns().get(0).name(),
                   translator.getTupleVarSchema(otherBoundedVar));
-          if (foreignProjString == null) continue;
+          if (foreignProjString == null)
+            continue;
           final UVar foreignProjVar = UVar.mkProj(UName.mk(foreignProjString), otherBoundedVar);
-          if (!eqVars.contains(foreignProjVar)) continue;
+          if (!eqVars.contains(foreignProjVar))
+            continue;
           // modify the expr here
           isModified = true;
           final List<UTerm> newSubTerms = new ArrayList<>();
-          multiply = (UMul) multiply.replaceAtomicTerm(boundedVarRelatedTables.get(0), UConst.one())
+          multiply =
+              (UMul) multiply.replaceAtomicTerm(boundedVarRelatedTables.get(0), UConst.one())
                   .replaceAtomicTerm(UVarTerm.mk(primaryProjVar), UVarTerm.mk(foreignProjVar));
           newSubTerms.add(multiply);
           // should add notnulls
-          for (final UVar eqVar : eqVars) {
-            if (eqVar.equals(primaryProjVar)) continue;
+          for (final UVar eqVar : eqVars)
+          {
+            if (eqVar.equals(primaryProjVar))
+              continue;
             newSubTerms.add(mkNotNullPred(eqVar));
           }
           return USum.mk(new HashSet<>(otherBoundedVars), UMul.mk(newSubTerms));
         }
       }
-
     }
 
     return expr;
@@ -476,15 +575,24 @@ public class QueryUExprICRewriter extends UNormalization {
    * "t0(x) * (... 1 ...)"
    * if sum{y} is under set semantics (i.e. within negation/squash).
    */
-  private UTerm applyForeignSimplifySumInSet(
-      UTerm expr, List<Constraint> foreigns, List<Constraint> notNulls, Map<String, String> varToTable, NaturalCongruence<UTerm> eqClasses, boolean inSet) {
+  private UTerm applyForeignSimplifySumInSet(UTerm expr,
+      List<Constraint> foreigns,
+      List<Constraint> notNulls,
+      Map<String, String> varToTable,
+      NaturalCongruence<UTerm> eqClasses,
+      boolean inSet)
+  {
     // decide "inSet" for children
     final boolean inSetSub;
-    if (expr.kind().isUnary()) inSetSub = true;
-    else if (expr.kind() == PRED || expr.kind() == FUNC) inSetSub = false;
-    else inSetSub = inSet;
+    if (expr.kind().isUnary())
+      inSetSub = true;
+    else if (expr.kind() == PRED || expr.kind() == FUNC)
+      inSetSub = false;
+    else
+      inSetSub = inSet;
     // update context and transform subterms
-    if (expr instanceof UMul mul) {
+    if (expr instanceof UMul mul)
+    {
       final List<UTerm> factors = mul.subTerms();
       expr = transformSubTerms(expr, t -> {
         final Map<String, String> newVarToTable = new HashMap<>(varToTable);
@@ -493,19 +601,26 @@ public class QueryUExprICRewriter extends UNormalization {
         final List<UTerm> filteredFactors = filter(factors, factor -> !factor.equals(t));
         findVarTableMap(newVarToTable, filteredFactors);
         addToCongruence(newEqClasses, filteredFactors);
-        return applyForeignSimplifySumInSet(t, foreigns, notNulls, newVarToTable, newEqClasses, inSetSub);
+        return applyForeignSimplifySumInSet(
+            t, foreigns, notNulls, newVarToTable, newEqClasses, inSetSub);
       });
-    } else {
+    }
+    else
+    {
       // only copy context on write
-      expr = transformSubTerms(expr, t -> applyForeignSimplifySumInSet(t, foreigns, notNulls, varToTable, eqClasses, inSetSub));
+      expr = transformSubTerms(expr,
+          t
+          -> applyForeignSimplifySumInSet(t, foreigns, notNulls, varToTable, eqClasses, inSetSub));
     }
 
-    if (!inSet || expr.kind() != UKind.SUMMATION || ((USum) expr).body().kind() != MULTIPLY) return expr;
+    if (!inSet || expr.kind() != UKind.SUMMATION || ((USum) expr).body().kind() != MULTIPLY)
+      return expr;
 
     // recognize "sum{y}(t1(y) * [a1(y) = a0(x)])"
     final UMul mul = (UMul) ((USum) expr).body();
     final Set<UVar> bvs = ((USum) expr).boundedVars();
-    for (UVar y : bvs) {
+    for (UVar y : bvs)
+    {
       // deduplicate occurrences of PROJ vars of y in factors
       // so that this rule can be applied to a great extent
       final List<UTerm> newFactors = dedupProjVarsOf(y, mul.subTerms());
@@ -518,16 +633,20 @@ public class QueryUExprICRewriter extends UNormalization {
       // for each y, recognize "t1(y) * [a1(y) = E]"
       // where E should be equal to some a0(x) according to congruence
       final List<UTerm> yTerms = filter(newFactors, t -> t.isUsing(y));
-      if (yTerms.size() < 2) continue;
+      if (yTerms.size() < 2)
+        continue;
       final List<UTerm> tableYs = filter(yTerms, t -> t instanceof UTable);
-      final List<UTerm> predYs = filter(yTerms, t -> t instanceof UPred pred
-              && pred.predKind() == UPred.PredKind.EQ
-              && (pred.args().get(0) instanceof UVarTerm vt && vt.var().is(UVar.VarKind.PROJ) && vt.var().args()[0].equals(y)
-              || pred.args().get(1) instanceof UVarTerm vt1 && vt1.var().is(UVar.VarKind.PROJ) && vt1.var().args()[0].equals(y))
+      final List<UTerm> predYs = filter(yTerms,
+          t
+          -> t instanceof UPred pred && pred.predKind() == UPred.PredKind.EQ
+              && (pred.args().get(0) instanceof UVarTerm vt && vt.var().is(UVar.VarKind.PROJ)
+                      && vt.var().args()[0].equals(y)
+                  || pred.args().get(1) instanceof UVarTerm vt1 && vt1.var().is(UVar.VarKind.PROJ)
+                      && vt1.var().args()[0].equals(y))
               // if E contains y, then E cannot be equal to some a(x) due to absence of congruence
               && !(pred.args().get(0).isUsing(y) && pred.args().get(1).isUsing(y)));
       if (tableYs.size() != 1 || predYs.isEmpty()
-              || tableYs.size() + predYs.size() != yTerms.size())
+          || tableYs.size() + predYs.size() != yTerms.size())
         continue;
       final UTable tableY = (UTable) tableYs.get(0);
       final String t1 = tableY.tableName().toString();
@@ -537,8 +656,10 @@ public class QueryUExprICRewriter extends UNormalization {
         // E must not contain y
         // or E cannot be equal to some a0(x)
         // so the following "isUsing" check is enough to tell the difference between a1(y) and E
-        if (pred.args().get(0).isUsing(y)) return pred.args().get(1);
-        else return pred.args().get(0);
+        if (pred.args().get(0).isUsing(y))
+          return pred.args().get(1);
+        else
+          return pred.args().get(0);
       });
       // recognize a1
       final List<String> a1 = map(predYs, p -> {
@@ -550,37 +671,47 @@ public class QueryUExprICRewriter extends UNormalization {
       });
       // find the corresponding x via E and congruence
       final Set<UVar> possibleXs = getBaseVarsOfEqualProjTerms(es.get(0), newEqClasses);
-      for (int i = 1, bound = es.size(); i < bound; i++) {
+      for (int i = 1, bound = es.size(); i < bound; i++)
+      {
         possibleXs.retainAll(getBaseVarsOfEqualProjTerms(es.get(i), newEqClasses));
       }
       // for each possible x
-      for (UVar x : possibleXs) {
+      for (UVar x : possibleXs)
+      {
         // find t0
         final String t0 = newVarToTable.get(x.toString());
-        if (t0 == null) continue;
-        // enumerate FK constraints and find a0
-        loopFK:
-        for (Constraint foreign : foreigns) {
+        if (t0 == null)
+          continue;
+      // enumerate FK constraints and find a0
+      loopFK:
+        for (Constraint foreign : foreigns)
+        {
           // for each pair of columns in the FOREIGN KEY constraint
-          for (Pair<Column, Column> pair : zip(foreign.columns(), foreign.refColumns())) {
+          for (Pair<Column, Column> pair : zip(foreign.columns(), foreign.refColumns()))
+          {
             final Column src = pair.getLeft(); // correspond to t0.a0
             final Column dst = pair.getRight(); // correspond to t1.a1
             // check whether the src table is t0 and the dst table is t1
             if (!t0.equals(src.tableName()) || !t1.equals(dst.tableName()))
               continue loopFK;
             // check whether the referring column is NOT NULL
-            if (none(notNulls, nn -> nn.columns().size() == 1 && nn.columns().get(0).equals(src))) {
+            if (none(notNulls, nn -> nn.columns().size() == 1 && nn.columns().get(0).equals(src)))
+            {
               // NULLABLE; the FK constraint cannot be applied
               continue loopFK;
             }
             // check whether this pair of columns correspond to the present PROJ vars
-            final String srcColName = getIndexStringByInfo(t0, src.name(), translator.getTupleVarSchema(x));
-            final String dstColName = getIndexStringByInfo(t1, dst.name(), translator.getTupleVarSchema(y));
+            final String srcColName =
+                getIndexStringByInfo(t0, src.name(), translator.getTupleVarSchema(x));
+            final String dstColName =
+                getIndexStringByInfo(t1, dst.name(), translator.getTupleVarSchema(y));
             final int index = a1.indexOf(dstColName);
-            if (index < 0) continue loopFK;
+            if (index < 0)
+              continue loopFK;
             final UTerm e = es.get(index);
             final Set<UVar> a0ProjVarsAtIndex = getEqualProjVars(e, newEqClasses);
-            if (none(a0ProjVarsAtIndex, a0ProjVar -> a0ProjVar.name().toString().equals(srcColName)))
+            if (none(
+                    a0ProjVarsAtIndex, a0ProjVar -> a0ProjVar.name().toString().equals(srcColName)))
               continue loopFK;
           }
           // simplify sum{y} to 1
@@ -600,21 +731,26 @@ public class QueryUExprICRewriter extends UNormalization {
    * For example, "[a1(baseVar) = e1] * [a1(baseVar) = e2]"
    * is turned into "[a1(baseVar) = e1] * [e1 = e2]".
    */
-  private List<UTerm> dedupProjVarsOf(UVar baseVar, List<UTerm> factors) {
+  private List<UTerm> dedupProjVarsOf(UVar baseVar, List<UTerm> factors)
+  {
     // find irrelevant factors
     // and congruence involving relevant factors
     final List<UTerm> relevantFactors = new ArrayList<>();
     final List<UTerm> irrelevantFactors = new ArrayList<>();
     final NaturalCongruence<UTerm> congruence = NaturalCongruence.mk();
-    for (UTerm factor : factors) {
-      if (!(factor instanceof UPred pred) || !pred.isPredKind(UPred.PredKind.EQ)) {
+    for (UTerm factor : factors)
+    {
+      if (!(factor instanceof UPred pred) || !pred.isPredKind(UPred.PredKind.EQ))
+      {
         irrelevantFactors.add(factor);
         continue;
       }
       // find PROJ var of baseVar
-      if (none(pred.args(), t -> t instanceof UVarTerm vt
-              && vt.var().is(UVar.VarKind.PROJ)
-              && vt.var().args()[0].equals(baseVar))) {
+      if (none(pred.args(),
+              t
+              -> t instanceof UVarTerm vt && vt.var().is(UVar.VarKind.PROJ)
+                  && vt.var().args()[0].equals(baseVar)))
+      {
         irrelevantFactors.add(factor);
         continue;
       }
@@ -623,31 +759,42 @@ public class QueryUExprICRewriter extends UNormalization {
     }
     // modify (not in-place) relevant factors:
     // for each congruence class, generate corresponding predicates
-    for (UTerm key : congruence.keys()) {
+    for (UTerm key : congruence.keys())
+    {
       final Set<UTerm> eqClass = congruence.eqClassAt(key);
       // (non-)PROJ vars of baseVar
-      final List<UTerm> projVars = filter(eqClass, t -> t instanceof UVarTerm vt
-              && vt.var().is(UVar.VarKind.PROJ)
+      final List<UTerm> projVars = filter(eqClass,
+          t
+          -> t instanceof UVarTerm vt && vt.var().is(UVar.VarKind.PROJ)
               && vt.var().args()[0].equals(baseVar));
-      final List<UTerm> nonProjVars = filter(eqClass, t -> !(t instanceof UVarTerm vt
-              && vt.var().is(UVar.VarKind.PROJ)
+      final List<UTerm> nonProjVars = filter(eqClass,
+          t
+          -> !(t instanceof UVarTerm vt && vt.var().is(UVar.VarKind.PROJ)
               && vt.var().args()[0].equals(baseVar)));
       // find a joint and build EQ predicates upon it
       UTerm joint = null;
-      for (UTerm term : nonProjVars) {
-        if (joint == null) {
+      for (UTerm term : nonProjVars)
+      {
+        if (joint == null)
+        {
           joint = term;
-        } else {
+        }
+        else
+        {
           relevantFactors.add(UPred.mkBinary(UPred.PredKind.EQ, joint, term));
         }
       }
       // forge bonds between the joint and PROJ vars of baseVar
-      for (UTerm term : projVars) {
-        if (joint == null) {
+      for (UTerm term : projVars)
+      {
+        if (joint == null)
+        {
           // forcefully set a joint if all terms are PROJ vars of baseVar
           // projVars cannot be empty
           joint = term;
-        } else {
+        }
+        else
+        {
           relevantFactors.add(UPred.mkBinary(UPred.PredKind.EQ, joint, term));
         }
       }
@@ -658,9 +805,12 @@ public class QueryUExprICRewriter extends UNormalization {
   }
 
   /** Find "t(x)" in factors and add {x -> t} to ctx. */
-  private void findVarTableMap(Map<String, String> varToTable, List<UTerm> factors) {
-    for (UTerm factor : factors) {
-      if (factor instanceof UTable table) {
+  private void findVarTableMap(Map<String, String> varToTable, List<UTerm> factors)
+  {
+    for (UTerm factor : factors)
+    {
+      if (factor instanceof UTable table)
+      {
         final String tableName = table.tableName().toString();
         final String varName = table.var().toString();
         varToTable.put(varName, tableName);
@@ -669,9 +819,12 @@ public class QueryUExprICRewriter extends UNormalization {
   }
 
   /** Find congruence in factors. */
-  private void addToCongruence(NaturalCongruence<UTerm> congruence, List<UTerm> factors) {
-    for (UTerm factor : factors) {
-      if (factor instanceof UPred pred && pred.isPredKind(UPred.PredKind.EQ)) {
+  private void addToCongruence(NaturalCongruence<UTerm> congruence, List<UTerm> factors)
+  {
+    for (UTerm factor : factors)
+    {
+      if (factor instanceof UPred pred && pred.isPredKind(UPred.PredKind.EQ))
+      {
         congruence.putCongruent(pred.args().get(0), pred.args().get(1));
       }
     }
@@ -680,20 +833,26 @@ public class QueryUExprICRewriter extends UNormalization {
   /**
    * Return {x | term equals a(x) for some "a"}.
    */
-  private Set<UVar> getBaseVarsOfEqualProjTerms(UTerm term, NaturalCongruence<UTerm> congruence) {
+  private Set<UVar> getBaseVarsOfEqualProjTerms(UTerm term, NaturalCongruence<UTerm> congruence)
+  {
     final Set<UVar> result = new HashSet<>();
-    for (UTerm eqTerm : congruence.eqClassOf(term)) {
-      if (eqTerm instanceof UVarTerm vt && vt.var().is(UVar.VarKind.PROJ)) {
+    for (UTerm eqTerm : congruence.eqClassOf(term))
+    {
+      if (eqTerm instanceof UVarTerm vt && vt.var().is(UVar.VarKind.PROJ))
+      {
         result.add(vt.var().args()[0]);
       }
     }
     return result;
   }
 
-  private Set<UVar> getEqualProjVars(UTerm term, NaturalCongruence<UTerm> congruence) {
+  private Set<UVar> getEqualProjVars(UTerm term, NaturalCongruence<UTerm> congruence)
+  {
     final Set<UVar> result = new HashSet<>();
-    for (UTerm eqTerm : congruence.eqClassOf(term)) {
-      if (eqTerm instanceof UVarTerm vt && vt.var().is(UVar.VarKind.PROJ)) {
+    for (UTerm eqTerm : congruence.eqClassOf(term))
+    {
+      if (eqTerm instanceof UVarTerm vt && vt.var().is(UVar.VarKind.PROJ))
+      {
         result.add(vt.var());
       }
     }
@@ -703,7 +862,8 @@ public class QueryUExprICRewriter extends UNormalization {
   /**
    * Apply unique constraints to add squash on terms.
    */
-  public UTerm applyUniqueAddSquash(UTerm expr, List<Constraint> uniques) {
+  public UTerm applyUniqueAddSquash(UTerm expr, List<Constraint> uniques)
+  {
     expr = applyUniqueAddSquashInner(expr, uniques, true);
     expr = applyUniqueAddSquashOuter(expr, uniques);
     return expr;
@@ -713,39 +873,50 @@ public class QueryUExprICRewriter extends UNormalization {
    * Apply unique constraint to add squash in a summation.
    * \sum_{t}(R(t) * g(t)) -> \sum_{t}||R(t) * g(t)||, g(t) does not contain [a(t) = e]
    */
-  public UTerm applyUniqueAddSquashInner(UTerm expr, List<Constraint> uniques, boolean consider) {
-    boolean thisConsider = (expr.kind() == UKind.MULTIPLY
-            || expr.kind() == UKind.ADD) ? consider : !expr.kind().isUnary();
+  public UTerm applyUniqueAddSquashInner(UTerm expr, List<Constraint> uniques, boolean consider)
+  {
+    boolean thisConsider = (expr.kind() == UKind.MULTIPLY || expr.kind() == UKind.ADD)
+        ? consider
+        : !expr.kind().isUnary();
     expr = transformSubTerms(expr, t -> applyUniqueAddSquashInner(t, uniques, thisConsider));
-    if (expr.kind() != UKind.SUMMATION || !consider) return expr;
+    if (expr.kind() != UKind.SUMMATION || !consider)
+      return expr;
 
     final USum summation = (USum) expr;
     final List<UTerm> subTerms = summation.body().subTerms();
     final Set<UTerm> squashedTerms = new HashSet<>(summation.body().subTerms().size());
 
-    for (Constraint unique : uniques) {
-      if (unique.columns().size() > 1) {
+    for (Constraint unique : uniques)
+    {
+      if (unique.columns().size() > 1)
+      {
         continue;
       }
       final Column column = unique.columns().get(0);
       final UName tableName = UName.mk(column.tableName());
-      for (UVar boundedVar : summation.boundedVars()) {
-        final UTerm tableTerm =
-                linearFind(subTerms, t -> !squashedTerms.contains(t) && t.equals(UTable.mk(tableName, boundedVar)));
-        final String projString = getIndexStringByInfo(column.tableName(), column.name(), translator.getTupleVarSchema(boundedVar));
-        if (projString == null) continue;
+      for (UVar boundedVar : summation.boundedVars())
+      {
+        final UTerm tableTerm = linearFind(subTerms,
+            t -> !squashedTerms.contains(t) && t.equals(UTable.mk(tableName, boundedVar)));
+        final String projString = getIndexStringByInfo(
+            column.tableName(), column.name(), translator.getTupleVarSchema(boundedVar));
+        if (projString == null)
+          continue;
         final UVarTerm projVarTerm = UVarTerm.mk(UVar.mkProj(UName.mk(projString), boundedVar));
-        final UTerm predTerm =
-                linearFind(subTerms, t -> !squashedTerms.contains(t) && isEqVarFreeTerm(t, projVarTerm));
-        if (tableTerm == null) continue;
+        final UTerm predTerm = linearFind(
+            subTerms, t -> !squashedTerms.contains(t) && isEqVarFreeTerm(t, projVarTerm));
+        if (tableTerm == null)
+          continue;
 
-        if (predTerm != null) continue;
-        squashedTerms.addAll(filter(subTerms, t -> t.isUsing(boundedVar) && !(t.kind() == UKind.VAR)));
+        if (predTerm != null)
+          continue;
+        squashedTerms.addAll(
+            filter(subTerms, t -> t.isUsing(boundedVar) && !(t.kind() == UKind.VAR)));
       }
     }
 
-
-    if (!squashedTerms.isEmpty()) {
+    if (!squashedTerms.isEmpty())
+    {
       isModified = true;
       summation.body().subTerms().removeAll(squashedTerms);
       final UTerm newSquashBody = UMul.mk(new ArrayList<>(squashedTerms));
@@ -757,82 +928,109 @@ public class QueryUExprICRewriter extends UNormalization {
 
   /**
    * Apply unique constraint to add squash on a summation.
-   * \sum{t}([a(t) = e] * R(t) * f(t)) -> || \sum{t}([a(t) = e] * R(t) * f(t)) ||, if a(t) is unique.
+   * \sum{t}([a(t) = e] * R(t) * f(t)) -> || \sum{t}([a(t) = e] * R(t) * f(t)) ||, if a(t) is
+   * unique.
    */
-  public UTerm applyUniqueAddSquashOuter(UTerm expr, List<Constraint> uniques) {
-    if (expr.kind().isUnary()) return expr;
+  public UTerm applyUniqueAddSquashOuter(UTerm expr, List<Constraint> uniques)
+  {
+    if (expr.kind().isUnary())
+      return expr;
     expr = transformSubTerms(expr, t -> applyUniqueAddSquashOuter(t, uniques));
-    if (expr.kind() != UKind.SUMMATION) return expr;
+    if (expr.kind() != UKind.SUMMATION)
+      return expr;
 
     final USum summation = (USum) expr;
     final List<UTerm> subTerms = summation.body().subTerms();
     final Set<UTerm> squashedTerms = new HashSet<>(summation.body().subTerms().size());
     final Set<UVar> squashedVars = new HashSet<>(summation.boundedVars().size());
 
-    for (Constraint unique : uniques) {
-      if (unique.columns().size() > 1) {
+    for (Constraint unique : uniques)
+    {
+      if (unique.columns().size() > 1)
+      {
         continue;
       }
       final Column column = unique.columns().get(0);
       final UName tableName = UName.mk(column.tableName());
-      for (UVar boundedVar : filter(summation.boundedVars(), v -> !squashedVars.contains(v))) {
-        final UTerm tableTerm =
-                linearFind(subTerms, t -> !squashedTerms.contains(t) && t.equals(UTable.mk(tableName, boundedVar)));
-        final String projString = getIndexStringByInfo(column.tableName(), column.name(), translator.getTupleVarSchema(boundedVar));
-        if (projString == null) continue;
+      for (UVar boundedVar : filter(summation.boundedVars(), v -> !squashedVars.contains(v)))
+      {
+        final UTerm tableTerm = linearFind(subTerms,
+            t -> !squashedTerms.contains(t) && t.equals(UTable.mk(tableName, boundedVar)));
+        final String projString = getIndexStringByInfo(
+            column.tableName(), column.name(), translator.getTupleVarSchema(boundedVar));
+        if (projString == null)
+          continue;
         final UVarTerm projVarTerm = UVarTerm.mk(UVar.mkProj(UName.mk(projString), boundedVar));
-        final UTerm predTerm =
-                linearFind(subTerms, t -> !squashedTerms.contains(t) && isEqVarFreeTerm(t, projVarTerm));
-        if (tableTerm == null) continue;
+        final UTerm predTerm = linearFind(
+            subTerms, t -> !squashedTerms.contains(t) && isEqVarFreeTerm(t, projVarTerm));
+        if (tableTerm == null)
+          continue;
 
-        squashedTerms.addAll(filter(subTerms, t -> t.isUsing(boundedVar) && !(t.kind() == UKind.VAR)));
-        if ((predTerm != null) && !any(subTerms, t -> t.isUsing(boundedVar) && (t.kind() == UKind.VAR)))
+        squashedTerms.addAll(
+            filter(subTerms, t -> t.isUsing(boundedVar) && !(t.kind() == UKind.VAR)));
+        if ((predTerm != null)
+            && !any(subTerms, t -> t.isUsing(boundedVar) && (t.kind() == UKind.VAR)))
           squashedVars.add(boundedVar);
       }
     }
 
     // apply squash to bound vars
-    if (!squashedTerms.isEmpty() && !squashedVars.isEmpty()) {
+    if (!squashedTerms.isEmpty() && !squashedVars.isEmpty())
+    {
       isModified = true;
       summation.body().subTerms().removeAll(squashedTerms);
-      for (UVar removedVar : squashedVars) {
+      for (UVar removedVar : squashedVars)
+      {
         summation.removeBoundedVar(removedVar);
       }
       final UTerm newSquashBody = USum.mk(squashedVars, UMul.mk(new ArrayList<>(squashedTerms)));
       final USquash newSquash = USquash.mk(newSquashBody);
       summation.body().subTerms().add(newSquash);
     }
-    if (summation.boundedVars().isEmpty()) return summation.body();
+    if (summation.boundedVars().isEmpty())
+      return summation.body();
     return summation;
   }
 
   /**
    * Apply unique constraint to add squash on a summation.
-   * \sum{t}([a(t) = e] * R(t) * f(t)) -> || \sum{t}([a(t) = e] * R(t) * f(t)) ||, if a(t) is unique.
+   * \sum{t}([a(t) = e] * R(t) * f(t)) -> || \sum{t}([a(t) = e] * R(t) * f(t)) ||, if a(t) is
+   * unique.
    */
-  public UTerm applyUniqueAddSquashOuterSMT(UTerm expr, List<Constraint> uniques) {
-    if (expr.kind().isUnary()) return expr;
+  public UTerm applyUniqueAddSquashOuterSMT(UTerm expr, List<Constraint> uniques)
+  {
+    if (expr.kind().isUnary())
+      return expr;
     expr = transformSubTerms(expr, t -> applyUniqueAddSquashOuterSMT(t, uniques));
-    if (expr.kind() != UKind.SUMMATION) return expr;
+    if (expr.kind() != UKind.SUMMATION)
+      return expr;
     final USum summation = (USum) expr;
     // todo: generalize it for case \sum{t}([a(t) = e] * || R(t) * f(t) ||)
-    if (summation.body().kind() == ADD) return expr;
+    if (summation.body().kind() == ADD)
+      return expr;
 
     final List<UTerm> subTerms = summation.body().subTerms();
     final Set<UTerm> squashedTerms = new HashSet<>(summation.body().subTerms().size());
     final Set<UVar> squashedVars = new HashSet<>(summation.boundedVars().size());
 
-    for (Constraint unique : uniques) {
-      if (unique.columns().size() > 1) {
+    for (Constraint unique : uniques)
+    {
+      if (unique.columns().size() > 1)
+      {
         continue;
       }
       final Column column = unique.columns().get(0);
       final UName tableName = UName.mk(column.tableName());
-      for (UVar bv : filter(summation.boundedVars(), v -> !squashedVars.contains(v))) {
+      for (UVar bv : filter(summation.boundedVars(), v -> !squashedVars.contains(v)))
+      {
         final List<UTerm> relatedTerms = filter(subTerms, t -> t.isUsing(bv));
-        final String projString = getIndexStringByInfo(column.tableName(), column.name(), translator.getTupleVarSchema(bv));
-        if (projString == null) continue;
-        if (canApplyUniqueAddSquashOuter(tableName, bv, UName.mk(projString), UMul.mk(relatedTerms))) {
+        final String projString = getIndexStringByInfo(
+            column.tableName(), column.name(), translator.getTupleVarSchema(bv));
+        if (projString == null)
+          continue;
+        if (canApplyUniqueAddSquashOuter(
+                tableName, bv, UName.mk(projString), UMul.mk(relatedTerms)))
+        {
           squashedVars.add(bv);
           squashedTerms.addAll(relatedTerms);
         }
@@ -840,17 +1038,20 @@ public class QueryUExprICRewriter extends UNormalization {
     }
 
     // apply squash to bound vars
-    if (!squashedTerms.isEmpty() && !squashedVars.isEmpty()) {
+    if (!squashedTerms.isEmpty() && !squashedVars.isEmpty())
+    {
       isModified = true;
       summation.body().subTerms().removeAll(squashedTerms);
-      for (UVar removedVar : squashedVars) {
+      for (UVar removedVar : squashedVars)
+      {
         summation.removeBoundedVar(removedVar);
       }
       final UTerm newSquashBody = USum.mk(squashedVars, UMul.mk(new ArrayList<>(squashedTerms)));
       final USquash newSquash = USquash.mk(newSquashBody);
       summation.body().subTerms().add(newSquash);
     }
-    if (summation.boundedVars().isEmpty()) return summation.body();
+    if (summation.boundedVars().isEmpty())
+      return summation.body();
     return summation;
   }
 
@@ -861,11 +1062,13 @@ public class QueryUExprICRewriter extends UNormalization {
    * and there exists C such that $k(x)<>C -> f(x)=0,
    * then <code>applyUniqueAddSquashOuter</code> can be applied to x.
    */
-  private boolean canApplyUniqueAddSquashOuter(UName r, UVar x, UName k, UTerm f) {
+  private boolean canApplyUniqueAddSquashOuter(UName r, UVar x, UName k, UTerm f)
+  {
     // collect var type info
     final Set<String> fvs = f.getFVs();
     final Map<UVar, List<Value>> varSchema = new HashMap<>();
-    for (String varName : fvs) {
+    for (String varName : fvs)
+    {
       final UVar var = UVar.mkBase(UName.mk(varName));
       varSchema.put(var, translator.getTupleVarSchema(var));
     }
@@ -879,7 +1082,8 @@ public class QueryUExprICRewriter extends UNormalization {
     final LiaStar fIsZero = LiaStar.mkEq(false, fLia, LiaStar.mkConst(false, 0));
     final LiaStar fIsOne = LiaStar.mkEq(false, fLia, LiaStar.mkConst(false, 1));
     final LiaStar premise1 = LiaStar.mkOr(false, fIsZero, fIsOne);
-    if (!Z3Support.isValidLia(premise1)) {
+    if (!Z3Support.isValidLia(premise1))
+    {
       return false;
     }
     // check validity of "forall x,y. r(x) = 0 -> f(x,y) = 0"
@@ -887,7 +1091,8 @@ public class QueryUExprICRewriter extends UNormalization {
     final LiaStar rXLia = LiaTranslator.translate(rX, varSchema, liaVarName, varMap, sumVarMap);
     final LiaStar rXIsZero = LiaStar.mkEq(false, rXLia, LiaStar.mkConst(false, 0));
     final LiaStar premise2 = LiaStar.mkImplies(false, rXIsZero, fIsZero);
-    if (!Z3Support.isValidLia(premise2)) {
+    if (!Z3Support.isValidLia(premise2))
+    {
       return false;
     }
     // check validity of "exists C. forall x. $k(x) <> C -> forall y. f(x,y) = 0"
@@ -906,54 +1111,70 @@ public class QueryUExprICRewriter extends UNormalization {
 
   /**
    * Apply unique constraint to replace a bounded var into a free var tuple.
-   * \sum{t}([a(t) = e] * R(t) * f(t)), where a is unique and e is a constant(int constant or string)
+   * \sum{t}([a(t) = e] * R(t) * f(t)), where a is unique and e is a constant(int constant or
+   * string)
    * ->  ([a(X) = e] * || R(X) || * f(X)).
    */
-  public UTerm applyUniqueReplaceBoundedVarFreeVar(UTerm expr, List<Constraint> uniques, Map<Integer, VarSchema> constToTuple) {
-    expr = transformSubTerms(expr, t -> applyUniqueReplaceBoundedVarFreeVar(t, uniques, constToTuple));
-    if (expr.kind() != UKind.SUMMATION || ((USum) expr).body().kind() != MULTIPLY) return expr;
+  public UTerm applyUniqueReplaceBoundedVarFreeVar(
+      UTerm expr, List<Constraint> uniques, Map<Integer, VarSchema> constToTuple)
+  {
+    expr =
+        transformSubTerms(expr, t -> applyUniqueReplaceBoundedVarFreeVar(t, uniques, constToTuple));
+    if (expr.kind() != UKind.SUMMATION || ((USum) expr).body().kind() != MULTIPLY)
+      return expr;
     final USum summation = (USum) expr;
     UMul multiply = (UMul) ((USum) expr).body();
     final NaturalCongruence<UTerm> congruence = NaturalCongruence.mk();
     getEqCongruenceRecursive(multiply, pred -> true, congruence, expr, false);
 
-    for (Constraint unique : uniques) {
-      if (unique.columns().size() > 1) {
+    for (Constraint unique : uniques)
+    {
+      if (unique.columns().size() > 1)
+      {
         continue;
       }
       final Column column = unique.columns().get(0);
       final UName tableName = UName.mk(column.tableName());
-      for (final UVar boundedVar : summation.boundedVars()) {
+      for (final UVar boundedVar : summation.boundedVars())
+      {
         final UTerm tableTerm =
-                linearFind(multiply.subTerms(), t -> t.equals(UTable.mk(tableName, boundedVar)));
-        final String projString = getIndexStringByInfo(column.tableName(), column.name(), translator.getTupleVarSchema(boundedVar));
-        if (projString == null || tableTerm == null) continue;
+            linearFind(multiply.subTerms(), t -> t.equals(UTable.mk(tableName, boundedVar)));
+        final String projString = getIndexStringByInfo(
+            column.tableName(), column.name(), translator.getTupleVarSchema(boundedVar));
+        if (projString == null || tableTerm == null)
+          continue;
         final UVarTerm projVarTerm = UVarTerm.mk(UVar.mkProj(UName.mk(projString), boundedVar));
-        final List<UTerm> constTerms = filter(congruence.eqClassOf(projVarTerm), t ->
-                t.kind() == CONST
-                || t.kind() == STRING
-                || ((t instanceof UVarTerm varTerm)
-                && varTerm.var().is(UVar.VarKind.PROJ)
-                && varTerm.var().isUsing(translator.getVisibleVar())));
-        if (constTerms.isEmpty()) continue;
+        final List<UTerm> constTerms = filter(congruence.eqClassOf(projVarTerm),
+            t
+            -> t.kind() == CONST || t.kind() == STRING
+                || ((t instanceof UVarTerm varTerm) && varTerm.var().is(UVar.VarKind.PROJ)
+                    && varTerm.var().isUsing(translator.getVisibleVar())));
+        if (constTerms.isEmpty())
+          continue;
 
         VarSchema replaceVar = null;
-        for (final UTerm constTerm : constTerms) {
-          if (constToTuple.containsKey(constTerm.hashCode())) {
+        for (final UTerm constTerm : constTerms)
+        {
+          if (constToTuple.containsKey(constTerm.hashCode()))
+          {
             replaceVar = constToTuple.get(constTerm.hashCode());
             break;
           }
         }
-        if (replaceVar != null) {
-          if (!CalciteSupport.isExactlyEqualTwoValueList(translator.getTupleVarSchema(boundedVar), replaceVar.schema()))
+        if (replaceVar != null)
+        {
+          if (!CalciteSupport.isExactlyEqualTwoValueList(
+                  translator.getTupleVarSchema(boundedVar), replaceVar.schema()))
             continue;
           translator.putTupleVarSchema(replaceVar.var(), replaceVar.schema());
         }
-        if (replaceVar == null) {
+        if (replaceVar == null)
+        {
           replaceVar = new VarSchema(mkFreshFreeVar(), translator.getTupleVarSchema(boundedVar));
           translator.putTupleVarSchema(replaceVar.var(), replaceVar.schema());
         }
-        for (final UTerm constTerm : constTerms) {
+        for (final UTerm constTerm : constTerms)
+        {
           constToTuple.put(constTerm.hashCode(), replaceVar);
         }
 
@@ -961,8 +1182,10 @@ public class QueryUExprICRewriter extends UNormalization {
         isModified = true;
         final Set<UVar> newBoundedVars = summation.boundedVars();
         newBoundedVars.remove(boundedVar);
-        multiply = UMul.mk(USquash.mk(tableTerm), filter(multiply.subTerms(), t -> !t.equals(tableTerm)));
-        if (newBoundedVars.isEmpty()) {
+        multiply =
+            UMul.mk(USquash.mk(tableTerm), filter(multiply.subTerms(), t -> !t.equals(tableTerm)));
+        if (newBoundedVars.isEmpty())
+        {
           return multiply.replaceVar(boundedVar, replaceVar.var(), false);
         }
         return USum.mk(newBoundedVars, multiply.replaceVar(boundedVar, replaceVar.var(), false));
@@ -977,46 +1200,57 @@ public class QueryUExprICRewriter extends UNormalization {
    * -> \sum{..., y, ...} {|| \sum{..., z, ...} (T(y) * [$0(y) = $0(y)] * [$1(y) = $1(y)] * ...)||}
    * assume that every column of x is the primary keys of T.
    */
-  private UTerm applyPrimaryReplaceBoundedVar(UTerm expr, List<Constraint> primaries) {
+  private UTerm applyPrimaryReplaceBoundedVar(UTerm expr, List<Constraint> primaries)
+  {
     expr = transformSubTerms(expr, t -> applyPrimaryReplaceBoundedVar(t, primaries));
-    if (expr.kind() != UKind.SUMMATION
-            || ((USum) expr).body().kind() != MULTIPLY
-            || ((USum) expr).body().subTerms().size() != 1
-            || ((USum) expr).body().subTerms().get(0).kind() != SQUASH) return expr;
+    if (expr.kind() != UKind.SUMMATION || ((USum) expr).body().kind() != MULTIPLY
+        || ((USum) expr).body().subTerms().size() != 1
+        || ((USum) expr).body().subTerms().get(0).kind() != SQUASH)
+      return expr;
 
     final USum outerSummation = (USum) expr;
     final USquash squash = (USquash) outerSummation.body().subTerms().get(0);
 
-    if (squash.body().kind() != SUMMATION || ((USum) squash.body()).body().kind() != MULTIPLY) return expr;
+    if (squash.body().kind() != SUMMATION || ((USum) squash.body()).body().kind() != MULTIPLY)
+      return expr;
 
     final USum innerSummation = (USum) squash.body();
     final UMul multiply = (UMul) innerSummation.body();
     final NaturalCongruence<UVar> congruence = getEqVarCongruenceInTermsOfMul(multiply);
 
-    for (final UVar outerBoundedVar : outerSummation.boundedVars()) {
-      final List<UVar> outerBoundedProjVars = map(getValueListBySize(translator.getTupleVarSchema(outerBoundedVar).size()),
+    for (final UVar outerBoundedVar : outerSummation.boundedVars())
+    {
+      final List<UVar> outerBoundedProjVars =
+          map(getValueListBySize(translator.getTupleVarSchema(outerBoundedVar).size()),
               v -> translator.mkProjVar(v, outerBoundedVar));
-      for (final UVar innerBoundedVar : innerSummation.boundedVars()) {
-        final List<UTerm> tableTerm = filter(multiply.subTerms(), t -> t.kind() == TABLE && t.isUsing(innerBoundedVar));
+      for (final UVar innerBoundedVar : innerSummation.boundedVars())
+      {
+        final List<UTerm> tableTerm =
+            filter(multiply.subTerms(), t -> t.kind() == TABLE && t.isUsing(innerBoundedVar));
         // only consider one table term.
-        if (tableTerm.size() != 1) continue;
-        final List<UVar> innerBoundedProjVars = getProjVarsOfTableSingleColumn(innerBoundedVar,
-                ((UTable) tableTerm.get(0)).tableName().toString(),
-                primaries);
+        if (tableTerm.size() != 1)
+          continue;
+        final List<UVar> innerBoundedProjVars = getProjVarsOfTableSingleColumn(
+            innerBoundedVar, ((UTable) tableTerm.get(0)).tableName().toString(), primaries);
         // hack: only consider one schema here.
-        if (innerBoundedProjVars.size() != 1 || outerBoundedProjVars.size() != 1) continue;
+        if (innerBoundedProjVars.size() != 1 || outerBoundedProjVars.size() != 1)
+          continue;
         final UVar outerBoundedProjVar = outerBoundedProjVars.get(0);
         final UVar innerBoundedProjVar = innerBoundedProjVars.get(0);
-        if (congruence.eqClassOf(innerBoundedProjVar).contains(outerBoundedProjVar)) {
+        if (congruence.eqClassOf(innerBoundedProjVar).contains(outerBoundedProjVar))
+        {
           // modify here.
           isModified = true;
-          final UTerm newMultiply = multiply.replaceAtomicTerm(UVarTerm.mk(outerBoundedProjVar), UVarTerm.mk(innerBoundedProjVar));
+          final UTerm newMultiply = multiply.replaceAtomicTerm(
+              UVarTerm.mk(outerBoundedProjVar), UVarTerm.mk(innerBoundedProjVar));
           final Set<UVar> newOuterBoundedVars = outerSummation.boundedVars();
           final Set<UVar> newInnerBoundedVars = innerSummation.boundedVars();
           newOuterBoundedVars.remove(outerBoundedVar);
           newOuterBoundedVars.add(innerBoundedVar);
           newInnerBoundedVars.remove(innerBoundedVar);
-          final UTerm newInnerSummation = newInnerBoundedVars.isEmpty() ? newMultiply : USum.mk(newInnerBoundedVars, newMultiply);
+          final UTerm newInnerSummation = newInnerBoundedVars.isEmpty()
+              ? newMultiply
+              : USum.mk(newInnerBoundedVars, newMultiply);
           return USum.mk(newOuterBoundedVars, UMul.mk(USquash.mk(newInnerSummation)));
         }
       }
@@ -1030,25 +1264,29 @@ public class QueryUExprICRewriter extends UNormalization {
    * then sum{x,y,...}(t(x)*t(y)*[$k(x)=$k(y)]*f(y))
    * = sum{x,...}(t(x)*f(x))
    */
-  private UTerm applyPrimaryImplyTupleEq(UTerm expr, List<Constraint> primaries) {
+  private UTerm applyPrimaryImplyTupleEq(UTerm expr, List<Constraint> primaries)
+  {
     return applyPrimaryImplyTupleEq0(expr, primaries, new HashMap<>());
   }
 
   // recursion
   // tableVars: which tuples are in each table
-  private UTerm applyPrimaryImplyTupleEq0(UTerm expr, List<Constraint> primaries, Map<UVar, String> varTable) {
+  private UTerm applyPrimaryImplyTupleEq0(
+      UTerm expr, List<Constraint> primaries, Map<UVar, String> varTable)
+  {
     // collect such table terms:
     // when one of them is zero, the value of expr is determined
     final Map<UVar, String> newVarTable = new HashMap<>(varTable);
-    if (expr instanceof UMul mul) {
+    if (expr instanceof UMul mul)
+    {
       collectTableTermsByVars(mul, newVarTable);
     }
     // recursion
     expr = transformSubTerms(expr, t -> applyPrimaryImplyTupleEq0(t, primaries, newVarTable));
 
     // when current level (expr) is not a summation, skip
-    if (expr.kind() != UKind.SUMMATION
-            || ((USum) expr).body().kind() != MULTIPLY) return expr;
+    if (expr.kind() != UKind.SUMMATION || ((USum) expr).body().kind() != MULTIPLY)
+      return expr;
 
     // collect table terms of outer bound vars in the current level of sum
     final Set<UVar> bvs = ((USum) expr).boundedVars();
@@ -1060,12 +1298,16 @@ public class QueryUExprICRewriter extends UNormalization {
     return expr;
   }
 
-  private void collectTableTermsByVars(UTerm expr, Map<UVar, String> varTable) {
+  private void collectTableTermsByVars(UTerm expr, Map<UVar, String> varTable)
+  {
     collectTableTermsByVars(expr, varTable, t -> true);
   }
 
-  private void collectTableTermsByVars(UTerm expr, Map<UVar, String> varTable, Function<UTable, Boolean> filter) {
-    for (UTerm term : filter(expr.subTerms(), t -> t.kind() == TABLE && filter.apply((UTable) t))) {
+  private void collectTableTermsByVars(
+      UTerm expr, Map<UVar, String> varTable, Function<UTable, Boolean> filter)
+  {
+    for (UTerm term : filter(expr.subTerms(), t -> t.kind() == TABLE && filter.apply((UTable) t)))
+    {
       final UTable table = (UTable) term;
       final String tableName = table.tableName().toString();
       // hack: ignore multiple table terms of the same var
@@ -1074,75 +1316,106 @@ public class QueryUExprICRewriter extends UNormalization {
   }
 
   /** Handle cases where bound vars are in the same summation. */
-  private UTerm applyPrimaryImplyTupleEqToSum(UTerm expr, List<Constraint> primaries) {
-    if (!(expr instanceof USum sum)) return expr;
+  private UTerm applyPrimaryImplyTupleEqToSum(UTerm expr, List<Constraint> primaries)
+  {
+    if (!(expr instanceof USum sum))
+      return expr;
     final UMul multiply = (UMul) sum.body();
     final NaturalCongruence<UVar> congruence = getEqVarCongruenceInTermsOfMul(multiply);
     final Set<UVar> newBVs = new HashSet<>(sum.boundedVars());
     final List<UVar> bvs = new ArrayList<>(sum.boundedVars());
 
     boolean isUpdated = false;
-    for (int i = 0, bound = bvs.size(); i < bound; i++) {
-      for (int j = i + 1; j < bound; j++) {
+    for (int i = 0, bound = bvs.size(); i < bound; i++)
+    {
+      for (int j = i + 1; j < bound; j++)
+      {
         final UVar x = bvs.get(i);
         final UVar y = bvs.get(j);
-        final List<UTerm> tableTermsX = filter(multiply.subTerms(), t -> t.kind() == TABLE && t.isUsing(x));
-        final List<UTerm> tableTermsY = filter(multiply.subTerms(), t -> t.kind() == TABLE && t.isUsing(y));
+        final List<UTerm> tableTermsX =
+            filter(multiply.subTerms(), t -> t.kind() == TABLE && t.isUsing(x));
+        final List<UTerm> tableTermsY =
+            filter(multiply.subTerms(), t -> t.kind() == TABLE && t.isUsing(y));
         // hack: ignore multiple table terms
-        if (tableTermsX.isEmpty() || tableTermsY.isEmpty()) continue;
+        if (tableTermsX.isEmpty() || tableTermsY.isEmpty())
+          continue;
         final UTable tableTermX = (UTable) tableTermsX.get(0);
         final UTable tableTermY = (UTable) tableTermsY.get(0);
-        isUpdated = isUpdated ||
-                applyPrimaryImplyTupleEqToBVs(x, y, tableTermX, tableTermY, primaries, congruence, newBVs, multiply);
+        isUpdated = isUpdated
+            || applyPrimaryImplyTupleEqToBVs(
+                x, y, tableTermX, tableTermY, primaries, congruence, newBVs, multiply);
       }
     }
 
-    if (!isUpdated) return expr;
-    if (newBVs.isEmpty()) return multiply;
+    if (!isUpdated)
+      return expr;
+    if (newBVs.isEmpty())
+      return multiply;
     return USum.mk(newBVs, multiply);
   }
 
   /** Handle cases where bound vars are in different summations. */
-  private UTerm applyPrimaryImplyTupleEqToSumWithCtx(UTerm expr, List<Constraint> primaries, Map<UVar, String> varTable) {
-    if (!(expr instanceof USum sum)) return expr;
+  private UTerm applyPrimaryImplyTupleEqToSumWithCtx(
+      UTerm expr, List<Constraint> primaries, Map<UVar, String> varTable)
+  {
+    if (!(expr instanceof USum sum))
+      return expr;
     final UMul multiply = (UMul) sum.body();
     final NaturalCongruence<UVar> congruence = getEqVarCongruenceInTermsOfMul(multiply);
     final Set<UVar> newBVs = new HashSet<>(sum.boundedVars());
 
     boolean isUpdated = false;
-    for (UVar x : varTable.keySet()) {
-      for (UVar y : sum.boundedVars()) {
-        final List<UTerm> tableTermsY = filter(multiply.subTerms(), t -> t.kind() == TABLE && t.isUsing(y));
+    for (UVar x : varTable.keySet())
+    {
+      for (UVar y : sum.boundedVars())
+      {
+        final List<UTerm> tableTermsY =
+            filter(multiply.subTerms(), t -> t.kind() == TABLE && t.isUsing(y));
         // hack: ignore multiple table terms
-        if (tableTermsY.isEmpty()) continue;
+        if (tableTermsY.isEmpty())
+          continue;
         final UTable tableTermX = UTable.mk(UName.mk(varTable.get(x)), x.copy());
         final UTable tableTermY = (UTable) tableTermsY.get(0);
-        isUpdated = isUpdated ||
-                applyPrimaryImplyTupleEqToBVs(x, y, tableTermX, tableTermY, primaries, congruence, newBVs, multiply);
+        isUpdated = isUpdated
+            || applyPrimaryImplyTupleEqToBVs(
+                x, y, tableTermX, tableTermY, primaries, congruence, newBVs, multiply);
       }
     }
 
-    if (!isUpdated) return expr;
-    if (newBVs.isEmpty()) return multiply;
+    if (!isUpdated)
+      return expr;
+    if (newBVs.isEmpty())
+      return multiply;
     return USum.mk(newBVs, multiply);
   }
 
   /** Try to replace y with x in "multiply" and remove y from "boundVars". */
-  private boolean applyPrimaryImplyTupleEqToBVs(UVar x, UVar y, UTable tableTermX, UTable tableTermY, List<Constraint> primaries, NaturalCongruence<UVar> congruence,
-                                                Set<UVar> boundVars, UMul multiply) {
+  private boolean applyPrimaryImplyTupleEqToBVs(UVar x,
+      UVar y,
+      UTable tableTermX,
+      UTable tableTermY,
+      List<Constraint> primaries,
+      NaturalCongruence<UVar> congruence,
+      Set<UVar> boundVars,
+      UMul multiply)
+  {
     final List<Value> schema = translator.getTupleVarSchema(x);
-    if (!isExactlyEqualTwoValueList(schema, translator.getTupleVarSchema(y))) return false;
+    if (!isExactlyEqualTwoValueList(schema, translator.getTupleVarSchema(y)))
+      return false;
     // both table terms should have the same table name
     final UName table = tableTermX.tableName();
-    if (!table.equals(tableTermY.tableName())) return false;
+    if (!table.equals(tableTermY.tableName()))
+      return false;
     // hack: one single-column PK only.
     final List<UVar> xPKs = getProjVarsOfTableSingleColumn(x, table.toString(), primaries);
-    if (xPKs.size() != 1) return false;
+    if (xPKs.size() != 1)
+      return false;
     final UVar xPK = xPKs.get(0);
     final UVar yPK = getProjVarsOfTableSingleColumn(y, table.toString(), primaries).get(0);
-    if (congruence.eqClassOf(xPK).contains(yPK)) {
-      // replacement is safe, since congruence excluding y is consistent with the U-exp after replacement
-      // remove y from bound vars and replace y with x
+    if (congruence.eqClassOf(xPK).contains(yPK))
+    {
+      // replacement is safe, since congruence excluding y is consistent with the U-exp after
+      // replacement remove y from bound vars and replace y with x
       boundVars.remove(y);
       multiply.replaceVarInplace(y, x, false);
       return true;

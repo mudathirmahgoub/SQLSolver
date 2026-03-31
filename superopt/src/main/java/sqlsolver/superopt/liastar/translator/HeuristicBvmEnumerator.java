@@ -13,8 +13,8 @@ import sqlsolver.superopt.uexpr.UVar;
  *
  * @see BvmEvaluation#similarityScore(BVM, UTerm, UTerm)
  */
-public class HeuristicBvmEnumerator extends BvmEnumerator {
-
+public class HeuristicBvmEnumerator extends BvmEnumerator
+{
   private static final int DEFAULT_LIMIT = 10;
   private final USumTree sumTree1, sumTree2;
 
@@ -22,7 +22,8 @@ public class HeuristicBvmEnumerator extends BvmEnumerator {
   private final Queue<BVM> bvmQueue;
   private final Set<BVM> enqueuedBvms;
 
-  public HeuristicBvmEnumerator(UTerm uexp1, UTerm uexp2, UVar outVar, int limit) {
+  public HeuristicBvmEnumerator(UTerm uexp1, UTerm uexp2, UVar outVar, int limit)
+  {
     super(uexp1, uexp2, limit);
     // compute and cache the structure of both U-expressions
     sumTree1 = new USumTree(uexp1);
@@ -41,21 +42,26 @@ public class HeuristicBvmEnumerator extends BvmEnumerator {
    * @param uexp1 the first U-expression
    * @param uexp2 the second U-expression
    */
-  public HeuristicBvmEnumerator(UTerm uexp1, UTerm uexp2, UVar outVar) {
+  public HeuristicBvmEnumerator(UTerm uexp1, UTerm uexp2, UVar outVar)
+  {
     this(uexp1, uexp2, outVar, DEFAULT_LIMIT);
   }
 
   @Override
-  protected BVM next(UTerm uexp1, UTerm uexp2) {
+  protected BVM next(UTerm uexp1, UTerm uexp2)
+  {
     // try to fetch the head of queue
     final BVM currentBvm = bvmQueue.poll();
-    if (currentBvm == null) {
+    if (currentBvm == null)
+    {
       return null;
     }
     // append mutations of the BVM being visited at the end of queue
     Collection<BVM> mutatedBvms = mutate(currentBvm);
-    for (BVM bvm : mutatedBvms) {
-      if (!enqueuedBvms.contains(bvm)) {
+    for (BVM bvm : mutatedBvms)
+    {
+      if (!enqueuedBvms.contains(bvm))
+      {
         bvmQueue.add(bvm);
         enqueuedBvms.add(bvm);
       }
@@ -69,27 +75,33 @@ public class HeuristicBvmEnumerator extends BvmEnumerator {
    * Try all possible mutations on the BVM (i.e. try swapping every pair of bound vars within the
    * same node of either sum tree).
    */
-  private Collection<BVM> mutate(BVM bvm) {
+  private Collection<BVM> mutate(BVM bvm)
+  {
     final List<Set<BoundVar>> nodes = sumTree1.getAllNodes();
     nodes.addAll(sumTree2.getAllNodes());
     final Collection<BVM> result = new HashSet<>();
-    for (Set<BoundVar> node : nodes) {
+    for (Set<BoundVar> node : nodes)
+    {
       result.addAll(mutateWithinSet(bvm, node));
     }
     return result;
   }
 
   /** Try swapping every pair of bound vars within the specified set. */
-  private Collection<BVM> mutateWithinSet(BVM bvm, Set<BoundVar> vars) {
+  private Collection<BVM> mutateWithinSet(BVM bvm, Set<BoundVar> vars)
+  {
     final List<BoundVar> varList = new ArrayList<>(vars);
     final Collection<BVM> result = new HashSet<>();
     final int bound = varList.size();
-    for (int i = 0; i < bound; i++) {
-      for (int j = i + 1; j < bound; j++) {
+    for (int i = 0; i < bound; i++)
+    {
+      for (int j = i + 1; j < bound; j++)
+      {
         final BoundVar bv1 = varList.get(i);
         final BoundVar bv2 = varList.get(j);
         // only swap vars within the same table or no table
-        if (Objects.equals(bv1.table(), bv2.table())) {
+        if (Objects.equals(bv1.table(), bv2.table()))
+        {
           result.add(bvm.swapVars(bv1.var(), bv2.var()));
         }
       }

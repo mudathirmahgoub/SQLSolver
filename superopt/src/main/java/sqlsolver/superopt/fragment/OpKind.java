@@ -1,6 +1,7 @@
 package sqlsolver.superopt.fragment;
 
-public enum OpKind {
+public enum OpKind
+{
   // Replace this by sealed interface after google-java-format plugin support the future.
   INPUT(0, "Input"),
   INNER_JOIN(2, "InnerJoin"),
@@ -22,45 +23,52 @@ public enum OpKind {
   private final int numPredecessors;
   private final String text;
 
-  OpKind(int numPredecessors, String text) {
+  OpKind(int numPredecessors, String text)
+  {
     this.numPredecessors = numPredecessors;
     this.text = text;
   }
 
-  public int numPredecessors() {
+  public int numPredecessors()
+  {
     return numPredecessors;
   }
 
-  public String text() {
+  public String text()
+  {
     return text;
   }
 
-  public boolean isValidOutput() {
+  public boolean isValidOutput()
+  {
     return !this.isJoin() && !this.isFilter();
   }
 
-  public boolean isJoin() {
-    return this == LEFT_JOIN
-        || this == RIGHT_JOIN
-        || this == FULL_JOIN
-        || this == INNER_JOIN
+  public boolean isJoin()
+  {
+    return this == LEFT_JOIN || this == RIGHT_JOIN || this == FULL_JOIN || this == INNER_JOIN
         || this == CROSS_JOIN;
   }
 
-  public boolean isFilter() {
+  public boolean isFilter()
+  {
     return this == SIMPLE_FILTER || this == IN_SUB_FILTER || this == EXISTS_FILTER;
   }
 
-  public boolean isSubquery() {
+  public boolean isSubquery()
+  {
     return this == IN_SUB_FILTER || this == EXISTS_FILTER;
   }
 
-  public boolean isSetOp() {
+  public boolean isSetOp()
+  {
     return this == UNION || this == INTERSECT || this == EXCEPT;
   }
 
-  public static OpKind parse(String value) {
-    return switch (value) {
+  public static OpKind parse(String value)
+  {
+    return switch (value)
+    {
       case "LeftJoin" -> LEFT_JOIN;
       case "RightJoin" -> RIGHT_JOIN;
       case "FullJoin" -> FULL_JOIN;

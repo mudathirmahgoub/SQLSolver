@@ -1,16 +1,15 @@
 package sqlsolver.superopt.liastar.destructor;
 
+import static sqlsolver.common.utils.SetSupport.intersects;
+import static sqlsolver.superopt.liastar.LiaStar.*;
+
+import java.util.*;
+import java.util.function.Function;
 import sqlsolver.common.utils.SetSupport;
 import sqlsolver.superopt.liastar.LiaIteImpl;
 import sqlsolver.superopt.liastar.LiaStar;
 import sqlsolver.superopt.liastar.LiaVarImpl;
 import sqlsolver.superopt.util.Z3Support;
-
-import java.util.*;
-import java.util.function.Function;
-
-import static sqlsolver.common.utils.SetSupport.intersects;
-import static sqlsolver.superopt.liastar.LiaStar.*;
 
 /**
  * Given "F(...ite(pK,aK,bK)...)"s with a finite domain of K
@@ -21,46 +20,63 @@ import static sqlsolver.superopt.liastar.LiaStar.*;
  * <br/>
  * Its principle is: e=ite(p/\q,a,b) -> (q/\e=ite(p,a,b)) \/ (~q/\e=b).
  */
-public class IteDestructor extends Destructor {
-  /** Context of destruction. "env" is the formula template where parameterized ite expressions are replaced by template vars. */
-  private static class Context {
+public class IteDestructor extends Destructor
+{
+  /**
+   * Context of destruction. "env" is the formula template where parameterized ite expressions are
+   * replaced by template vars.
+   */
+  private static class Context
+  {
     final IteDestructor destructor;
     final Map<String, IteRecord> varIteMap;
     LiaStar env;
 
-    Context(LiaStar formula, IteDestructor destructor) {
+    Context(LiaStar formula, IteDestructor destructor)
+    {
       this.destructor = destructor;
       final Map<LiaIteImpl, String> iteVarMap = new HashMap<>();
       env = replaceParameterizedItes(formula, iteVarMap, destructor::isParameterized);
       varIteMap = new HashMap<>();
-      for (Map.Entry<LiaIteImpl, String> entry : iteVarMap.entrySet()) {
+      for (Map.Entry<LiaIteImpl, String> entry : iteVarMap.entrySet())
+      {
         varIteMap.put(entry.getValue(), new IteRecord(entry.getKey()));
       }
     }
 
-    boolean isTrivial() {
+    boolean isTrivial()
+    {
       return varIteMap.isEmpty();
     }
 
-    private void replaceParameterizedItesInEnv(Function<LiaStar, Boolean> isParameterized) {
+    private void replaceParameterizedItesInEnv(Function<LiaStar, Boolean> isParameterized)
+    {
       final Map<LiaIteImpl, String> iteVarMap = new HashMap<>();
       env = replaceParameterizedItes(env, iteVarMap, isParameterized);
-      for (Map.Entry<LiaIteImpl, String> entry : iteVarMap.entrySet()) {
+      for (Map.Entry<LiaIteImpl, String> entry : iteVarMap.entrySet())
+      {
         varIteMap.put(entry.getValue(), new IteRecord(entry.getKey()));
       }
     }
 
-    private LiaStar replaceParameterizedItes(LiaStar formula, Map<LiaIteImpl, String> iteVarMap, Function<LiaStar, Boolean> isParameterized) {
+    private LiaStar replaceParameterizedItes(LiaStar formula,
+        Map<LiaIteImpl, String> iteVarMap,
+        Function<LiaStar, Boolean> isParameterized)
+    {
       return formula.transformPreOrder(f -> {
         // only replace ite's with parameterized condition
-        if (f instanceof LiaIteImpl ite && isParameterized.apply(ite.subNodes().get(0))) {
-          if (iteVarMap.containsKey(ite)) {
+        if (f instanceof LiaIteImpl ite && isParameterized.apply(ite.subNodes().get(0)))
+        {
+          if (iteVarMap.containsKey(ite))
+          {
             return mkVar(true, iteVarMap.get(ite));
           }
           final String newVarName = LiaStar.newVarName();
           iteVarMap.put(ite, newVarName);
           return mkVar(true, newVarName);
-        } else {
+        }
+        else
+        {
           return null;
         }
       });
@@ -68,11 +84,13 @@ public class IteDestructor extends Destructor {
   }
 
   /** e = ite(p /\ q, a, b) -> (q /\ e = ite(p, a, b)) \/ (~q /\ e = b) */
-  private static class IteRecord {
+  private static class IteRecord
+  {
     LiaStar a, b;
     List<LiaStar> q, p;
 
-    IteRecord(LiaIteImpl ite) {
+    IteRecord(LiaIteImpl ite)
+    {
       final List<LiaStar> children = ite.subNodes(); // cond, op1, op2
       this.a = deepcopy(children.get(1));
       this.b = deepcopy(children.get(2));
@@ -82,12 +100,14 @@ public class IteDestructor extends Destructor {
     }
 
     /** Return q in LIA form. */
-    LiaStar getCond() {
+    LiaStar getCond()
+    {
       return mkConjunction(true, q);
     }
 
     /** [[q, ite(p,a,b)], [~q, b]] */
-    LiaStar[][] toLiaCases() {
+    LiaStar[][] toLiaCases()
+    {
       final LiaStar[][] result = new LiaStar[2][2];
       result[0][0] = getCond();
       result[0][1] = toLiaIfCondIsTrue();
@@ -97,32 +117,40 @@ public class IteDestructor extends Destructor {
     }
 
     /** Return the expression when q is true. */
-    LiaStar toLiaIfCondIsTrue() {
+    LiaStar toLiaIfCondIsTrue()
+    {
       final LiaStar ite;
       final LiaStar p = this.p.isEmpty() ? null : mkConjunction(true, this.p);
-      if (p == null) {
+      if (p == null)
+      {
         ite = deepcopy(a);
-      } else {
+      }
+      else
+      {
         ite = mkIte(true, deepcopy(p), deepcopy(a), deepcopy(b));
       }
       return ite;
     }
 
     /** Return the expression when q is false. */
-    LiaStar toLiaIfCondIsFalse() {
+    LiaStar toLiaIfCondIsFalse()
+    {
       return deepcopy(b);
     }
   }
 
-  public IteDestructor(Set<String> params, Set<String> importantVars) {
+  public IteDestructor(Set<String> params, Set<String> importantVars)
+  {
     super(params, importantVars);
   }
 
   @Override
-  public List<LiaStar> destruct(LiaStar formula) {
+  public List<LiaStar> destruct(LiaStar formula)
+  {
     final Context ctx = new Context(formula, this);
     // trivial case cannot be further destructed
-    if (ctx.isTrivial()) {
+    if (ctx.isTrivial())
+    {
       final List<LiaStar> result = new ArrayList<>();
       result.add(formula);
       return result;
@@ -135,19 +163,24 @@ public class IteDestructor extends Destructor {
   }
 
   /** Extract parameterized part of each ite condition in ctx to do case analysis. */
-  private void extractParamsFromIteCond(Context ctx) {
+  private void extractParamsFromIteCond(Context ctx)
+  {
     // find "closure" of params
     boolean changed;
     final Set<String> paramClosure = getParams();
-    do {
+    do
+    {
       changed = false;
       // add new vars to the param closure
       // also add literals to destruct and update candidate ite's
-      for (IteRecord record : ctx.varIteMap.values()) {
+      for (IteRecord record : ctx.varIteMap.values())
+      {
         final List<LiaStar> toSeparate = new ArrayList<>();
-        for (LiaStar term : record.p) {
+        for (LiaStar term : record.p)
+        {
           final Set<String> termVars = term.collectVarNames();
-          if (intersects(termVars, paramClosure)) {
+          if (intersects(termVars, paramClosure))
+          {
             toSeparate.add(term);
             record.q.add(term);
             paramClosure.addAll(termVars);
@@ -156,20 +189,26 @@ public class IteDestructor extends Destructor {
         }
         record.p.removeAll(toSeparate);
       }
-      ctx.replaceParameterizedItesInEnv(f -> SetSupport.intersects(f.collectVarNames(), paramClosure));
+      ctx.replaceParameterizedItesInEnv(
+          f -> SetSupport.intersects(f.collectVarNames(), paramClosure));
     } while (changed);
   }
 
   /** Construct formulas for each case in ctx. */
-  private List<LiaStar> constructResult(Context ctx) {
+  private List<LiaStar> constructResult(Context ctx)
+  {
     List<LiaStar> result = new ArrayList<>();
     constructResult(result, new ArrayList<>(ctx.varIteMap.entrySet()), 0, ctx.env);
     return result;
   }
 
   private void constructResult(List<LiaStar> results,
-          List<Map.Entry<String, IteRecord>> varIteEntries, int depth, LiaStar result) {
-    if (depth >= varIteEntries.size()) {
+      List<Map.Entry<String, IteRecord>> varIteEntries,
+      int depth,
+      LiaStar result)
+  {
+    if (depth >= varIteEntries.size())
+    {
       // border
       results.add(result);
       return;
@@ -179,12 +218,14 @@ public class IteDestructor extends Destructor {
     final IteRecord record = entry.getValue();
     final LiaStar[][] cases = record.toLiaCases();
     // for each case (ite cond is true/false)
-    for (LiaStar[] cas : cases) {
+    for (LiaStar[] cas : cases)
+    {
       final LiaStar cond = cas[0], exp = cas[1];
       // instantiate ite (previously replaced with var) with exp
       LiaStar newResult = replaceVarWithExp(result, var, exp);
       // ignore impossible cases
-      if (isImpossible(newResult, cond)) {
+      if (isImpossible(newResult, cond))
+      {
         continue;
       }
       // ignore duplicates
@@ -194,10 +235,13 @@ public class IteDestructor extends Destructor {
     }
   }
 
-  private LiaStar replaceVarWithExp(LiaStar formula, String var, LiaStar exp) {
-    if (formula == null) return null;
+  private LiaStar replaceVarWithExp(LiaStar formula, String var, LiaStar exp)
+  {
+    if (formula == null)
+      return null;
     return formula.transformPreOrder(f -> {
-      if (f instanceof LiaVarImpl v && v.getName().equals(var)) {
+      if (f instanceof LiaVarImpl v && v.getName().equals(var))
+      {
         return exp.deepcopy();
       }
       return null;
@@ -205,12 +249,15 @@ public class IteDestructor extends Destructor {
   }
 
   // add each non-duplicate term in formula into env
-  private LiaStar addNonDuplicates(LiaStar env, LiaStar formula) {
+  private LiaStar addNonDuplicates(LiaStar env, LiaStar formula)
+  {
     LiaStar result = env;
     final List<LiaStar> terms = new ArrayList<>();
     decomposeConjunction(formula, terms);
-    for (LiaStar term : terms) {
-      if (!isDuplicate(result, term)) {
+    for (LiaStar term : terms)
+    {
+      if (!isDuplicate(result, term))
+      {
         result = mkAnd(false, result, term);
       }
     }
@@ -218,8 +265,10 @@ public class IteDestructor extends Destructor {
   }
 
   // whether env -> term (ignore stars in env)
-  private boolean isDuplicate(LiaStar env, LiaStar term) {
-    if (env == null) {
+  private boolean isDuplicate(LiaStar env, LiaStar term)
+  {
+    if (env == null)
+    {
       return false;
     }
     List<LiaStar> noStarList = new ArrayList<>();
@@ -231,8 +280,10 @@ public class IteDestructor extends Destructor {
   }
 
   // whether env -> not term (ignore stars in env)
-  private boolean isImpossible(LiaStar env, LiaStar term) {
-    if (env == null) {
+  private boolean isImpossible(LiaStar env, LiaStar term)
+  {
+    if (env == null)
+    {
       return false;
     }
     List<LiaStar> noStarList = new ArrayList<>();

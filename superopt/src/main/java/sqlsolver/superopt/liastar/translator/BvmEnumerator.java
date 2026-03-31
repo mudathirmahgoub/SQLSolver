@@ -6,7 +6,8 @@ import sqlsolver.superopt.uexpr.UTerm;
  * A BvmEnumerator enumerates possible bound var matching in some order. "Bvm" stands for "bound var
  * matching". Implementation and input decide the enumeration order.
  */
-public abstract class BvmEnumerator {
+public abstract class BvmEnumerator
+{
   private final UTerm uexp1, uexp2;
   private BVM cachedNext;
   private final int limit;
@@ -24,7 +25,8 @@ public abstract class BvmEnumerator {
    * @param limit the allowed maximum number of invoking "next", or a non-positive number to allow
    *     arbitrarily many invocations
    */
-  protected BvmEnumerator(UTerm uexp1, UTerm uexp2, int limit) {
+  protected BvmEnumerator(UTerm uexp1, UTerm uexp2, int limit)
+  {
     this.uexp1 = uexp1;
     this.uexp2 = uexp2;
     cachedNext = null;
@@ -44,7 +46,8 @@ public abstract class BvmEnumerator {
    * @return the next BVM if there is one and the number of invocations does not exceed the limit;
    *     otherwise <code>null</code>
    */
-  public BVM next() {
+  public BVM next()
+  {
     // see the cached "next", or fetch "next" if it is not cached
     final BVM result = seeNext();
     // clear cache and update counter
@@ -61,7 +64,8 @@ public abstract class BvmEnumerator {
    * @return the next BVM if there is one and the number of invocations does not exceed the limit;
    *     otherwise <code>null</code>
    */
-  public BVM seeNext() {
+  public BVM seeNext()
+  {
     return seeNext(limit);
   }
 
@@ -70,7 +74,8 @@ public abstract class BvmEnumerator {
    *
    * @return whether "next" BVM is non-null if limit is set to zero
    */
-  public boolean hasNextBeyondLimit() {
+  public boolean hasNextBeyondLimit()
+  {
     return seeNext(0) != null;
   }
 
@@ -80,11 +85,14 @@ public abstract class BvmEnumerator {
    * @param limit restrict visibility of "next"; only first <code>limit</code> BVMs are visible;
    *     non-positive <code>limit</code> poses no restriction
    */
-  private BVM seeNext(int limit) {
-    if (limit > 0 && count >= limit) {
+  private BVM seeNext(int limit)
+  {
+    if (limit > 0 && count >= limit)
+    {
       return null;
     }
-    if (cachedNext == null) {
+    if (cachedNext == null)
+    {
       // fetch "next" when cachedNext is null; it is correct in both cases
       // case 1: "next" is not cached, just fetch and cache it
       // case 2: "next" is already null, and fetching it always returns null

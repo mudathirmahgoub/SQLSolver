@@ -1,3 +1,3 @@
 package sqlsolver.superopt.uexpr;
 
-public record AttrsDesc(UName name) { }
+public record AttrsDesc(UName name) {}

@@ -23,14 +23,18 @@ import sqlsolver.superopt.util.Timeout;
  * Translate U-expressions into FOL formulas. It aims at U-expressions whose summations are always
  * within squash/negation.
  */
-public abstract class SetTranslator {
-  public record Config(String varMode, boolean forcesArithExpr) {
+public abstract class SetTranslator
+{
+  public record Config(String varMode, boolean forcesArithExpr)
+  {
     public static final String VAR_MODE_TUPLE_AS_VAR = "tuple as var";
     public static final String VAR_MODE_COLUMN_AS_VAR = "column as var";
   }
 
-  public static SetTranslator mk(Config config, TranslatorContext ctx, UTerm term) {
-    switch (config.varMode) {
+  public static SetTranslator mk(Config config, TranslatorContext ctx, UTerm term)
+  {
+    switch (config.varMode)
+    {
       case Config.VAR_MODE_TUPLE_AS_VAR -> {
         return new TupleVarSetTranslator(config, ctx, term);
       }
@@ -96,64 +100,78 @@ public abstract class SetTranslator {
     void bindZ3BV(Expr z3BV, UVar var) {
       // find the corresponding sum layer
       Set<Expr> targetLayer = null;
-      for (Pair<Set<UVar>, Set<Expr>> pair : zip(sumBVs, existBVs)) {
-        if (any(pair.getLeft(), var::isUsing)) {
-          targetLayer = pair.getRight();
-          break;
+      for (Pair<Set<UVar>, Set<Expr>> pair : zip(sumBVs, existBVs))
+        {
+          if (any(pair.getLeft(), var::isUsing))
+          {
+            targetLayer = pair.getRight();
+            break;
+          }
         }
-      }
-      if (targetLayer == null) targetLayer = existBVs.getLast();
-      // bind z3BV to it
-      targetLayer.add(z3BV);
+        if (targetLayer == null)
+          targetLayer = existBVs.getLast();
+        // bind z3BV to it
+        targetLayer.add(z3BV);
     }
 
-    private boolean isNotNullColumn(UVar var, LinkedList<UTerm> path) {
-      if (var.kind() != UVar.VarKind.PROJ) return false;
+    private boolean isNotNullColumn(UVar var, LinkedList<UTerm> path)
+    {
+      if (var.kind() != UVar.VarKind.PROJ)
+        return false;
       assert var.args().length == 1;
       // find which table(s) the tuple belongs to
       final List<String> tableNames = belongsToWhichTable(var.args()[0], path);
       // check if the column is NOT NULL
-      for (String tableName : tableNames) {
+      for (String tableName : tableNames)
+      {
         // if the column is NOT NULL in one table, then it is NOT NULL
         final int colIndex = CalciteSupport.columnNameToIndex(var.name().toString());
         final String colName =
             tableSchema.table(tableName).columns().stream().toList().get(colIndex).name();
-        if (any(
-            tableSchema.table(tableName).constraints(),
-            ic ->
-                ic.kind() == ConstraintKind.NOT_NULL
-                    && ic.columns().size() == 1
-                    && ic.columns().get(0).name().equals(colName))) return true;
+        if (any(tableSchema.table(tableName).constraints(),
+                ic
+                -> ic.kind() == ConstraintKind.NOT_NULL && ic.columns().size() == 1
+                    && ic.columns().get(0).name().equals(colName)))
+          return true;
       }
       return false;
     }
 
-    private List<String> belongsToWhichTable(UVar tuple, LinkedList<UTerm> path) {
+    private List<String> belongsToWhichTable(UVar tuple, LinkedList<UTerm> path)
+    {
       final List<String> result = new ArrayList<>();
       final List<UTable> tables = findTableTerm(tuple, path.getLast());
-      for (UTable table : tables) {
+      for (UTable table : tables)
+      {
         final String tableName = table.tableName().toString();
-        if (belongsToTable(tuple, path, tableName)) result.add(tableName);
+        if (belongsToTable(tuple, path, tableName))
+          result.add(tableName);
       }
       return result;
     }
 
-    private List<UTable> findTableTerm(UVar var, UTerm term) {
+    private List<UTable> findTableTerm(UVar var, UTerm term)
+    {
       // find table(var) in term
-      if (term instanceof UTable table && table.var().equals(var)) return List.of(table);
+      if (term instanceof UTable table && table.var().equals(var))
+        return List.of(table);
       final List<UTable> result = new ArrayList<>();
-      for (UTerm sub : term.subTerms()) {
+      for (UTerm sub : term.subTerms())
+      {
         result.addAll(findTableTerm(var, sub));
       }
       return result;
     }
 
-    private boolean belongsToTable(UVar tuple, LinkedList<UTerm> path, String tableName) {
+    private boolean belongsToTable(UVar tuple, LinkedList<UTerm> path, String tableName)
+    {
       // whether assigning 0 to the table term
       //   makes any term on the path become a constant
-      for (UTerm term : path) {
+      for (UTerm term : path)
+      {
         final UTable tableTerm = UTable.mk(UName.mk(tableName), tuple.copy());
-        if (UExprSupport.normalizeExpr(term.replaceAtomicTerm(tableTerm, UConst.zero())).kind() == UKind.CONST)
+        if (UExprSupport.normalizeExpr(term.replaceAtomicTerm(tableTerm, UConst.zero())).kind()
+            == UKind.CONST)
           return true;
       }
       return false;
@@ -164,38 +182,48 @@ public abstract class SetTranslator {
   protected final TranslatorContext ctx;
   private final UTerm term;
 
-  protected SetTranslator(Config config, TranslatorContext ctx, UTerm term) {
+  protected SetTranslator(Config config, TranslatorContext ctx, UTerm term)
+  {
     this.config = config;
     this.ctx = ctx;
     this.term = term;
   }
 
   /** Translate the preset U-expression into an FOL arithmetic expression. */
-  public ArithExpr translate() {
+  public ArithExpr translate()
+  {
     final Expr result = translateRecursive(term, new LinkedList<>(), false);
-    if (result instanceof ArithExpr arithResult) {
+    if (result instanceof ArithExpr arithResult)
+    {
       return arithResult;
-    } else if (result instanceof BoolExpr boolResult) {
+    }
+    else if (result instanceof BoolExpr boolResult)
+    {
       return (ArithExpr) ctx.z3.mkITE(boolResult, ctx.z3.mkInt(1), ctx.z3.mkInt(0));
     }
     throw new UnsupportedOperationException(
         "expressions beyond Arithmetic/Bool types are not supported");
   }
 
-  protected String notNullVarOf(String var) {
+  protected String notNullVarOf(String var)
+  {
     return var + "_notnull";
   }
 
   // whether a term must be binary (term = 0 \/ term = 1)
-  private boolean isBinaryValue(UTerm term) {
+  private boolean isBinaryValue(UTerm term)
+  {
     final LiaStar termLia = LiaTranslator.translate(term, ctx.varSchema);
     final LiaStar zero = LiaStar.mkConst(false, 0);
     final LiaStar one = LiaStar.mkConst(false, 1);
     final LiaStar toCheck =
         LiaStar.mkOr(false, LiaStar.mkEq(false, termLia, zero), LiaStar.mkEq(false, termLia, one));
-    try {
+    try
+    {
       return isValidLia(toCheck);
-    } catch (Throwable e) {
+    }
+    catch (Throwable e)
+    {
       Timeout.bypassTimeout(e);
       // non-integral values are considered non-binary
       return false;
@@ -211,7 +239,8 @@ public abstract class SetTranslator {
   //     is determined by its environment (i.e. whether isUnderSet is true).
   //   The term type and the value of "isUnderSet" decides whether each direct subterm
   //   can be squashed without changing the term's value.
-  private Expr translateRecursive(UTerm term, LinkedList<UTerm> path, boolean isUnderSet) {
+  private Expr translateRecursive(UTerm term, LinkedList<UTerm> path, boolean isUnderSet)
+  {
     final UTerm parent = path.isEmpty() ? null : path.getFirst();
     final LinkedList<UTerm> newPath = new LinkedList<>(path);
     newPath.addFirst(term);
@@ -221,7 +250,8 @@ public abstract class SetTranslator {
     // translate (assign arithResult or boolResult according to term type)
     ArithExpr arithResult = null;
     BoolExpr boolResult = null;
-    switch (term.kind()) {
+    switch (term.kind())
+    {
       case CONST -> {
         arithResult = ctx.z3.mkInt(((UConst) term).value());
       }
@@ -263,11 +293,14 @@ public abstract class SetTranslator {
           }
         }
         // not-null constraints
-        for (Pair<UTerm, Expr> pair : zip(pred.args(), argExps)) {
+        for (Pair<UTerm, Expr> pair : zip(pred.args(), argExps))
+        {
           final UTerm arg = pair.getLeft();
-          if (!(arg instanceof UVarTerm vt)) continue;
+          if (!(arg instanceof UVarTerm vt))
+            continue;
           final UVar var = vt.var();
-          if (ctx.isNotNullColumn(var, newPath)) continue;
+          if (ctx.isNotNullColumn(var, newPath))
+            continue;
           // for each nullable var, append not-null constraint and z3 var def
           final Expr varExp = pair.getRight();
           final String notNullVarName = notNullVarOf(varExp.toString());
@@ -275,7 +308,7 @@ public abstract class SetTranslator {
           ctx.bindZ3BV(notNullVar, var);
           boolResult = ctx.z3.mkAnd(boolResult, notNullVar);
         }
-      }
+    }
       case FUNC -> {
         final UFunc func = (UFunc) term;
         final String funcName = func.funcName().toString();

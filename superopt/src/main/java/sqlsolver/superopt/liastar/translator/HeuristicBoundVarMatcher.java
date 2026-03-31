@@ -11,11 +11,12 @@ import sqlsolver.common.utils.NameSequence;
 import sqlsolver.superopt.uexpr.*;
 
 /** Select one bound variable from each summation so that they match well. */
-public class HeuristicBoundVarMatcher {
-
+public class HeuristicBoundVarMatcher
+{
   public record Result(UVar newCommonVar, Set<UVar> replacedBoundVars) {}
 
-  private enum MatchingMode {
+  private enum MatchingMode
+  {
     DIFF,
     PATTERN,
     FORCE
@@ -28,10 +29,13 @@ public class HeuristicBoundVarMatcher {
   private Set<Integer> sumIndexSet2;
   private Map<Integer, UTerm> previousSums;
 
-  private record CommonTupleResult(UVar tuple, String table, int appearsIn) {
+  private record CommonTupleResult(UVar tuple, String table, int appearsIn)
+  {
     @Override
-    public boolean equals(Object obj) {
-      if (obj instanceof CommonTupleResult that) {
+    public boolean equals(Object obj)
+    {
+      if (obj instanceof CommonTupleResult that)
+      {
         // irrelevant to position
         return tuple.equals(that.tuple) && table.equals(that.table);
       }
@@ -40,11 +44,14 @@ public class HeuristicBoundVarMatcher {
   }
 
   /** Find all possible unique common tuples. */
-  private Set<CommonTupleResult> getCommonTuples() {
+  private Set<CommonTupleResult> getCommonTuples()
+  {
     Set<CommonTupleResult> commons = new HashSet<>();
-    for (int i = 0; i < sums.size(); ++i) {
+    for (int i = 0; i < sums.size(); ++i)
+    {
       USum curSum = ((USum) sums.get(i));
-      for (UVar v : curSum.boundedVars()) {
+      for (UVar v : curSum.boundedVars())
+      {
         String commonTable = findTableForTuple(curSum, v);
         commons.add(new CommonTupleResult(v, commonTable, i));
       }
@@ -52,17 +59,21 @@ public class HeuristicBoundVarMatcher {
     return commons;
   }
 
-  private String findTableForTuple(UTerm expr, UVar tuple) {
-    switch (expr.kind()) {
+  private String findTableForTuple(UTerm expr, UVar tuple)
+  {
+    switch (expr.kind())
+    {
       case ADD, MULTIPLY -> {
-        for (UTerm term : expr.subTerms()) {
+        for (UTerm term : expr.subTerms())
+        {
           String tmp = findTableForTuple(term, tuple);
-          if (tmp != null) {
+          if (tmp != null)
+          {
             return tmp;
           }
         }
         return null;
-      }
+    }
       case SQUASH -> {
         return findTableForTuple(((USquash) expr).body(), tuple);
       }
@@ -104,33 +115,42 @@ public class HeuristicBoundVarMatcher {
 
     Set<UVar> boundTuples = cur.boundedVars();
     Set<UVar> candidateVars = new HashSet<>();
-    for (UVar v : boundTuples) {
-      String tableName = findTableForTuple(cur.body(), v);
-      if (tableName == null) {
-        continue;
-      }
-      if (tableName.equals(commonTable)) {
-        candidateVars.add(v);
-      }
-    }
-    return candidateVars;
+    for (UVar v : boundTuples)
+        {
+          String tableName = findTableForTuple(cur.body(), v);
+          if (tableName == null)
+          {
+            continue;
+          }
+          if (tableName.equals(commonTable))
+          {
+            candidateVars.add(v);
+          }
+        }
+        return candidateVars;
   }
 
   /** The minimum of difference between "tuple" in "term" and each term in "baseline". */
-  private int computeDiff(UVar tuple, UTerm term, Set<UTerm> baseline) {
-    if (baseline.isEmpty()) return Integer.MAX_VALUE;
+  private int computeDiff(UVar tuple, UTerm term, Set<UTerm> baseline)
+  {
+    if (baseline.isEmpty())
+      return Integer.MAX_VALUE;
     return baseline.stream()
         .map(s -> diffBetweenVarOccurrencesInTerms(tuple, term, s))
         .min(Integer::compareTo)
         .get();
   }
 
-  private UTerm findCorrespondingSummation(USum sum, Set<UTerm> baseline) {
+  private UTerm findCorrespondingSummation(USum sum, Set<UTerm> baseline)
+  {
     int bvCount = sum.boundedVars().size();
-    for (UTerm base : baseline) {
-      if (base instanceof USum sum0) {
+    for (UTerm base : baseline)
+    {
+      if (base instanceof USum sum0)
+      {
         int bvCount0 = sum0.boundedVars().size();
-        if (bvCount == bvCount0 + 1) {
+        if (bvCount == bvCount0 + 1)
+        {
           // one bound var in sum0 was replaced
           // so sum has one more bound var than sum0
           return base;
@@ -141,21 +161,27 @@ public class HeuristicBoundVarMatcher {
   }
 
   // find "a" such that [a(x) = b(...)] equals "term"
-  private UName getAttrRelatedToOutVar(UTerm term) {
-    if (term instanceof UPred pred && pred.isPredKind(UPred.PredKind.EQ)) {
+  private UName getAttrRelatedToOutVar(UTerm term)
+  {
+    if (term instanceof UPred pred && pred.isPredKind(UPred.PredKind.EQ))
+    {
       UTerm left = pred.args().get(0);
       UTerm right = pred.args().get(1);
-      if (left instanceof UVarTerm vt1 && right instanceof UVarTerm vt2) {
+      if (left instanceof UVarTerm vt1 && right instanceof UVarTerm vt2)
+      {
         UVar v1 = vt1.var();
         UVar v2 = vt2.var();
         // "term" is like [a(x) = b(...)]
-        if (v1.kind() == UVar.VarKind.PROJ && v2.kind() == UVar.VarKind.PROJ) {
+        if (v1.kind() == UVar.VarKind.PROJ && v2.kind() == UVar.VarKind.PROJ)
+        {
           UVar[] args1 = v1.args();
           UVar[] args2 = v2.args();
-          if (args1.length == 1 && args1[0].equals(outVar)) {
+          if (args1.length == 1 && args1[0].equals(outVar))
+          {
             return v1.name(); // a
           }
-          if (args2.length == 1 && args2[0].equals(outVar)) {
+          if (args2.length == 1 && args2[0].equals(outVar))
+          {
             return v2.name(); // a
           }
         }
@@ -165,27 +191,29 @@ public class HeuristicBoundVarMatcher {
   }
 
   // find xN such that [a(x) = b(xN)] equals "term"
-  private UVar getVarRelatedToOutVar(UTerm term, UName attr) {
-    if (term instanceof UPred pred && pred.isPredKind(UPred.PredKind.EQ)) {
+  private UVar getVarRelatedToOutVar(UTerm term, UName attr)
+  {
+    if (term instanceof UPred pred && pred.isPredKind(UPred.PredKind.EQ))
+    {
       UTerm left = pred.args().get(0);
       UTerm right = pred.args().get(1);
-      if (left instanceof UVarTerm vt1 && right instanceof UVarTerm vt2) {
+      if (left instanceof UVarTerm vt1 && right instanceof UVarTerm vt2)
+      {
         UVar v1 = vt1.var();
         UVar v2 = vt2.var();
         // "term" is like [a(x) = b(xN)]
-        if (v1.kind() == UVar.VarKind.PROJ && v2.kind() == UVar.VarKind.PROJ) {
+        if (v1.kind() == UVar.VarKind.PROJ && v2.kind() == UVar.VarKind.PROJ)
+        {
           UVar[] args1 = v1.args();
           UVar[] args2 = v2.args();
-          if (args1.length == 1
-              && args1[0].equals(outVar)
-              && v1.name().equals(attr)
-              && args2.length == 1) {
+          if (args1.length == 1 && args1[0].equals(outVar) && v1.name().equals(attr)
+              && args2.length == 1)
+          {
             return args2[0]; // xN
           }
-          if (args2.length == 1
-              && args2[0].equals(outVar)
-              && v2.name().equals(attr)
-              && args1.length == 1) {
+          if (args2.length == 1 && args2[0].equals(outVar) && v2.name().equals(attr)
+              && args1.length == 1)
+          {
             return args1[0]; // xN
           }
         }
@@ -194,10 +222,13 @@ public class HeuristicBoundVarMatcher {
     return null;
   }
 
-  private List<UVar> collectTableVarList(UTerm term, UName tableName) {
+  private List<UVar> collectTableVarList(UTerm term, UName tableName)
+  {
     List<UVar> vars = new ArrayList<>();
-    for (UTerm subTerm : term.subTerms()) {
-      if (subTerm instanceof UTable tableTerm && tableTerm.tableName().equals(tableName)) {
+    for (UTerm subTerm : term.subTerms())
+    {
+      if (subTerm instanceof UTable tableTerm && tableTerm.tableName().equals(tableName))
+      {
         vars.add(tableTerm.var());
       }
     }
@@ -205,11 +236,13 @@ public class HeuristicBoundVarMatcher {
   }
 
   private UVar chooseAmongMultiBests(
-      int curIndex, String commonTable, UVar commonTupleNewName, Set<UTerm> baseline) {
+      int curIndex, String commonTable, UVar commonTupleNewName, Set<UTerm> baseline)
+  {
     USum cur = (USum) sums.get(curIndex).copy();
     USum partner = (USum) findCorrespondingSummation(cur, baseline);
 
-    if (partner == null) return null;
+    if (partner == null)
+      return null;
     partner = (USum) partner.copy();
 
     UTerm t1 = getOutermostMultiArgOrAtomTerm(partner.body());
@@ -221,16 +254,22 @@ public class HeuristicBoundVarMatcher {
     // xN and xM are replaced with the same lia var
     Set<UTerm> outVarTerms1 = collectRelatedSubTermSet(t1, outVar);
     Set<UTerm> outVarTerms2 = collectRelatedSubTermSet(t2, outVar);
-    for (UTerm subt1 : outVarTerms1) {
+    for (UTerm subt1 : outVarTerms1)
+    {
       UName attr = getAttrRelatedToOutVar(subt1);
-      if (attr == null) continue;
+      if (attr == null)
+        continue;
       UVar v1 = getVarRelatedToOutVar(subt1, attr);
       assert v1 != null;
-      if (!v1.equals(commonTupleNewName)) continue; // only find uN in partner
-      for (UTerm subt2 : outVarTerms2) {
+      if (!v1.equals(commonTupleNewName))
+        continue; // only find uN in partner
+      for (UTerm subt2 : outVarTerms2)
+      {
         UVar v2 = getVarRelatedToOutVar(subt2, attr);
-        if (v2 == null) continue;
-        if (!bvs2.contains(v2)) continue; // only find xM in cur
+        if (v2 == null)
+          continue;
+        if (!bvs2.contains(v2))
+          continue; // only find xM in cur
         // found matching (uN,xM)
         return v2;
       }
@@ -241,12 +280,14 @@ public class HeuristicBoundVarMatcher {
     List<UVar> tableVars1 = collectTableVarList(t1, tableName);
     List<UVar> tableVars2 = collectTableVarList(t2, tableName);
     int bound = tableVars1.size();
-    if (bound == tableVars2.size()) {
-      for (int i = 0; i < bound; i++) {
+    if (bound == tableVars2.size())
+    {
+      for (int i = 0; i < bound; i++)
+      {
         UVar v1 = tableVars1.get(i);
         UVar v2 = tableVars2.get(i);
         if (v1.equals(commonTupleNewName) && bvs2.contains(v2)) // only replace xM
-        return v2;
+          return v2;
       }
     }
 
@@ -258,44 +299,44 @@ public class HeuristicBoundVarMatcher {
    * then the term must be injected. Besides, it also returns which bound var is replaced and
    * removed.
    */
-  private UTerm injectTupleForOneUTerm(
-      int curIndex,
+  private UTerm injectTupleForOneUTerm(int curIndex,
       UVar commonTuple,
       int commonTupleAppearsIn,
       UVar commonTupleNewName,
       ArrayList<UVar> preVars,
       ArrayList<String> selectedVarTables,
-      MatchingMode mode) {
-
+      MatchingMode mode)
+  {
     USum cur = (USum) sums.get(curIndex).copy();
     Set<UVar> boundTuples = cur.boundedVars();
 
     // directly replace the bound var in its source summation
-    if (curIndex == commonTupleAppearsIn) {
+    if (curIndex == commonTupleAppearsIn)
+    {
       return replaceTargetTupleFromOneSum(cur, commonTuple, commonTupleNewName, preVars);
     }
 
     // get baseline for comparison among candidates
     Set<UTerm> diffBaseline = new HashSet<>();
     if (sumIndexSet1.contains(curIndex))
-      diffBaseline.addAll(
-          sumIndexSet2.stream()
-              .filter(i -> previousSums.containsKey(i))
-              .map(previousSums::get)
-              .toList());
+      diffBaseline.addAll(sumIndexSet2.stream()
+                              .filter(i -> previousSums.containsKey(i))
+                              .map(previousSums::get)
+                              .toList());
     if (sumIndexSet2.contains(curIndex))
-      diffBaseline.addAll(
-          sumIndexSet1.stream()
-              .filter(i -> previousSums.containsKey(i))
-              .map(previousSums::get)
-              .toList());
+      diffBaseline.addAll(sumIndexSet1.stream()
+                              .filter(i -> previousSums.containsKey(i))
+                              .map(previousSums::get)
+                              .toList());
 
-    for (String commonTable : selectedVarTables) {
+    for (String commonTable : selectedVarTables)
+    {
       Set<UVar> candidateVars = getCandidateVars(cur, commonTable);
 
       List<UVar> bests = null;
       int minDiff = Integer.MAX_VALUE;
-      for (UVar tmp : candidateVars) {
+      for (UVar tmp : candidateVars)
+      {
         // evaluate a bound var
         // based on difference from previous sums
         USum curCopy = (USum) cur.copy();
@@ -304,18 +345,22 @@ public class HeuristicBoundVarMatcher {
         int diff = computeDiff(commonTupleNewName, expAfterInject, diffBaseline);
 
         // there is no best record, or "tmp" breaks the best record
-        if (bests == null || diff < minDiff) {
+        if (bests == null || diff < minDiff)
+        {
           bests = new ArrayList<>();
           minDiff = diff;
         }
         // add "tmp" to bests if it is the best
-        if (diff == minDiff) {
+        if (diff == minDiff)
+        {
           bests.add(tmp);
         }
       }
 
-      if (bests != null) {
-        if (mode == MatchingMode.DIFF && bests.size() > 1 && minDiff < Integer.MAX_VALUE) {
+      if (bests != null)
+      {
+        if (mode == MatchingMode.DIFF && bests.size() > 1 && minDiff < Integer.MAX_VALUE)
+        {
           // Injection only uses DIFF,
           //   and there are multiple best candidates,
           //   and minDiff is not MAX_VALUE (i.e. baseline is not empty)
@@ -325,7 +370,8 @@ public class HeuristicBoundVarMatcher {
         // First, injection may use PATTERN;
         // Second, only one candidate is the best,
         //   or baseline is empty (so an arbitrary candidate can be selected)
-        if (bests.size() == 1 || minDiff == Integer.MAX_VALUE) {
+        if (bests.size() == 1 || minDiff == Integer.MAX_VALUE)
+        {
           return replaceTargetTupleFromOneSum(cur, bests.get(0), commonTupleNewName, preVars);
         }
         // inject using PATTERN among multiple bests
@@ -336,55 +382,74 @@ public class HeuristicBoundVarMatcher {
       }
     }
 
-    if (mode != MatchingMode.FORCE) return null;
+    if (mode != MatchingMode.FORCE)
+      return null;
 
     // force injection
 
     UVar v = null;
     int maxScore = 0;
-    for (UVar tmp : boundTuples) {
-      if (v == null) {
+    for (UVar tmp : boundTuples)
+    {
+      if (v == null)
+      {
         v = tmp;
-      } else {
+      }
+      else
+      {
         USum curCopy = (USum) cur.copy();
         UTerm expAfterInject =
             replaceTargetTupleFromOneSum(curCopy, v, commonTupleNewName, new ArrayList<>());
         int score = computeScoreForInjectTuple(previousSums.values(), expAfterInject);
-        if (score > maxScore) v = tmp;
+        if (score > maxScore)
+          v = tmp;
       }
     }
     selectedVarTables.add(findTableForTuple(cur.body(), v));
     return replaceTargetTupleFromOneSum(cur, v, commonTupleNewName, preVars);
   }
 
-  private int computeScoreForInjectTuple(Collection<UTerm> sums, UTerm exp) {
+  private int computeScoreForInjectTuple(Collection<UTerm> sums, UTerm exp)
+  {
     int score = 0;
     List<UTerm> thisTerms;
-    if (exp instanceof USum sum) thisTerms = sum.body().subTerms();
-    else if (exp instanceof UMul) thisTerms = exp.subTerms();
-    else return 0;
+    if (exp instanceof USum sum)
+      thisTerms = sum.body().subTerms();
+    else if (exp instanceof UMul)
+      thisTerms = exp.subTerms();
+    else
+      return 0;
 
-    for (UTerm thatExp : sums) {
+    for (UTerm thatExp : sums)
+    {
       int termScore = 0;
 
       List<UTerm> thatTerms;
-      if (thatExp instanceof USum sum) thatTerms = sum.body().subTerms();
-      else if (thatExp instanceof UMul) thatTerms = thatExp.subTerms();
-      else thatTerms = new ArrayList<>();
+      if (thatExp instanceof USum sum)
+        thatTerms = sum.body().subTerms();
+      else if (thatExp instanceof UMul)
+        thatTerms = thatExp.subTerms();
+      else
+        thatTerms = new ArrayList<>();
 
-      for (UTerm t : thatTerms) {
-        if (thisTerms.contains(t)) termScore++;
+      for (UTerm t : thatTerms)
+      {
+        if (thisTerms.contains(t))
+          termScore++;
       }
 
-      if (termScore > score) score = termScore;
+      if (termScore > score)
+        score = termScore;
     }
 
     return score;
   }
 
-  private <T> void setAll(List<T> l1, List<T> l2) {
+  private <T> void setAll(List<T> l1, List<T> l2)
+  {
     int i = 0;
-    for (T t : l2) {
+    for (T t : l2)
+    {
       l1.set(i++, t);
     }
   }
@@ -409,27 +474,32 @@ public class HeuristicBoundVarMatcher {
    *     null</code>
    * @return whether each case in <code>list</code> has been given a decision
    */
-  private <T, U> boolean decide(
-      List<T> list,
+  private <T, U> boolean decide(List<T> list,
       Function<T, U> tryToDecide,
       BiConsumer<T, U> consumer,
-      Function<T, U> decideUndecided) {
+      Function<T, U> decideUndecided)
+  {
     List<T> toDecide = new LinkedList<>(), toDecideLater = list;
 
     // keep making decisions when there are cases that can be decided
-    while (!toDecideLater.isEmpty() && !toDecide.equals(toDecideLater)) {
+    while (!toDecideLater.isEmpty() && !toDecide.equals(toDecideLater))
+    {
       // start a new round of decision
       toDecide = toDecideLater;
       toDecideLater = new LinkedList<>();
       // traverse the remaining cases (in "toDecide")
-      for (T t : toDecide) {
+      for (T t : toDecide)
+      {
         // try to decide upon each case
         U result = tryToDecide.apply(t);
-        if (result == null) {
+        if (result == null)
+        {
           // the case cannot be decided in the current round
           // delay its decision
           toDecideLater.add(t);
-        } else {
+        }
+        else
+        {
           consumer.accept(t, result);
         }
       }
@@ -439,9 +509,11 @@ public class HeuristicBoundVarMatcher {
 
     // when decisions are not forced
     // return whether decisions are made successfully upon all cases
-    if (decideUndecided == null) return toDecide.isEmpty();
+    if (decideUndecided == null)
+      return toDecide.isEmpty();
 
-    if (toDecide.isEmpty()) return true;
+    if (toDecide.isEmpty())
+      return true;
 
     // force decision upon undecided cases
     T toForce = toDecide.get(0);
@@ -457,7 +529,8 @@ public class HeuristicBoundVarMatcher {
    * failure.
    */
   private Set<UVar> tryInjectTuple(
-      CommonTupleResult common, UVar commonTupleNewName, MatchingMode mode) {
+      CommonTupleResult common, UVar commonTupleNewName, MatchingMode mode)
+  {
     // reset
     previousSums = new HashMap<>();
     List<UTerm> injectedSums = new ArrayList<>(sums);
@@ -472,38 +545,38 @@ public class HeuristicBoundVarMatcher {
 
     List<Integer> toMatch = new LinkedList<>();
     toMatch.add(commonAppearsIn);
-    for (int i = 0; i < sums.size(); i++) if (i != commonAppearsIn) toMatch.add(i);
+    for (int i = 0; i < sums.size(); i++)
+      if (i != commonAppearsIn)
+        toMatch.add(i);
 
-    boolean result =
-        decide(
-            toMatch,
-            i ->
-                injectTupleForOneUTerm(
-                    i,
-                    commonTuple,
-                    commonAppearsIn,
-                    commonTupleNewName,
-                    selectedVars,
-                    selectedVarTables,
-                    mode == MatchingMode.FORCE ? MatchingMode.PATTERN : mode),
-            (i, injectedTerm) -> {
-              injectedSums.set(i, injectedTerm);
-              previousSums.put(i, injectedTerm);
-            },
-            mode == MatchingMode.FORCE
-                ? i ->
-                    injectTupleForOneUTerm(
-                        i,
-                        commonTuple,
-                        commonAppearsIn,
-                        commonTupleNewName,
-                        selectedVars,
-                        selectedVarTables,
-                        mode)
-                : null);
+    boolean result = decide(toMatch,
+        i
+        -> injectTupleForOneUTerm(i,
+            commonTuple,
+            commonAppearsIn,
+            commonTupleNewName,
+            selectedVars,
+            selectedVarTables,
+            mode == MatchingMode.FORCE ? MatchingMode.PATTERN : mode),
+        (i, injectedTerm)
+            -> {
+          injectedSums.set(i, injectedTerm);
+          previousSums.put(i, injectedTerm);
+        },
+        mode == MatchingMode.FORCE
+        ? i
+        -> injectTupleForOneUTerm(i,
+            commonTuple,
+            commonAppearsIn,
+            commonTupleNewName,
+            selectedVars,
+            selectedVarTables,
+            mode)
+        : null);
 
     // upon success, update the sum list in-place
-    if (result) {
+    if (result)
+    {
       setAll(sums, injectedSums);
       return new HashSet<>(selectedVars);
     }
@@ -520,8 +593,10 @@ public class HeuristicBoundVarMatcher {
    * @return the result of injection
    */
   public Result injectCommonTuple(
-      List<UTerm> sums, Set<Integer> sumIndexSet1, Set<Integer> sumIndexSet2) {
-    if (sums.isEmpty()) return null;
+      List<UTerm> sums, Set<Integer> sumIndexSet1, Set<Integer> sumIndexSet2)
+  {
+    if (sums.isEmpty())
+      return null;
 
     this.sums = sums;
     this.sumIndexSet1 = sumIndexSet1;
@@ -532,20 +607,24 @@ public class HeuristicBoundVarMatcher {
     assert !commons.isEmpty();
 
     // only use DIFF
-    for (CommonTupleResult common : commons) {
+    for (CommonTupleResult common : commons)
+    {
       // traverse possible common tuples until success or end
       // try a different common tuple name if matching is stuck
       Set<UVar> replacedBoundVars = tryInjectTuple(common, commonTupleNewName, MatchingMode.DIFF);
-      if (replacedBoundVars != null) return new Result(commonTupleNewName, replacedBoundVars);
+      if (replacedBoundVars != null)
+        return new Result(commonTupleNewName, replacedBoundVars);
     }
 
     // use DIFF first, then PATTERN
-    for (CommonTupleResult common : commons) {
+    for (CommonTupleResult common : commons)
+    {
       // traverse possible common tuples until success or end
       // try a different common tuple name if matching is stuck
       Set<UVar> replacedBoundVars =
           tryInjectTuple(common, commonTupleNewName, MatchingMode.PATTERN);
-      if (replacedBoundVars != null) return new Result(commonTupleNewName, replacedBoundVars);
+      if (replacedBoundVars != null)
+        return new Result(commonTupleNewName, replacedBoundVars);
     }
 
     // all possible common tuples lead to stuck in matching
@@ -563,7 +642,8 @@ public class HeuristicBoundVarMatcher {
    * @param boundVarName where new bound var names come from
    * @param outVar output var name (typically "x")
    */
-  public HeuristicBoundVarMatcher(NameSequence boundVarName, UVar outVar) {
+  public HeuristicBoundVarMatcher(NameSequence boundVarName, UVar outVar)
+  {
     this.boundVarName = boundVarName;
     this.outVar = outVar;
   }

@@ -1,4 +1,5 @@
-module sqlsolver.stmt {
+module sqlsolver.stmt
+{
   requires sqlsolver.common;
   requires sqlsolver.sql;
   requires sqlite.jdbc;

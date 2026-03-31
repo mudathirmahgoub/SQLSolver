@@ -1,20 +1,21 @@
 package sqlsolver.superopt.fragment;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import org.apache.commons.lang3.tuple.Pair;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import static sqlsolver.common.utils.IterableSupport.linearFind;
 
-class SymbolNamingImpl implements SymbolNaming {
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.commons.lang3.tuple.Pair;
+
+class SymbolNamingImpl implements SymbolNaming
+{
   private final BiMap<Symbol, String> names;
   private final List<Pair<String, Symbol>> extraNaming;
   private final NamingStrategy tableNaming, attrsNaming, predNaming, schemaNaming, funcNaming;
 
-  SymbolNamingImpl() {
+  SymbolNamingImpl()
+  {
     names = HashBiMap.create();
     tableNaming = new NamingStrategyImpl();
     attrsNaming = new NamingStrategyImpl();
@@ -25,7 +26,8 @@ class SymbolNamingImpl implements SymbolNaming {
   }
 
   @Override
-  public SymbolNaming name(Symbols symbols) {
+  public SymbolNaming name(Symbols symbols)
+  {
     for (Symbol symbol : symbols.symbolsOf(Symbol.Kind.TABLE))
       names.computeIfAbsent(symbol, tableNaming::mkName);
 
@@ -45,33 +47,42 @@ class SymbolNamingImpl implements SymbolNaming {
   }
 
   @Override
-  public void setName(Symbol symbol, String name) {
-    if (!names.containsKey(symbol)) names.put(symbol, name);
-    else extraNaming.add(Pair.of(name, symbol));
+  public void setName(Symbol symbol, String name)
+  {
+    if (!names.containsKey(symbol))
+      names.put(symbol, name);
+    else
+      extraNaming.add(Pair.of(name, symbol));
   }
 
   @Override
-  public String nameOf(Symbol symbol) {
+  public String nameOf(Symbol symbol)
+  {
     return names.get(symbol);
   }
 
   @Override
-  public Symbol symbolOf(String name) {
+  public Symbol symbolOf(String name)
+  {
     final Symbol symbol = names.inverse().get(name);
-    if (symbol != null) return symbol;
+    if (symbol != null)
+      return symbol;
     final Pair<String, Symbol> pair = linearFind(extraNaming, it -> name.equals(it.getKey()));
     return pair == null ? null : pair.getRight();
   }
 
-  private interface NamingStrategy {
+  private interface NamingStrategy
+  {
     String mkName(Symbol symbol);
   }
 
-  private static class NamingStrategyImpl implements NamingStrategy {
+  private static class NamingStrategyImpl implements NamingStrategy
+  {
     private int nextId;
 
     @Override
-    public String mkName(Symbol symbol) {
+    public String mkName(Symbol symbol)
+    {
       return ((char) (symbol.kind().name().charAt(0) + ('a' - 'A'))) + String.valueOf(nextId++);
     }
   }

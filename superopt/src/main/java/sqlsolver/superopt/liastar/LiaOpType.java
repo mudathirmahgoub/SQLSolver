@@ -1,6 +1,7 @@
 package sqlsolver.superopt.liastar;
 
-public enum LiaOpType {
+public enum LiaOpType
+{
   LAND,
   LOR,
   LCONST,
@@ -17,7 +18,8 @@ public enum LiaOpType {
   LVAR,
   LFUNC;
 
-  public boolean isAtomicPredicate() {
+  public boolean isAtomicPredicate()
+  {
     return this == LEQ || this == LLE || this == LLT;
   }
 }

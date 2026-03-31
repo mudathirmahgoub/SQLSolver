@@ -1,6 +1,7 @@
 package sqlsolver.superopt.optimizer;
 
-public enum PreprocessRule {
+public enum PreprocessRule
+{
   EnforceInnerJoin(1, "EnforceInnerJoin"),
   ReduceSort(2, "ReduceSort"),
   ReduceDedup(3, "ReduceDedup"),
@@ -10,22 +11,28 @@ public enum PreprocessRule {
   private final int ruleId;
   private final String desc;
 
-  PreprocessRule(int ruleId, String desc) {
+  PreprocessRule(int ruleId, String desc)
+  {
     this.ruleId = ruleId;
     this.desc = desc;
   }
 
-  public int ruleId() {
+  public int ruleId()
+  {
     return ruleId;
   }
 
-  public String desc() {
+  public String desc()
+  {
     return desc;
   }
 
-  static String getDescByRuleId(int ruleId) {
-    for (PreprocessRule r : PreprocessRule.values()) {
-      if (r.ruleId() == ruleId) return r.desc();
+  static String getDescByRuleId(int ruleId)
+  {
+    for (PreprocessRule r : PreprocessRule.values())
+    {
+      if (r.ruleId() == ruleId)
+        return r.desc();
     }
     return "unknown";
   }

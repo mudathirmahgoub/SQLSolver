@@ -1,17 +1,17 @@
 package sqlsolver.superopt.uexpr;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.apache.calcite.rel.RelNode;
 import sqlsolver.common.utils.SetSupport;
 import sqlsolver.sql.calcite.CalciteSupport;
 import sqlsolver.sql.plan.Value;
 import sqlsolver.sql.schema.Schema;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-public class UExprConcreteTranslationResult {
+public class UExprConcreteTranslationResult
+{
   final RelNode p0, p1;
 
   final Schema schema;
@@ -20,7 +20,8 @@ public class UExprConcreteTranslationResult {
   final Map<UVar, List<Value>> srcTupleVarSchemas;
   final Map<UVar, List<Value>> tgtTupleVarSchemas;
 
-  public UExprConcreteTranslationResult(RelNode p0, RelNode p1, Schema schema) {
+  public UExprConcreteTranslationResult(RelNode p0, RelNode p1, Schema schema)
+  {
     this.p0 = p0;
     this.p1 = p1;
     this.schema = schema;
@@ -28,19 +29,23 @@ public class UExprConcreteTranslationResult {
     this.tgtTupleVarSchemas = new HashMap<>();
   }
 
-  public UTerm sourceExpr() {
+  public UTerm sourceExpr()
+  {
     return srcExpr;
   }
 
-  public UTerm targetExpr() {
+  public UTerm targetExpr()
+  {
     return tgtExpr;
   }
 
-  public UVar sourceOutVar() {
+  public UVar sourceOutVar()
+  {
     return srcOutVar;
   }
 
-  public UVar targetOutVar() {
+  public UVar targetOutVar()
+  {
     return tgtOutVar;
   }
 
@@ -49,18 +54,23 @@ public class UExprConcreteTranslationResult {
    * Assume that each common tuple between source and target has the same schema
    * on source and target side.
    */
-  public Map<UVar, List<Value>> getTupleVarSchemas() {
+  public Map<UVar, List<Value>> getTupleVarSchemas()
+  {
     final Map<UVar, List<Value>> result = new HashMap<>();
-    for (Map.Entry<UVar, List<Value>> entry : SetSupport.union(srcTupleVarSchemas.entrySet(), tgtTupleVarSchemas.entrySet())) {
+    for (Map.Entry<UVar, List<Value>> entry :
+        SetSupport.union(srcTupleVarSchemas.entrySet(), tgtTupleVarSchemas.entrySet()))
+    {
       // deep copy each column in schema
       final UVar var = entry.getKey().copy();
       final List<Value> schema = new ArrayList<>();
-      for (Value column : entry.getValue()) {
+      for (Value column : entry.getValue())
+      {
         schema.add(column.copy());
       }
       // check if schema already exists in the result map
       final List<Value> schema0 = result.get(var);
-      if (schema0 == null) {
+      if (schema0 == null)
+      {
         // not exists; enter the schema
         result.put(var, schema);
         continue;
@@ -68,38 +78,45 @@ public class UExprConcreteTranslationResult {
       // if different from the existing schema, inequivalent
       final List<Value> finalSchema = CalciteSupport.mergeTwoValueLists(schema, schema0);
       // TODO: type checking
-      //assert finalSchema != null;
+      // assert finalSchema != null;
       if (finalSchema != null)
         result.put(var, finalSchema);
     }
     return result;
   }
 
-  public void setSrcTupleVarSchema(UVar var, List<Value> schema) {
+  public void setSrcTupleVarSchema(UVar var, List<Value> schema)
+  {
     srcTupleVarSchemas.put(var, schema);
   }
 
-  public List<Value> srcTupleVarSchemaOf(UVar var) {
+  public List<Value> srcTupleVarSchemaOf(UVar var)
+  {
     return srcTupleVarSchemas.get(var);
   }
 
-  public void setTgtTupleVarSchema(UVar var, List<Value> schema) {
+  public void setTgtTupleVarSchema(UVar var, List<Value> schema)
+  {
     tgtTupleVarSchemas.put(var, schema);
   }
 
-  public List<Value> tgtTupleVarSchemaOf(UVar var) {
+  public List<Value> tgtTupleVarSchemaOf(UVar var)
+  {
     return tgtTupleVarSchemas.get(var);
   }
 
-  public Map<UVar, List<Value>> getSrcSchema() {
+  public Map<UVar, List<Value>> getSrcSchema()
+  {
     return srcTupleVarSchemas;
   }
 
-  public Map<UVar, List<Value>> getTgtSchema() {
+  public Map<UVar, List<Value>> getTgtSchema()
+  {
     return tgtTupleVarSchemas;
   }
 
-  public void alignOutVar(UVar freshOutVar) {
+  public void alignOutVar(UVar freshOutVar)
+  {
     // Invariant: out var is BASE type
     assert srcOutVar.is(UVar.VarKind.BASE) && tgtOutVar.is(UVar.VarKind.BASE);
 
@@ -114,7 +131,8 @@ public class UExprConcreteTranslationResult {
     srcOutVar = freshOutVar.copy();
   }
 
-  public void alignOutSchema() {
+  public void alignOutSchema()
+  {
     // srcOutVar and tgtOutVar should be aligned
     assert srcOutVar.is(UVar.VarKind.BASE) && srcOutVar.equals(tgtOutVar);
     final List<Value> srcOutVarSchema = srcTupleVarSchemas.get(srcOutVar);

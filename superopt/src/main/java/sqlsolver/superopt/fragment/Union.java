@@ -1,8 +1,10 @@
 package sqlsolver.superopt.fragment;
 
-public interface Union extends SetOp {
+public interface Union extends SetOp
+{
   @Override
-  default OpKind kind() {
+  default OpKind kind()
+  {
     return OpKind.UNION;
   }
 }

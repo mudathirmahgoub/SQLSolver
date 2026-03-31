@@ -1,16 +1,16 @@
 package sqlsolver.superopt.uexpr;
 
-import com.microsoft.z3.Context;
-import com.microsoft.z3.Sort;
-
-import java.util.List;
-import java.util.function.Function;
-
 import static sqlsolver.common.utils.IterableSupport.*;
 import static sqlsolver.sql.plan.Value.*;
 import static sqlsolver.superopt.uexpr.PredefinedFunctions.ValueType.*;
 
-public class PredefinedFunctions {
+import com.microsoft.z3.Context;
+import com.microsoft.z3.Sort;
+import java.util.List;
+import java.util.function.Function;
+
+public class PredefinedFunctions
+{
   public static final String NAME_IS_NULL = UName.FUNC_IS_NULL_NAME;
   public static final String NAME_DIVIDE = "divide";
   public static final String NAME_SQRT = "sqrt";
@@ -23,14 +23,17 @@ public class PredefinedFunctions {
   public static final String NAME_SUBSTRING = "SUBSTRING";
   public static final String NAME_IN_LIST = "in_list";
 
-  public enum ValueType {
+  public enum ValueType
+  {
     INT(Context::mkIntSort),
     BOOL(Context::mkBoolSort),
     REAL(Context::mkRealSort),
     STRING(Context::mkStringSort);
 
-    public static ValueType getValueTypeByString(String typeName) {
-      switch (typeName) {
+    public static ValueType getValueTypeByString(String typeName)
+    {
+      switch (typeName)
+      {
         case TYPE_NAT, TYPE_INT, TYPE_BIGINT, TYPE_BOOL -> {
           return ValueType.INT;
         }
@@ -157,8 +160,11 @@ public class PredefinedFunctions {
       String suffix = familyFuncName.substring(familyName.length() + 1);
       try {
         int argCount = Integer.parseInt(suffix);
-        return argCount >= 0 ? argCount : -1;
-      } catch (NumberFormatException e) {
+        return argCount >= 0 ? argCount :
+          -1;
+      }
+      catch (NumberFormatException e)
+      {
         return -1;
       }
     }
@@ -169,11 +175,11 @@ public class PredefinedFunctions {
    * Check whether a function term in uexp belongs to a function family.
    * That means, the function name is like (familyName + "_" + N) for some non-negative integer N.
    */
-  public static boolean belongsToFamily(UFunc func, String familyName) {
+  public static boolean belongsToFamily(UFunc func, String familyName)
+  {
     String funcName = func.funcName().toString();
     int size = func.subTerms().size();
     int argCount = PredefinedFunctions.parseArgCount(funcName, familyName);
     return argCount >= 0 && argCount == size;
   }
-
 }

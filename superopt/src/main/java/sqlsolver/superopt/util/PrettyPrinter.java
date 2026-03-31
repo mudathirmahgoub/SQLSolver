@@ -1,15 +1,19 @@
 package sqlsolver.superopt.util;
 
-public class PrettyPrinter extends AbstractPrettyPrinter {
+import sqlsolver.common.utils.Printer;
+import sqlsolver.superopt.logic.LogicSupport;
 
+public class PrettyPrinter extends AbstractPrettyPrinter
+{
   @Override
-  protected void printString(String str) {
-    System.out.print(str);
+  protected void printString(String str)
+  {
+    Printer.output.print(str);
   }
 
   @Override
-  protected void printNewLine() {
-    System.out.println();
+  protected void printNewLine()
+  {
+    Printer.output.println();
   }
-
 }

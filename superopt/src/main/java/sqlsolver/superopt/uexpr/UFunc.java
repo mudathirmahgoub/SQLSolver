@@ -2,29 +2,35 @@ package sqlsolver.superopt.uexpr;
 
 import java.util.List;
 
-public interface UFunc extends UTerm {
-  enum FuncKind {
+public interface UFunc extends UTerm
+{
+  enum FuncKind
+  {
     NON_INT("non-integer"),
     INTEGER("integer");
     private final String text;
 
-    FuncKind(String text) {
-            this.text = text;
-        }
+    FuncKind(String text)
+    {
+      this.text = text;
+    }
 
-    UName funcName() {
-            return UName.mk(text);
-        }
+    UName funcName()
+    {
+      return UName.mk(text);
+    }
   }
 
-  default boolean isFuncKind(UFunc.FuncKind funcKind) {
-        return funcKind() == funcKind;
-    }
+  default boolean isFuncKind(UFunc.FuncKind funcKind)
+  {
+    return funcKind() == funcKind;
+  }
 
   @Override
-  default UKind kind() {
-        return UKind.FUNC;
-    }
+  default UKind kind()
+  {
+    return UKind.FUNC;
+  }
 
   FuncKind funcKind();
 
@@ -32,7 +38,8 @@ public interface UFunc extends UTerm {
 
   List<UTerm> args();
 
-  static UFunc mk(FuncKind funcKind, UName funcName, List<UTerm> arguments) {
+  static UFunc mk(FuncKind funcKind, UName funcName, List<UTerm> arguments)
+  {
     return new UFuncImpl(funcKind, funcName, arguments);
   }
 }

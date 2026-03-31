@@ -1,13 +1,15 @@
 package sqlsolver.superopt.uexpr;
 
-import java.util.Set;
-
 import static sqlsolver.common.utils.IterableSupport.all;
 import static sqlsolver.superopt.uexpr.UVar.VarKind.BASE;
 
-public interface USum extends UUnary {
+import java.util.Set;
+
+public interface USum extends UUnary
+{
   @Override
-  default UKind kind() {
+  default UKind kind()
+  {
     return UKind.SUMMATION;
   }
 
@@ -21,11 +23,14 @@ public interface USum extends UUnary {
 
   void removeUnusedBoundedVar();
 
-  static USum mk(Set<UVar> sumVars, UTerm body) {
+  static USum mk(Set<UVar> sumVars, UTerm body)
+  {
     assert all(sumVars, it -> it.kind() == BASE);
 
-    if (body.kind().isBinary()) return new USumImpl(sumVars, body);
-    else return new USumImpl(sumVars, UMul.mk(body));
+    if (body.kind().isBinary())
+      return new USumImpl(sumVars, body);
+    else
+      return new USumImpl(sumVars, UMul.mk(body));
   }
 
   public UTerm replaceTerm(UTerm baseTerm, UTerm repTerm);
@@ -35,5 +40,4 @@ public interface USum extends UUnary {
   public boolean addBoundedVarForce(UVar var);
 
   Set<String> getBoundVarNames();
-
 }

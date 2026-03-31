@@ -1,40 +1,47 @@
 package sqlsolver.superopt.optimizer;
 
-import gnu.trove.list.TIntList;
-import sqlsolver.sql.plan.*;
-
-import java.util.List;
-
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.Collections.singletonList;
 import static sqlsolver.common.tree.TreeSupport.indexOfChild;
 import static sqlsolver.sql.SqlSupport.isColRefEq;
 import static sqlsolver.sql.plan.PlanSupport.mkColRefExpr;
 
-class ConvertExists {
+import gnu.trove.list.TIntList;
+import java.util.List;
+import sqlsolver.sql.plan.*;
+
+class ConvertExists
+{
   private final PlanContext plan;
   private boolean isConverted;
 
-  ConvertExists(PlanContext plan) {
+  ConvertExists(PlanContext plan)
+  {
     this.plan = plan;
   }
 
-  int convert(int nodeId) {
+  int convert(int nodeId)
+  {
     final PlanKind kind = plan.kindOf(nodeId);
     for (int i = 0, bound = kind.numChildren(); i < bound; ++i) convert(plan.childOf(nodeId, i));
 
-    if (plan.kindOf(nodeId) != PlanKind.Exists) return nodeId;
+    if (plan.kindOf(nodeId) != PlanKind.Exists)
+      return nodeId;
 
     final TIntList depNodes = plan.infoCache().getDependentNodesIn(nodeId);
-    if (depNodes.size() != 1) return nodeId;
+    if (depNodes.size() != 1)
+      return nodeId;
 
     final int depNode = depNodes.get(0);
     final int subqueryRoot = plan.childOf(nodeId, 1);
-    if (plan.kindOf(depNode) != PlanKind.Filter) return nodeId;
-    if (!isInSameScope(subqueryRoot, depNode)) return nodeId;
+    if (plan.kindOf(depNode) != PlanKind.Filter)
+      return nodeId;
+    if (!isInSameScope(subqueryRoot, depNode))
+      return nodeId;
 
     final Expression predicate = ((SimpleFilterNode) plan.nodeAt(depNode)).predicate();
-    if (!isColRefEq(predicate.template())) return nodeId;
+    if (!isColRefEq(predicate.template()))
+      return nodeId;
 
     final ValuesRegistry valuesReg = plan.valuesReg();
     final Values refs = valuesReg.valueRefsOf(predicate);
@@ -43,11 +50,13 @@ class ConvertExists {
     final Values outerValues = valuesReg.valuesOf(nodeId);
     final boolean isOuter0 = outerValues.contains(refs.get(0));
     final boolean isOuter1 = outerValues.contains(refs.get(1));
-    if (isOuter0 == isOuter1) return nodeId;
+    if (isOuter0 == isOuter1)
+      return nodeId;
 
     final Value lhsRef = refs.get(isOuter0 ? 0 : 1), rhsRef = refs.get(isOuter0 ? 1 : 0);
     final Values rhsValues = valuesReg.valuesOf(plan.childOf(subqueryRoot, 0));
-    if (!rhsValues.contains(rhsRef)) return nodeId;
+    if (!rhsValues.contains(rhsRef))
+      return nodeId;
 
     final List<String> projAttrNames = singletonList(rhsRef.name());
     final List<Expression> projExprs = singletonList(PlanSupport.mkColRefExpr(rhsRef));
@@ -83,14 +92,19 @@ class ConvertExists {
     return inSubNodeId;
   }
 
-  boolean isConverted() {
+  boolean isConverted()
+  {
     return isConverted;
   }
 
-  private boolean isInSameScope(int parent, int child) {
-    while (child != parent) {
-      if (!plan.isPresent(child)) return false;
-      if (plan.kindOf(child) == PlanKind.Proj) return false;
+  private boolean isInSameScope(int parent, int child)
+  {
+    while (child != parent)
+    {
+      if (!plan.isPresent(child))
+        return false;
+      if (plan.kindOf(child) == PlanKind.Proj)
+        return false;
       child = plan.parentOf(child);
     }
     return true;

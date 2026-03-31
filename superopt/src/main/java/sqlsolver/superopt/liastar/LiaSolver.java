@@ -2,6 +2,8 @@ package sqlsolver.superopt.liastar;
 
 import com.microsoft.z3.*;
 import java.util.*;
+
+import sqlsolver.common.utils.Printer;
 import sqlsolver.superopt.liastar.parameter.InwardParamRemover;
 import sqlsolver.superopt.logic.LogicSupport;
 import sqlsolver.superopt.logic.SqlSolver;
@@ -9,7 +11,8 @@ import sqlsolver.superopt.uexpr.PredefinedFunctions;
 import sqlsolver.superopt.util.Timeout;
 import sqlsolver.superopt.util.Z3Support;
 
-public class LiaSolver {
+public class LiaSolver
+{
   public static final String CONFIG_KEY_PARAM_REMOVAL_MODE = "PARAM_REMOVAL_MODE";
   public static final String CONFIG_VALUE_PARAM_REMOVAL_MODE_INWARD = "INWARD";
   public static final String CONFIG_VALUE_PARAM_REMOVAL_MODE_OUTWARD = "OUTWARD";
@@ -25,69 +28,95 @@ public class LiaSolver {
    * </ul>
    * @return the satisfiability result
    */
-  public static LiaSolverStatus solveWithConfig(LiaStar f, Properties config) {
+  public static LiaSolverStatus solveWithConfig(LiaStar f, Properties config)
+  {
     return new LiaSolver(config, f).solve();
   }
 
-  public LiaSolver(Properties config, LiaStar f) {
+  public LiaSolver(Properties config, LiaStar f)
+  {
     this.config = config;
     liaFormula = f;
   }
 
-  public LiaSolverStatus solve() {
-    try {
+  public LiaSolverStatus solve()
+  {
+    try
+    {
       String result = checkUnderapp();
-      if (result.equals("SAT")) return LiaSolverStatus.SAT;
-    } catch (Exception e) {
+      if (result.equals("SAT"))
+        return LiaSolverStatus.SAT;
+    }
+    catch (Exception e)
+    {
     }
 
-    try {
+    try
+    {
       String result = checkOverapp();
-      if (result.equals("UNSAT")) return LiaSolverStatus.UNSAT;
-      if (result.equals("SAT")) return LiaSolverStatus.SAT;
+      if (result.equals("UNSAT"))
+        return LiaSolverStatus.UNSAT;
+      if (result.equals("SAT"))
+        return LiaSolverStatus.SAT;
       return LiaSolverStatus.UNKNOWN;
-    } catch (Exception e) {
+    }
+    catch (Exception e)
+    {
       Timeout.bypassTimeout(e);
-      if (LogicSupport.dumpLiaFormulas) {
+      if (LogicSupport.dumpLiaFormulas)
+      {
         e.printStackTrace();
       }
       return LiaSolverStatus.UNKNOWN;
     }
   }
 
-  String checkUnderapp() {
-    try {
+  String checkUnderapp()
+  {
+    try
+    {
       LiaStar curexp = liaFormula.deepcopy();
       curexp = LiaStar.calculateUnderApprox(curexp, curexp.embeddingLayers() > 4 ? 1 : 2);
       return solveLia(curexp);
-    } catch (Exception e) {
+    }
+    catch (Exception e)
+    {
       return "UNKNOWN";
     }
   }
 
-  String checkOverapp() throws Exception {
-    if (LogicSupport.dumpLiaFormulas) System.out.println("init: " + liaFormula);
+  String checkOverapp() throws Exception
+  {
+    if (LogicSupport.dumpLiaFormulas)
+      Printer.output.println("init: " + liaFormula);
 
     LiaStar tmpFormula = liaFormula.deepcopy();
     tmpFormula = tmpFormula.pushUpParameter(new HashSet<>());
-    if (LogicSupport.dumpLiaFormulas) System.out.println("pushed up param: " + tmpFormula);
+    if (LogicSupport.dumpLiaFormulas)
+      Printer.output.println("pushed up param: " + tmpFormula);
     final String removeParamMode = config.getProperty(CONFIG_KEY_PARAM_REMOVAL_MODE);
-    if (removeParamMode.equals(CONFIG_VALUE_PARAM_REMOVAL_MODE_INWARD)) {
+    if (removeParamMode.equals(CONFIG_VALUE_PARAM_REMOVAL_MODE_INWARD))
+    {
       tmpFormula = InwardParamRemover.removeParameter(tmpFormula);
-    } else if (removeParamMode.equals(CONFIG_VALUE_PARAM_REMOVAL_MODE_OUTWARD)) {
+    }
+    else if (removeParamMode.equals(CONFIG_VALUE_PARAM_REMOVAL_MODE_OUTWARD))
+    {
       tmpFormula = tmpFormula.removeParameter();
     }
-    if (LogicSupport.dumpLiaFormulas) System.out.println("remove param (mode: " + removeParamMode + "): " + tmpFormula);
+    if (LogicSupport.dumpLiaFormulas)
+      Printer.output.println("remove param (mode: " + removeParamMode + "): " + tmpFormula);
 
     tmpFormula.simplifyMult(new HashMap<>());
     tmpFormula.mergeMult(new HashMap<>());
-    if (LogicSupport.dumpLiaFormulas) System.out.println("remove multiplication: " + tmpFormula);
+    if (LogicSupport.dumpLiaFormulas)
+      Printer.output.println("remove multiplication: " + tmpFormula);
 
     return solveNestedLiastar(tmpFormula);
   }
 
   /** forall t1 t2. ((isnull(t1)<>0) /\ (isnull(t2)<>0)) -> t1 = t2 */
-  private BoolExpr ruleNullEquals(Context ctx) {
+  private BoolExpr ruleNullEquals(Context ctx)
+  {
     String strVar1 = "t1", strVar2 = "t2", strIsNull = "IsNull";
     Expr[] vars = new Expr[2];
     vars[0] = ctx.mkIntConst(strVar1);
@@ -105,21 +134,26 @@ public class LiaSolver {
     return ctx.mkForall(vars, body, 1, null, null, null, null);
   }
 
-  private BoolExpr appendRules(Context ctx, BoolExpr target) {
+  private BoolExpr appendRules(Context ctx, BoolExpr target)
+  {
     target = ctx.mkAnd(ruleNullEquals(ctx), target);
     return target;
   }
 
-  private Set<BoolExpr> getMultipleConditions(Context ctx, Expr expr) {
+  private Set<BoolExpr> getMultipleConditions(Context ctx, Expr expr)
+  {
     Set<BoolExpr> conditions = new HashSet<>();
-    if (!expr.isApp()) return conditions;
+    if (!expr.isApp())
+      return conditions;
 
     Expr[] args = expr.getArgs();
-    if (expr.isIDiv() && args[0] instanceof IntExpr i0 && args[1] instanceof IntExpr i1) {
+    if (expr.isIDiv() && args[0] instanceof IntExpr i0 && args[1] instanceof IntExpr i1)
+    {
       conditions.add(ctx.mkEq(ctx.mkMod(i0, i1), ctx.mkInt(0)));
     }
     // recursion
-    for (Expr sub : args) {
+    for (Expr sub : args)
+    {
       conditions.addAll(getMultipleConditions(ctx, sub));
     }
     return conditions;
@@ -127,26 +161,30 @@ public class LiaSolver {
 
   // upon occurrence of "div u1 u2": append "= (mod u1 u2) 0"
   // this restricts valid division between integers
-  private BoolExpr appendMultipleConditions(Context ctx, BoolExpr target) {
+  private BoolExpr appendMultipleConditions(Context ctx, BoolExpr target)
+  {
     Set<BoolExpr> conditions = getMultipleConditions(ctx, target);
-    for (BoolExpr condition : conditions) {
+    for (BoolExpr condition : conditions)
+    {
       target = ctx.mkAnd(condition, target);
     }
     return target;
   }
 
-  String solveLia(LiaStar f) {
-    try (final Context ctx = new Context()) {
+  String solveLia(LiaStar f)
+  {
+    try (final Context ctx = new Context())
+    {
       BoolExpr target = ctx.mkTrue();
 
       Set<LiaVarImpl> vars = new HashSet<>();
-      f.transformPostOrder(
-          lia -> {
-            if (lia instanceof LiaVarImpl var) {
-              vars.add(var);
-            }
-            return lia;
-          });
+      f.transformPostOrder(lia -> {
+        if (lia instanceof LiaVarImpl var)
+        {
+          vars.add(var);
+        }
+        return lia;
+      });
       Map<String, Expr> varDef = new HashMap<>();
       final BoolExpr varConstraints = Z3Support.defineVarsByVars(ctx, varDef, vars);
       target = ctx.mkAnd(target, varConstraints);
@@ -159,22 +197,24 @@ public class LiaSolver {
       // append rules applicable to f
       target = appendRules(ctx, target);
 
-      Solver s =
-          (f.toString().contains(PredefinedFunctions.NAME_SQRT))
-              ? ctx.mkSolver()
-              : ctx.mkSolver(ctx.tryFor(ctx.mkTactic("qflia"), SqlSolver.Z3_TIMEOUT));
+      Solver s = (f.toString().contains(PredefinedFunctions.NAME_SQRT))
+          ? ctx.mkSolver()
+          : ctx.mkSolver(ctx.tryFor(ctx.mkTactic("qflia"), SqlSolver.Z3_TIMEOUT));
       //       Solver s = ctx.mkSolver();
       s.add(target);
 
-      if (LogicSupport.dumpLiaFormulas) {
-        System.out.println("FOL: " + s);
+      if (LogicSupport.dumpLiaFormulas)
+      {
+        Printer.output.println("FOL: " + s);
       }
 
       Status q = s.check();
-      if (LogicSupport.dumpLiaFormulas) {
-        System.out.println("smt solver: " + q.toString());
+      if (LogicSupport.dumpLiaFormulas)
+      {
+        Printer.output.println("smt solver: " + q.toString());
       }
-      return switch (q) {
+      return switch (q)
+      {
         case UNKNOWN -> "UNKNOWN";
         case SATISFIABLE -> "SAT";
         case UNSATISFIABLE -> "UNSAT";
@@ -183,12 +223,12 @@ public class LiaSolver {
   }
 
   String solveNestedLiastar(LiaStar f) throws Exception {
-    if (LogicSupport.dumpLiaFormulas) System.out.println("liastar: " + f.toString());
+    if (LogicSupport.dumpLiaFormulas) Printer.output.println("liastar: " + f.toString());
     f = f.expandStar();
 
     if (LogicSupport.dumpLiaFormulas) {
-      System.out.println("lia: " + f.toString());
-      System.out.println("#variables in LIA without *: " + f.getVars().size());
+      Printer.output.println("lia: " + f.toString());
+      Printer.output.println("#variables in LIA without *: " + f.getVars().size());
     }
 
     return solveLia(f);

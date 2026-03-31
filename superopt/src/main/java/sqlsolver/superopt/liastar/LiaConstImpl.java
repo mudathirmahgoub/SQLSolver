@@ -1,145 +1,164 @@
 package sqlsolver.superopt.liastar;
 
 import com.microsoft.z3.*;
-import sqlsolver.superopt.util.PrettyBuilder;
-
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import sqlsolver.superopt.util.PrettyBuilder;
 
-public class LiaConstImpl extends LiaStar {
-
+public class LiaConstImpl extends LiaStar
+{
   long value;
 
-  LiaConstImpl() {
+  LiaConstImpl()
+  {
     value = 0;
   }
 
-  LiaConstImpl(long v) {
+  LiaConstImpl(long v)
+  {
     value = v;
   }
 
   @Override
-  public boolean isLia() {
+  public boolean isLia()
+  {
     return true;
   }
 
   @Override
-  public LiaOpType getType() {
+  public LiaOpType getType()
+  {
     return LiaOpType.LCONST;
   }
 
-  public long getValue() {
+  public long getValue()
+  {
     return value;
   }
 
   @Override
-  public Set<String> collectVarNames() {
+  public Set<String> collectVarNames()
+  {
     return new HashSet<>();
   }
 
   @Override
-  public Set<String> collectAllVarNames() {
+  public Set<String> collectAllVarNames()
+  {
     return new HashSet<>();
   }
 
   @Override
-  public LiaStar mergeMult(Map<LiaMulImpl, LiaVarImpl> multToVar) {
+  public LiaStar mergeMult(Map<LiaMulImpl, LiaVarImpl> multToVar)
+  {
     return this;
   }
 
   @Override
-  public Set<String> getVars() {
+  public Set<String> getVars()
+  {
     return new HashSet<>();
   }
 
   @Override
-  public LiaStar deepcopy() {
+  public LiaStar deepcopy()
+  {
     return mkConst(innerStar, value);
   }
 
   @Override
-  public LiaStar multToBin(int n) {
+  public LiaStar multToBin(int n)
+  {
     return this;
   }
 
   @Override
-  public LiaStar simplifyMult(Map<LiaStar, String> multToVar) {
+  public LiaStar simplifyMult(Map<LiaStar, String> multToVar)
+  {
     return null;
   }
 
   @Override
-  public boolean equals(Object that) {
-    if(that == this)
+  public boolean equals(Object that)
+  {
+    if (that == this)
       return true;
-    if(that == null)
+    if (that == null)
       return false;
-    if(!(that instanceof LiaConstImpl))
+    if (!(that instanceof LiaConstImpl))
       return false;
     LiaConstImpl tmp = (LiaConstImpl) that;
     return value == tmp.value;
   }
 
   @Override
-  public int hashCode() {
+  public int hashCode()
+  {
     return Math.toIntExact(value % 10000);
   }
 
   @Override
-  protected void prettyPrint(PrettyBuilder builder) {
+  protected void prettyPrint(PrettyBuilder builder)
+  {
     builder.print(value);
   }
 
   @Override
-  protected boolean isPrettyPrintMultiLine() {
+  protected boolean isPrettyPrintMultiLine()
+  {
     return false;
   }
 
   @Override
-  public LiaStar expandStar() {
+  public LiaStar expandStar()
+  {
     return this;
   }
 
   @Override
-  public Expr transToSMT(Context ctx, Map<String, Expr> varsName, Map<String, FuncDecl> funcsName) {
+  public Expr transToSMT(Context ctx, Map<String, Expr> varsName, Map<String, FuncDecl> funcsName)
+  {
     return ctx.mkInt(value);
   }
 
   @Override
-  public EstimateResult estimate() {
-    return new EstimateResult(
-            new HashSet(),
-            0,
-            0,
-            value
-    );
+  public EstimateResult estimate()
+  {
+    return new EstimateResult(new HashSet(), 0, 0, value);
   }
 
   @Override
-  public Expr expandStarWithK(Context ctx, Solver sol, String suffix) {
+  public Expr expandStarWithK(Context ctx, Solver sol, String suffix)
+  {
     return ctx.mkInt(value);
   }
 
-
   @Override
-  public int embeddingLayers() {
+  public int embeddingLayers()
+  {
     return 0;
   }
 
   @Override
-  public LiaStar transformPostOrder(Function<LiaStar, LiaStar> transformer) {
+  public LiaStar transformPostOrder(Function<LiaStar, LiaStar> transformer)
+  {
     return transformer.apply(mkConst(innerStar, value));
   }
 
   @Override
-  public LiaStar transformPostOrder(BiFunction<LiaStar, LiaStar, LiaStar> transformer, LiaStar parent) {
+  public LiaStar transformPostOrder(
+      BiFunction<LiaStar, LiaStar, LiaStar> transformer, LiaStar parent)
+  {
     return transformer.apply(mkConst(innerStar, value), parent);
   }
 
   @Override
-  public LiaStar transformPreOrderRecursive(BiFunction<LiaStar, LiaStar, LiaStar> transformer, LiaStar parent) {
+  public LiaStar transformPreOrderRecursive(
+      BiFunction<LiaStar, LiaStar, LiaStar> transformer, LiaStar parent)
+  {
     return mkConst(innerStar, value);
   }
 }

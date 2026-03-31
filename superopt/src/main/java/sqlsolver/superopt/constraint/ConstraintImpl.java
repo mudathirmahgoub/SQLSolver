@@ -1,23 +1,25 @@
 package sqlsolver.superopt.constraint;
 
+import static java.util.Arrays.asList;
+
+import java.util.Arrays;
 import sqlsolver.common.utils.ArraySupport;
 import sqlsolver.superopt.fragment.Symbol;
 import sqlsolver.superopt.fragment.SymbolNaming;
 
-import java.util.Arrays;
-
-import static java.util.Arrays.asList;
-
-class ConstraintImpl implements Constraint {
+class ConstraintImpl implements Constraint
+{
   private final Kind kind;
   private final Symbol[] symbols;
 
-  ConstraintImpl(Kind kind, Symbol[] symbols) {
+  ConstraintImpl(Kind kind, Symbol[] symbols)
+  {
     this.kind = kind;
     this.symbols = symbols;
   }
 
-  static Constraint parse(String str, SymbolNaming naming) {
+  static Constraint parse(String str, SymbolNaming naming)
+  {
     final String[] fields = str.split("[(),\\[\\] ]+");
     final Kind kind = Kind.valueOf(fields[0].replace("Pick", "Attrs") /* backward compatible */);
 
@@ -31,40 +33,49 @@ class ConstraintImpl implements Constraint {
   }
 
   @Override
-  public Kind kind() {
+  public Kind kind()
+  {
     return kind;
   }
 
   @Override
-  public Symbol[] symbols() {
+  public Symbol[] symbols()
+  {
     return symbols;
   }
 
   @Override
-  public String canonicalStringify(SymbolNaming naming) {
+  public String canonicalStringify(SymbolNaming naming)
+  {
     return ConstraintSupport.stringify(this, naming, true, new StringBuilder()).toString();
   }
 
   @Override
-  public StringBuilder stringify(SymbolNaming naming, StringBuilder builder) {
+  public StringBuilder stringify(SymbolNaming naming, StringBuilder builder)
+  {
     return ConstraintSupport.stringify(this, naming, false, builder);
   }
 
   @Override
-  public String toString() {
+  public String toString()
+  {
     return kind.name();
   }
 
   @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof Constraint)) return false;
+  public boolean equals(Object o)
+  {
+    if (this == o)
+      return true;
+    if (!(o instanceof Constraint))
+      return false;
     final Constraint that = (Constraint) o;
     return kind == that.kind() && Arrays.equals(symbols, that.symbols());
   }
 
   @Override
-  public int hashCode() {
+  public int hashCode()
+  {
     int result = kind.hashCode();
     result = 31 * result + Arrays.hashCode(symbols);
     return result;

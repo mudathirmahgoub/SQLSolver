@@ -1,7 +1,7 @@
 package sqlsolver.superopt.util;
 
-public abstract class AbstractPrettyPrinter {
-
+public abstract class AbstractPrettyPrinter
+{
   private int indent = 0, lineLength = 0, lineNumber = 0;
   private int autoNewLine = 0;
   private boolean autoNewLineEnabled = false;
@@ -16,33 +16,40 @@ public abstract class AbstractPrettyPrinter {
    * the printer switches to a new line.
    * <code>setAutoNewLineEnabled(true)</code> should also be called
    * to enable auto new line.
-   * @param autoNewLine the threshold of auto new line, or a non-positive value indicating no auto new line
+   * @param autoNewLine the threshold of auto new line, or a non-positive value indicating no auto
+   *     new line
    */
-  public void setAutoNewLine(int autoNewLine) {
+  public void setAutoNewLine(int autoNewLine)
+  {
     this.autoNewLine = autoNewLine;
   }
 
-  public void setAutoNewLineEnabled(boolean enabled) {
+  public void setAutoNewLineEnabled(boolean enabled)
+  {
     autoNewLineEnabled = enabled;
   }
 
-  public AbstractPrettyPrinter indent(int i) {
+  public AbstractPrettyPrinter indent(int i)
+  {
     indent += i;
     assert indent >= 0;
     return this;
   }
 
-  public int getCurrentLineLength(boolean includesIndent) {
+  public int getCurrentLineLength(boolean includesIndent)
+  {
     return includesIndent ? lineLength + indent : lineLength;
   }
 
-  public int getCurrentLineLength() {
-        return getCurrentLineLength(false);
-    }
+  public int getCurrentLineLength()
+  {
+    return getCurrentLineLength(false);
+  }
 
-  public int getLineNumber() {
-        return lineNumber;
-    }
+  public int getLineNumber()
+  {
+    return lineNumber;
+  }
 
   /**
    * Print <code>o.toString()</code>.
@@ -50,9 +57,11 @@ public abstract class AbstractPrettyPrinter {
    * @param o the object to print
    * @return <code>this</code>
    */
-  public AbstractPrettyPrinter print(Object o) {
+  public AbstractPrettyPrinter print(Object o)
+  {
     String str = o.toString();
-    if (autoNewLineEnabled && autoNewLine > 0 && lineLength + str.length() > autoNewLine) {
+    if (autoNewLineEnabled && autoNewLine > 0 && lineLength + str.length() > autoNewLine)
+    {
       println();
     }
     printString(str);
@@ -64,7 +73,8 @@ public abstract class AbstractPrettyPrinter {
    * Append a new line and indent.
    * @return <code>this</code>
    */
-  public AbstractPrettyPrinter println() {
+  public AbstractPrettyPrinter println()
+  {
     printNewLine();
     printString(" ".repeat(indent));
     lineLength = 0;
@@ -77,10 +87,10 @@ public abstract class AbstractPrettyPrinter {
    * @param o the object to print
    * @return <code>this</code>
    */
-  public AbstractPrettyPrinter println(Object o) {
+  public AbstractPrettyPrinter println(Object o)
+  {
     print(o);
     println();
     return this;
   }
-
 }

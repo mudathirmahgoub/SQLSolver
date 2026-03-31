@@ -1,6 +1,7 @@
 package sqlsolver.superopt.fragment;
 
-public interface Proj extends Op {
+public interface Proj extends Op
+{
   Symbol attrs();
 
   Symbol schema();
@@ -10,7 +11,8 @@ public interface Proj extends Op {
   boolean deduplicated();
 
   @Override
-  default OpKind kind() {
+  default OpKind kind()
+  {
     return OpKind.PROJ;
   }
 }

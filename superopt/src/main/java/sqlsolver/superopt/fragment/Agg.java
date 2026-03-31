@@ -1,6 +1,7 @@
 package sqlsolver.superopt.fragment;
 
-public interface Agg extends Op {
+public interface Agg extends Op
+{
   // Agg <grpAttrs aggAttrs aggOutputAttrs aggFunc schema havingPred>
   Symbol groupByAttrs();
 
@@ -23,7 +24,8 @@ public interface Agg extends Op {
   void setDeduplicated(boolean flag);
 
   @Override
-  default OpKind kind() {
+  default OpKind kind()
+  {
     return OpKind.AGG;
   }
 }

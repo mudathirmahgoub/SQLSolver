@@ -1,6 +1,7 @@
 package sqlsolver.superopt.liastar;
 
-public enum LiaSolverStatus {
+public enum LiaSolverStatus
+{
   SAT,
   UNSAT,
   UNKNOWN;

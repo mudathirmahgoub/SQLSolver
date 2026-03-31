@@ -1,4 +1,3 @@
 package sqlsolver.superopt.uexpr;
 
-public record FuncDesc(UName name) {
-}
+public record FuncDesc(UName name) {}

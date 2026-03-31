@@ -1,25 +1,29 @@
 package sqlsolver.superopt.optimizer;
 
+import static sqlsolver.sql.plan.PlanSupport.joinKindOf;
+
 import sqlsolver.sql.ast.constants.JoinKind;
 import sqlsolver.sql.plan.PlanContext;
 import sqlsolver.sql.plan.PlanKind;
 
-import static sqlsolver.sql.plan.PlanSupport.joinKindOf;
-
-class FlipRightJoin {
+class FlipRightJoin
+{
   private final PlanContext plan;
   private boolean isFlipped;
 
-  FlipRightJoin(PlanContext plan) {
+  FlipRightJoin(PlanContext plan)
+  {
     this.plan = plan;
     this.isFlipped = false;
   }
 
-  int flip(int nodeId) {
+  int flip(int nodeId)
+  {
     final PlanKind kind = plan.kindOf(nodeId);
     for (int i = 0, bound = kind.numChildren(); i < bound; ++i) flip(plan.childOf(nodeId, i));
 
-    if (joinKindOf(plan, nodeId) == JoinKind.RIGHT_JOIN) {
+    if (joinKindOf(plan, nodeId) == JoinKind.RIGHT_JOIN)
+    {
       final int newRhs = plan.childOf(nodeId, 0);
       final int newLhs = plan.childOf(nodeId, 1);
       plan.detachNode(newLhs);
@@ -38,7 +42,8 @@ class FlipRightJoin {
     return nodeId;
   }
 
-  boolean isFlipped() {
+  boolean isFlipped()
+  {
     return isFlipped;
   }
 }

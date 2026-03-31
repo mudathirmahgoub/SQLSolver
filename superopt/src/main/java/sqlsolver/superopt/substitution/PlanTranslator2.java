@@ -1,5 +1,18 @@
 package sqlsolver.superopt.substitution;
 
+import static java.util.Collections.singletonList;
+import static sqlsolver.common.datasource.DbSupport.MySQL;
+import static sqlsolver.common.tree.TreeContext.NO_SUCH_NODE;
+import static sqlsolver.common.utils.Commons.joining;
+import static sqlsolver.common.utils.ListSupport.*;
+import static sqlsolver.sql.SqlSupport.*;
+import static sqlsolver.sql.ast.ExprFields.ColRef_ColName;
+import static sqlsolver.sql.ast.SqlNodeFields.ColName_Col;
+import static sqlsolver.sql.ast.SqlNodeFields.GroupItem_Expr;
+import static sqlsolver.sql.ast.constants.BinaryOpKind.EQUAL;
+import static sqlsolver.superopt.constraint.Constraint.Kind.*;
+
+import java.util.*;
 import org.apache.commons.lang3.tuple.Pair;
 import sqlsolver.common.utils.NameSequence;
 import sqlsolver.sql.ast.SqlContext;
@@ -13,23 +26,9 @@ import sqlsolver.sql.schema.SchemaSupport;
 import sqlsolver.superopt.constraint.Constraint;
 import sqlsolver.superopt.constraint.Constraints;
 import sqlsolver.superopt.fragment.*;
-import sqlsolver.superopt.fragment.*;
 
-import java.util.*;
-
-import static java.util.Collections.singletonList;
-import static sqlsolver.common.tree.TreeContext.NO_SUCH_NODE;
-import static sqlsolver.common.utils.Commons.joining;
-import static sqlsolver.common.utils.ListSupport.*;
-import static sqlsolver.sql.SqlSupport.*;
-import static sqlsolver.sql.ast.ExprFields.ColRef_ColName;
-import static sqlsolver.common.datasource.DbSupport.MySQL;
-import static sqlsolver.sql.ast.SqlNodeFields.ColName_Col;
-import static sqlsolver.sql.ast.SqlNodeFields.GroupItem_Expr;
-import static sqlsolver.sql.ast.constants.BinaryOpKind.EQUAL;
-import static sqlsolver.superopt.constraint.Constraint.Kind.*;
-
-class PlanTranslator2 {
+class PlanTranslator2
+{
   private static final String ALIAS_PREFIX = "q";
   private static final String TABLE_PREFIX = "r";
   private static final String SOURCE_PREFIX = "t";
@@ -56,7 +55,8 @@ class PlanTranslator2 {
 
   private Schema schema;
 
-  PlanTranslator2(Substitution rule) {
+  PlanTranslator2(Substitution rule)
+  {
     this.rule = rule;
     this.constraints = rule.constraints();
     this.srcSyms = rule._0().symbols();
@@ -74,25 +74,30 @@ class PlanTranslator2 {
     this.synNameReg = new HashMap<>();
   }
 
-  Pair<PlanContext, PlanContext> translate() {
+  Pair<PlanContext, PlanContext> translate()
+  {
     assignAll();
     schema = mkSchema();
     final PlanContext sourcePlan = new PlanConstructor(rule._0(), false).translate();
     final PlanContext targetPlan = new PlanConstructor(rule._1(), true).translate();
-    if (sourcePlan == null || targetPlan == null) return Pair.of(null, null);
+    if (sourcePlan == null || targetPlan == null)
+      return Pair.of(null, null);
 
     PlanSupport.resolvePlan(sourcePlan);
     PlanSupport.resolvePlan(targetPlan);
     return Pair.of(sourcePlan, targetPlan);
   }
 
-  private String getSynName(Symbol sym) {
-    if (sym.ctx() != srcSyms) sym = constraints.instantiationOf(sym);
+  private String getSynName(Symbol sym)
+  {
+    if (sym.ctx() != srcSyms)
+      sym = constraints.instantiationOf(sym);
     final Op op = srcSyms.ownerOf(sym);
     assert op.kind() == OpKind.AGG && sym == ((Agg) op).aggregateAttrs();
 
     final String synName = synNameReg.get(sym);
-    if (synName == null) {
+    if (synName == null)
+    {
       final String newSynName = synNameSeq.next();
       synNameReg.put(sym, newSynName);
       return newSynName;
@@ -100,63 +105,80 @@ class PlanTranslator2 {
     return synName;
   }
 
-  private <T> T getDescOf(Map<Symbol, T> descs, Symbol sym) {
+  private <T> T getDescOf(Map<Symbol, T> descs, Symbol sym)
+  {
     return sym.ctx() == srcSyms ? descs.get(sym) : descs.get(constraints.instantiationOf(sym));
   }
 
-  private SourceDesc sourceDescOf(Symbol tableSym) {
+  private SourceDesc sourceDescOf(Symbol tableSym)
+  {
     return getDescOf(sourceDescs, tableSym);
   }
 
-  private AttrsDesc attrsDescOf(Symbol attrsSym) {
+  private AttrsDesc attrsDescOf(Symbol attrsSym)
+  {
     return getDescOf(attrsDescs, attrsSym);
   }
 
-  private PredDesc predDescOf(Symbol predSym) {
+  private PredDesc predDescOf(Symbol predSym)
+  {
     return getDescOf(predDescs, predSym);
   }
 
-  private SchemaDesc schemaDescOf(Symbol schemaSym) {
+  private SchemaDesc schemaDescOf(Symbol schemaSym)
+  {
     return getDescOf(schemaDesc, schemaSym);
   }
 
-  public Schema schema() {
-    if (schema == null) schema = mkSchema();
+  public Schema schema()
+  {
+    if (schema == null)
+      schema = mkSchema();
     return schema;
   }
 
-  private void assignAll() {
+  private void assignAll()
+  {
     for (Symbol table : srcSyms.symbolsOf(Symbol.Kind.TABLE)) assignSourceDesc(table);
-    for (Symbol attrs : srcSyms.symbolsOf(Symbol.Kind.ATTRS)) {
+    for (Symbol attrs : srcSyms.symbolsOf(Symbol.Kind.ATTRS))
+    {
       assignAttrsDesc(attrs);
     }
     for (Symbol pred : srcSyms.symbolsOf(Symbol.Kind.PRED)) assignPredDesc(pred);
     for (Symbol schema : srcSyms.symbolsOf(Symbol.Kind.SCHEMA)) assignSchemaDesc(schema);
   }
 
-  private TableDesc assignTableDesc(Symbol table) {
+  private TableDesc assignTableDesc(Symbol table)
+  {
     final Constraints constraints = this.constraints;
-    for (var pair : sourceDescs.entrySet()) {
-      if (constraints.isEq(pair.getKey(), table)) return pair.getValue().tableDesc;
+    for (var pair : sourceDescs.entrySet())
+    {
+      if (constraints.isEq(pair.getKey(), table))
+        return pair.getValue().tableDesc;
     }
     return new TableDesc(tableSeq.next());
   }
 
-  private void assignSourceDesc(Symbol table) {
+  private void assignSourceDesc(Symbol table)
+  {
     final TableDesc tableDesc = assignTableDesc(table);
     sourceDescs.put(table, new SourceDesc(tableDesc, sourceSeq.next()));
   }
 
-  private void assignAttrsDesc(Symbol attrs) {
+  private void assignAttrsDesc(Symbol attrs)
+  {
     final AttrsDesc desc = getDescOf(attrsDescs, attrs);
-    if (desc != null) return;
+    if (desc != null)
+      return;
 
     // Check AttrsEq constraints:
     // If AttrsEq(a0,a1), a1 has been assigned an AttrsDesc, then a0 owns the same AttrsDesc.
     // It could only happen iff. \exists t1,t2. AttrsSub(a1,t1) /\ AttrsSub(a2,t2) /\
     // TableEq(t1,t2).
-    for (var pair : attrsDescs.entrySet()) {
-      if (constraints.isEq(pair.getKey(), attrs) && pair.getValue() != null) {
+    for (var pair : attrsDescs.entrySet())
+    {
+      if (constraints.isEq(pair.getKey(), attrs) && pair.getValue() != null)
+      {
         attrsDescs.put(attrs, pair.getValue());
         return;
       }
@@ -169,9 +191,11 @@ class PlanTranslator2 {
     final List<Symbol> sourceChain = concreteSourceChain(attrs);
     // Check whether there is a single column attrs and find the bottom one.
     Symbol bottomSingleColAttrs = null;
-    for (int i = sourceChain.size() - 1; i >= 0; i--) {
+    for (int i = sourceChain.size() - 1; i >= 0; i--)
+    {
       Symbol sourceSym = sourceChain.get(i);
-      if (sourceSym.kind() != Symbol.Kind.TABLE && isSingleColKeyAttrs(sourceSym)) {
+      if (sourceSym.kind() != Symbol.Kind.TABLE && isSingleColKeyAttrs(sourceSym))
+      {
         bottomSingleColAttrs = sourceSym;
         break;
       }
@@ -179,9 +203,12 @@ class PlanTranslator2 {
 
     // Decide the column name assign to 'attrs'
     final String colName;
-    if (bottomSingleColAttrs == null) {
+    if (bottomSingleColAttrs == null)
+    {
       colName = colSeq.next();
-    } else {
+    }
+    else
+    {
       assignAttrsDesc(bottomSingleColAttrs);
       final AttrsDesc bottomSingleColAttrsDesc = attrsDescOf(bottomSingleColAttrs);
       assert bottomSingleColAttrsDesc.isSingleColAttrs();
@@ -193,22 +220,27 @@ class PlanTranslator2 {
     final AttrsDesc attrsDesc = new AttrsDesc(colName);
     if (!isSingleColKeyAttrs(attrs)
         && !(thisOp.kind() == OpKind.AGG && attrs == ((Agg) thisOp).aggregateAttrs())
-        && source.kind() == Symbol.Kind.SCHEMA
-        && srcOp.kind() == OpKind.AGG) {
+        && source.kind() == Symbol.Kind.SCHEMA && srcOp.kind() == OpKind.AGG)
+    {
       final Symbol aggAttrs = ((Agg) srcOp).aggregateAttrs();
       attrsDesc.addColName(getSynName(aggAttrs));
     }
     attrsDescs.put(attrs, attrsDesc);
 
     // Assign new column to each source if no single column attrs
-    if (bottomSingleColAttrs == null) {
+    if (bottomSingleColAttrs == null)
+    {
       // Add `colName` to source symbol's `colNames`
-      for (Symbol sourceSym : sourceChain) {
-        if (sourceSym.kind() == Symbol.Kind.ATTRS) {
+      for (Symbol sourceSym : sourceChain)
+      {
+        if (sourceSym.kind() == Symbol.Kind.ATTRS)
+        {
           assignAttrsDesc(sourceSym);
           final AttrsDesc srcAttrsDesc = attrsDescOf(sourceSym);
           srcAttrsDesc.addColName(colName);
-        } else {
+        }
+        else
+        {
           final TableDesc tableDesc = sourceDescOf(sourceSym).tableDesc;
           tableDesc.addColName(colName);
         }
@@ -268,31 +300,40 @@ class PlanTranslator2 {
   //   tableDesc.addColName(colName);
   // }
 
-  private boolean isSingleColKeyAttrs(Symbol attrs) {
-    if (attrs.ctx() != srcSyms) attrs = constraints.instantiationOf(attrs);
+  private boolean isSingleColKeyAttrs(Symbol attrs)
+  {
+    if (attrs.ctx() != srcSyms)
+      attrs = constraints.instantiationOf(attrs);
 
     // A symbol on JOIN, InSubFilter should be single-column key attrs
     Op owner = srcSyms.ownerOf(attrs);
-    if (owner.kind().isJoin() || owner.kind().isSubquery()) return true;
+    if (owner.kind().isJoin() || owner.kind().isSubquery())
+      return true;
 
-    for (Symbol eqSym : constraints.eqClassOf(attrs)) {
+    for (Symbol eqSym : constraints.eqClassOf(attrs))
+    {
       Op thatOwner = srcSyms.ownerOf(eqSym);
-      if (thatOwner.kind().isJoin() || thatOwner.kind().isSubquery()) return true;
+      if (thatOwner.kind().isJoin() || thatOwner.kind().isSubquery())
+        return true;
     }
     return false;
   }
 
-  private List<Symbol> concreteSourceChain(Symbol attrs) {
+  private List<Symbol> concreteSourceChain(Symbol attrs)
+  {
     // Only return attrs or table
     Symbol source = constraints.sourceOf(attrs);
     List<Symbol> sourceChain = new ArrayList<>();
 
-    while (source.kind() != Symbol.Kind.TABLE) {
+    while (source.kind() != Symbol.Kind.TABLE)
+    {
       final Op srcOp = srcSyms.ownerOf(source);
       assert srcOp.kind() == OpKind.PROJ || srcOp.kind() == OpKind.AGG;
       final Symbol srcAttrs;
-      if (srcOp.kind() == OpKind.PROJ) srcAttrs = ((Proj) srcOp).attrs();
-      else srcAttrs = ((Agg) srcOp).groupByAttrs(); // Only add new column to Agg's groupBy attrs
+      if (srcOp.kind() == OpKind.PROJ)
+        srcAttrs = ((Proj) srcOp).attrs();
+      else
+        srcAttrs = ((Agg) srcOp).groupByAttrs(); // Only add new column to Agg's groupBy attrs
 
       sourceChain.add(srcAttrs);
       source = constraints.sourceOf(srcAttrs);
@@ -301,10 +342,13 @@ class PlanTranslator2 {
     return sourceChain;
   }
 
-  private void assignPredDesc(Symbol pred) {
+  private void assignPredDesc(Symbol pred)
+  {
     final Constraints constraints = this.constraints;
-    for (var pair : predDescs.entrySet()) {
-      if (constraints.isEq(pair.getKey(), pred)) {
+    for (var pair : predDescs.entrySet())
+    {
+      if (constraints.isEq(pair.getKey(), pred))
+      {
         predDescs.put(pred, pair.getValue());
         return;
       }
@@ -312,16 +356,20 @@ class PlanTranslator2 {
     predDescs.put(pred, new PredDesc(predSeq.next()));
   }
 
-  private void assignSchemaDesc(Symbol schemaSym) {
+  private void assignSchemaDesc(Symbol schemaSym)
+  {
     schemaDesc.put(schemaSym, new SchemaDesc(aliasSeq.next()));
   }
 
-  private Schema mkSchema() {
+  private Schema mkSchema()
+  {
     final StringBuilder builder = new StringBuilder();
 
-    for (SourceDesc source : sourceDescs.values()) {
+    for (SourceDesc source : sourceDescs.values())
+    {
       final TableDesc table = source.tableDesc;
-      if (table.initialized) continue;
+      if (table.initialized)
+        continue;
       table.initialized = true;
 
       builder.append("create table ").append(table.name).append("(\n");
@@ -332,15 +380,17 @@ class PlanTranslator2 {
 
     int constraintId = 0;
     final Set<String> initiatedConstraints = new HashSet<>();
-    for (Constraint notNull : constraints.ofKind(NotNull)) {
+    for (Constraint notNull : constraints.ofKind(NotNull))
+    {
       final AttrsDesc attrs = attrsDescs.get(notNull.symbols()[1]);
       final String colNames = joining(",", attrs.colNames);
-      if (!initiatedConstraints.add(colNames)) continue;
+      if (!initiatedConstraints.add(colNames))
+        continue;
 
       final TableDesc table = sourceDescs.get(notNull.symbols()[0]).tableDesc;
-      for (String colName : attrs.colNames) {
-        builder
-            .append("alter table ")
+      for (String colName : attrs.colNames)
+      {
+        builder.append("alter table ")
             .append(table.name)
             .append(" modify column ")
             .append(colName)
@@ -350,14 +400,15 @@ class PlanTranslator2 {
 
     constraintId = 0;
     initiatedConstraints.clear();
-    for (Constraint uniqueKey : constraints.ofKind(Unique)) {
+    for (Constraint uniqueKey : constraints.ofKind(Unique))
+    {
       final AttrsDesc attrs = attrsDescs.get(uniqueKey.symbols()[1]);
       final String colNames = joining(",", attrs.colNames);
-      if (!initiatedConstraints.add(colNames)) continue;
+      if (!initiatedConstraints.add(colNames))
+        continue;
 
       final TableDesc table = sourceDescs.get(uniqueKey.symbols()[0]).tableDesc;
-      builder
-          .append("alter table ")
+      builder.append("alter table ")
           .append(table.name)
           .append(" add constraint ")
           .append("unique_")
@@ -369,20 +420,22 @@ class PlanTranslator2 {
 
     constraintId = 0;
     initiatedConstraints.clear();
-    for (Constraint foreignKey : constraints.ofKind(Reference)) {
-      if (!sourceDescs.containsKey(foreignKey.symbols()[0])) continue;
+    for (Constraint foreignKey : constraints.ofKind(Reference))
+    {
+      if (!sourceDescs.containsKey(foreignKey.symbols()[0]))
+        continue;
 
       final AttrsDesc attrs = attrsDescs.get(foreignKey.symbols()[1]);
       final AttrsDesc refAttrs = attrsDescs.get(foreignKey.symbols()[3]);
       final String colNames = joining(",", attrs.colNames);
       final String refColNames = joining(",", refAttrs.colNames);
-      if (!initiatedConstraints.add(colNames + "-" + refColNames)) continue;
+      if (!initiatedConstraints.add(colNames + "-" + refColNames))
+        continue;
 
       final TableDesc refTable = sourceDescs.get(foreignKey.symbols()[2]).tableDesc;
       final TableDesc table = sourceDescs.get(foreignKey.symbols()[0]).tableDesc;
 
-      builder
-          .append("alter table ")
+      builder.append("alter table ")
           .append(table.name)
           .append(" add constraint ")
           .append("fk_")
@@ -399,76 +452,92 @@ class PlanTranslator2 {
     return SchemaSupport.parseSchema(MySQL, builder.toString());
   }
 
-  private static class TableDesc {
+  private static class TableDesc
+  {
     private final String name;
     private final List<String> colNames;
     private boolean initialized;
 
-    private TableDesc(String name) {
+    private TableDesc(String name)
+    {
       this.name = name;
       this.colNames = new ArrayList<>();
       this.initialized = false;
     }
 
-    private void addColName(String colName) {
+    private void addColName(String colName)
+    {
       this.colNames.add(colName);
     }
   }
 
-  private static class SourceDesc {
+  private static class SourceDesc
+  {
     private final TableDesc tableDesc;
     private final String qualification;
 
-    private SourceDesc(TableDesc tableDesc, String qualification) {
+    private SourceDesc(TableDesc tableDesc, String qualification)
+    {
       this.tableDesc = tableDesc;
       this.qualification = qualification;
     }
   }
 
-  private static class AttrsDesc {
+  private static class AttrsDesc
+  {
     private final List<String> colNames;
 
-    private AttrsDesc(String colName) {
+    private AttrsDesc(String colName)
+    {
       this.colNames = new ArrayList<>(singletonList(colName));
     }
 
-    private AttrsDesc() {
+    private AttrsDesc()
+    {
       this.colNames = new ArrayList<>();
     }
 
-    private void addColName(String colName) {
+    private void addColName(String colName)
+    {
       this.colNames.add(colName);
     }
 
-    private boolean isSingleColAttrs() {
+    private boolean isSingleColAttrs()
+    {
       return colNames.size() == 1;
     }
   }
 
-  private static class PredDesc {
+  private static class PredDesc
+  {
     private final String predName;
 
-    private PredDesc(String predName) {
+    private PredDesc(String predName)
+    {
       this.predName = predName;
     }
   }
 
-  private static class SchemaDesc {
+  private static class SchemaDesc
+  {
     private final String schemaName;
 
-    private SchemaDesc(String schemaName) {
+    private SchemaDesc(String schemaName)
+    {
       this.schemaName = schemaName;
     }
   }
 
-  private class PlanConstructor {
+  private class PlanConstructor
+  {
     private final Fragment template;
     private final SqlContext sql;
     private final PlanContext plan;
     private final boolean isTargetSide;
     private final Map<Op, PlanNode> instantiatedOps;
 
-    private PlanConstructor(Fragment template, boolean isTargetSide) {
+    private PlanConstructor(Fragment template, boolean isTargetSide)
+    {
       this.template = template;
       this.sql = SqlContext.mk(16);
       this.plan = PlanContext.mk(schema, 0);
@@ -476,50 +545,50 @@ class PlanTranslator2 {
       this.instantiatedOps = new HashMap<>(8);
     }
 
-    private PlanContext translate() {
+    private PlanContext translate()
+    {
       final int rootId = trTree(template.root());
-      if (rootId == NO_SUCH_NODE) return null;
+      if (rootId == NO_SUCH_NODE)
+        return null;
       return plan.setRoot(rootId);
     }
 
-    private int trTree(Op op) {
-      switch (op.kind()) {
-        case INPUT:
-          return trInput((Input) op);
+    private int trTree(Op op)
+    {
+      switch (op.kind())
+      {
+        case INPUT: return trInput((Input) op);
         case INNER_JOIN:
-        case LEFT_JOIN:
-          return trJoin((Join) op);
-        case SIMPLE_FILTER:
-          return trSimpleFilter((SimpleFilter) op);
-        case IN_SUB_FILTER:
-          return trInSubFilter((InSubFilter) op);
-        case PROJ:
-          return trProj((Proj) op);
-        case UNION, INTERSECT, EXCEPT:
-          return trSetOp((SetOp) op);
-        case AGG:
-          return trAgg((Agg) op);
-        default:
-          throw new IllegalArgumentException("unknown operator type: " + op.kind());
+        case LEFT_JOIN: return trJoin((Join) op);
+        case SIMPLE_FILTER: return trSimpleFilter((SimpleFilter) op);
+        case IN_SUB_FILTER: return trInSubFilter((InSubFilter) op);
+        case PROJ: return trProj((Proj) op);
+        case UNION, INTERSECT, EXCEPT: return trSetOp((SetOp) op);
+        case AGG: return trAgg((Agg) op);
+        default: throw new IllegalArgumentException("unknown operator type: " + op.kind());
       }
     }
 
-    private int trInput(Input input) {
+    private int trInput(Input input)
+    {
       final SourceDesc desc = sourceDescOf(input.table());
       final InputNode node = InputNode.mk(schema.table(desc.tableDesc.name), desc.qualification);
       instantiatedOps.put(input, node);
       return plan.bindNode(node);
     }
 
-    private int trJoin(Join join) {
+    private int trJoin(Join join)
+    {
       final int lhsChild = trTree(join.predecessors()[0]);
       final int rhsChild = trTree(join.predecessors()[1]);
 
-      if (lhsChild == NO_SUCH_NODE || rhsChild == NO_SUCH_NODE) return NO_SUCH_NODE;
+      if (lhsChild == NO_SUCH_NODE || rhsChild == NO_SUCH_NODE)
+        return NO_SUCH_NODE;
 
       final SqlNode lhsKey = trAttrsSingle(join.lhsAttrs(), join.predecessors()[0]);
       final SqlNode rhsKey = trAttrsSingle(join.rhsAttrs(), join.predecessors()[1]);
-      if (lhsKey == null || rhsKey == null) return NO_SUCH_NODE;
+      if (lhsKey == null || rhsKey == null)
+        return NO_SUCH_NODE;
 
       final SqlNode joinCond = mkBinary(sql, EQUAL, lhsKey, rhsKey);
       final Expression joinCondExpr = Expression.mk(joinCond);
@@ -532,12 +601,15 @@ class PlanTranslator2 {
       return nodeId;
     }
 
-    private int trSimpleFilter(SimpleFilter filter) {
+    private int trSimpleFilter(SimpleFilter filter)
+    {
       final int lhsChild = trTree(filter.predecessors()[0]);
-      if (lhsChild == NO_SUCH_NODE) return NO_SUCH_NODE;
+      if (lhsChild == NO_SUCH_NODE)
+        return NO_SUCH_NODE;
 
       final List<SqlNode> key = trAttrs(filter.attrs(), filter.predecessors()[0]);
-      if (key == null) return NO_SUCH_NODE;
+      if (key == null)
+        return NO_SUCH_NODE;
 
       final String predName = predDescOf(filter.predicate()).predName;
       final SqlNode pred = mkFuncCall(sql, predName, key);
@@ -549,13 +621,16 @@ class PlanTranslator2 {
       return nodeId;
     }
 
-    private int trInSubFilter(InSubFilter filter) {
+    private int trInSubFilter(InSubFilter filter)
+    {
       final int lhsChild = trTree(filter.predecessors()[0]);
       final int rhsChild = trTree(filter.predecessors()[1]);
-      if (lhsChild == NO_SUCH_NODE || rhsChild == NO_SUCH_NODE) return NO_SUCH_NODE;
+      if (lhsChild == NO_SUCH_NODE || rhsChild == NO_SUCH_NODE)
+        return NO_SUCH_NODE;
 
       final SqlNode key = trAttrsSingle(filter.attrs(), filter.predecessors()[0]);
-      if (key == null) return NO_SUCH_NODE;
+      if (key == null)
+        return NO_SUCH_NODE;
 
       final InSubNode node = InSubNode.mk(Expression.mk(key));
 
@@ -566,12 +641,15 @@ class PlanTranslator2 {
       return nodeId;
     }
 
-    private int trProj(Proj proj) {
+    private int trProj(Proj proj)
+    {
       final int lhsChild = trTree(proj.predecessors()[0]);
-      if (lhsChild == NO_SUCH_NODE) return NO_SUCH_NODE;
+      if (lhsChild == NO_SUCH_NODE)
+        return NO_SUCH_NODE;
 
       final List<SqlNode> colRefs = trAttrs(proj.attrs(), proj.predecessors()[0]);
-      if (colRefs == null) return NO_SUCH_NODE;
+      if (colRefs == null)
+        return NO_SUCH_NODE;
 
       final List<String> colNameList = map(colRefs, c -> c.$(ColRef_ColName).$(ColName_Col));
       final List<Expression> exprList = map(colRefs, Expression::mk);
@@ -584,10 +662,12 @@ class PlanTranslator2 {
       return nodeId;
     }
 
-    private int trSetOp(SetOp setOp) {
+    private int trSetOp(SetOp setOp)
+    {
       final int lhsChild = trTree(setOp.predecessors()[0]);
       final int rhsChild = trTree(setOp.predecessors()[1]);
-      if (lhsChild == NO_SUCH_NODE || rhsChild == NO_SUCH_NODE) return NO_SUCH_NODE;
+      if (lhsChild == NO_SUCH_NODE || rhsChild == NO_SUCH_NODE)
+        return NO_SUCH_NODE;
 
       final SetOpNode node = SetOpNode.mk(setOp.deduplicated(), setOpKindOf(setOp));
 
@@ -598,9 +678,11 @@ class PlanTranslator2 {
       return nodeId;
     }
 
-    private int trAgg(Agg agg) {
+    private int trAgg(Agg agg)
+    {
       final int lhsChild = trTree(agg.predecessors()[0]);
-      if (lhsChild == NO_SUCH_NODE) return NO_SUCH_NODE;
+      if (lhsChild == NO_SUCH_NODE)
+        return NO_SUCH_NODE;
 
       final List<String> groupColNames = attrsDescOf(agg.groupByAttrs()).colNames;
       final List<String> aggColNames = attrsDescOf(agg.aggregateAttrs()).colNames;
@@ -608,7 +690,8 @@ class PlanTranslator2 {
       // Insert a Proj node: translate aggregation as Agg(Proj(..))
       final List<SqlNode> groupRefAsts = trAttrs(agg.groupByAttrs(), agg.predecessors()[0]);
       final List<SqlNode> aggRefAsts = trAttrs(agg.aggregateAttrs(), agg.predecessors()[0]);
-      if (groupRefAsts == null || aggRefAsts == null) return NO_SUCH_NODE;
+      if (groupRefAsts == null || aggRefAsts == null)
+        return NO_SUCH_NODE;
 
       final var projAttrNames = join(groupColNames, aggColNames, groupColNames, aggColNames);
       final var projAttrExprs =
@@ -619,7 +702,8 @@ class PlanTranslator2 {
       // Then build Agg node based on Proj. TODO qualification
 
       // final String aggFuncName = "count";
-      final String aggFuncName = (agg.aggFuncKind() == AggFuncKind.UNKNOWN) ? "count" : agg.aggFuncKind().text();
+      final String aggFuncName =
+          (agg.aggFuncKind() == AggFuncKind.UNKNOWN) ? "count" : agg.aggFuncKind().text();
       final SqlNode aggAst = mkAggregate(sql, aggRefAsts, aggFuncName);
 
       final String havingPredName = predDescOf(agg.havingPred()).predName;
@@ -630,7 +714,8 @@ class PlanTranslator2 {
       final var attrNames = concat(groupColNames, singletonList(getSynName(agg.aggregateAttrs())));
       final var attrExprs = map(concat(groupRefAsts, singletonList(aggAst)), Expression::mk);
       final var groupExprs = map(groupRefAsts, this::mkGroupItemExpr);
-      final AggNode aggNode = AggNode.mk(agg.deduplicated(), attrNames, attrExprs, groupExprs, havingExpr);
+      final AggNode aggNode =
+          AggNode.mk(agg.deduplicated(), attrNames, attrExprs, groupExprs, havingExpr);
       aggNode.setQualification(schemaDescOf(agg.schema()).schemaName);
 
       // Bind node id: aggNodeId -> projNodeId -> lhsChild
@@ -642,81 +727,108 @@ class PlanTranslator2 {
       return aggNodeId;
     }
 
-    private List<SqlNode> trAttrs(Symbol attrs, Op predecessor) {
+    private List<SqlNode> trAttrs(Symbol attrs, Op predecessor)
+    {
       List<SqlNode> colRefs = new ArrayList<>(attrsDescOf(attrs).colNames.size());
-      for (String colName : attrsDescOf(attrs).colNames) {
+      for (String colName : attrsDescOf(attrs).colNames)
+      {
         final String qualification =
             findSourceIn(deepSourceOf(attrs, isAggregatedCol(colName)), predecessor);
-        if (qualification == null) return null;
+        if (qualification == null)
+          return null;
         colRefs.add(mkColRef(sql, qualification, colName));
       }
       return colRefs;
     }
 
-    private SqlNode trAttrsSingle(Symbol attrs, Op predecessor) {
+    private SqlNode trAttrsSingle(Symbol attrs, Op predecessor)
+    {
       final List<String> names = attrsDescOf(attrs).colNames;
       //      assert names.size() == 1;
       final String qualification =
           findSourceIn(deepSourceOf(attrs, isAggregatedCol(names.get(0))), predecessor);
-      if (qualification == null) return null;
+      if (qualification == null)
+        return null;
       return mkColRef(sql, qualification, names.get(0));
     }
 
-    private Symbol deepSourceOf(Symbol attrs, boolean aggregatedCol) {
-      if (isTargetSide) attrs = constraints.instantiationOf(attrs);
+    private Symbol deepSourceOf(Symbol attrs, boolean aggregatedCol)
+    {
+      if (isTargetSide)
+        attrs = constraints.instantiationOf(attrs);
       Symbol source = constraints.sourceOf(attrs);
-      while (source.kind() != Symbol.Kind.TABLE) {
+      while (source.kind() != Symbol.Kind.TABLE)
+      {
         assert source.kind() == Symbol.Kind.SCHEMA;
         source = castSchema2Attrs(source, aggregatedCol);
       }
       return source;
     }
 
-    private Symbol castSchema2Attrs(Symbol sym, boolean aggregatedCol) {
+    private Symbol castSchema2Attrs(Symbol sym, boolean aggregatedCol)
+    {
       final Op op = srcSyms.ownerOf(sym);
       assert op.kind() == OpKind.PROJ || op.kind() == OpKind.AGG;
 
-      if (op.kind() == OpKind.PROJ) return constraints.sourceOf(((Proj) op).attrs());
-      if (aggregatedCol) return constraints.sourceOf(((Agg) op).aggregateAttrs());
-      else return constraints.sourceOf(((Agg) op).groupByAttrs());
+      if (op.kind() == OpKind.PROJ)
+        return constraints.sourceOf(((Proj) op).attrs());
+      if (aggregatedCol)
+        return constraints.sourceOf(((Agg) op).aggregateAttrs());
+      else
+        return constraints.sourceOf(((Agg) op).groupByAttrs());
     }
 
-    private String findSourceIn(Symbol source, Op root) {
-      if (root.kind() == OpKind.INPUT) {
+    private String findSourceIn(Symbol source, Op root)
+    {
+      if (root.kind() == OpKind.INPUT)
+      {
         Symbol table = ((Input) root).table();
-        if (isTargetSide) table = rule.constraints().instantiationOf(table);
-        if (source == table) return ((InputNode) instantiatedOps.get(root)).qualification();
-
-      } else if (root.kind() == OpKind.PROJ || root.kind() == OpKind.AGG) {
+        if (isTargetSide)
+          table = rule.constraints().instantiationOf(table);
+        if (source == table)
+          return ((InputNode) instantiatedOps.get(root)).qualification();
+      }
+      else if (root.kind() == OpKind.PROJ || root.kind() == OpKind.AGG)
+      {
         if (findSourceIn(source, root.predecessors()[0]) != null)
           return ((Exporter) instantiatedOps.get(root)).qualification();
-
-      } else {
-        for (Op predecessor : root.predecessors()) {
+      }
+      else
+      {
+        for (Op predecessor : root.predecessors())
+        {
           final String found = findSourceIn(source, predecessor);
-          if (found != null) return found;
+          if (found != null)
+            return found;
         }
       }
 
       return null;
     }
 
-    private Expression mkGroupItemExpr(SqlNode colRef) {
+    private Expression mkGroupItemExpr(SqlNode colRef)
+    {
       final SqlNode groupItem = SqlNode.mk(sql, SqlKind.GroupItem);
       groupItem.$(GroupItem_Expr, copyAst(colRef, sql));
       return Expression.mk(groupItem);
     }
 
-    private static JoinKind joinKindOf(Join join) {
+    private static JoinKind joinKindOf(Join join)
+    {
       final OpKind kind = join.kind();
-      if (kind == OpKind.LEFT_JOIN) return JoinKind.LEFT_JOIN;
-      else if (kind == OpKind.INNER_JOIN) return JoinKind.INNER_JOIN;
-      else throw new IllegalArgumentException("unsupported join kind: " + kind);
+      if (kind == OpKind.LEFT_JOIN)
+        return JoinKind.LEFT_JOIN;
+      else if (kind == OpKind.INNER_JOIN)
+        return JoinKind.INNER_JOIN;
+      else
+        throw new IllegalArgumentException("unsupported join kind: " + kind);
     }
 
-    private static SetOpKind setOpKindOf(SetOp setOp) {
+    private static SetOpKind setOpKindOf(SetOp setOp)
+    {
       final OpKind kind = setOp.kind();
-      return switch (kind) {
+      return switch (kind)
+      {
         case UNION -> SetOpKind.UNION;
         case INTERSECT -> SetOpKind.INTERSECT;
         case EXCEPT -> SetOpKind.EXCEPT;

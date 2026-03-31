@@ -1,18 +1,5 @@
 package sqlsolver.superopt.optimizer;
 
-import gnu.trove.set.TIntSet;
-import gnu.trove.set.hash.TIntHashSet;
-import sqlsolver.common.utils.Lazy;
-import sqlsolver.common.utils.ListSupport;
-import sqlsolver.sql.ast.constants.JoinKind;
-import sqlsolver.sql.ast.constants.SetOpKind;
-import sqlsolver.sql.plan.*;
-import sqlsolver.superopt.fragment.*;
-import sqlsolver.superopt.substitution.Substitution;
-import sqlsolver.superopt.fragment.*;
-
-import java.util.*;
-
 import static com.google.common.collect.Lists.newArrayList;
 import static sqlsolver.common.tree.TreeContext.NO_SUCH_NODE;
 import static sqlsolver.common.utils.Commons.dumpException;
@@ -20,7 +7,19 @@ import static sqlsolver.common.utils.Commons.newIdentitySet;
 import static sqlsolver.common.utils.IterableSupport.zip;
 import static sqlsolver.sql.ast.ExprKind.Aggregate;
 
-class Instantiation {
+import gnu.trove.set.TIntSet;
+import gnu.trove.set.hash.TIntHashSet;
+import java.util.*;
+import sqlsolver.common.utils.Lazy;
+import sqlsolver.common.utils.ListSupport;
+import sqlsolver.sql.ast.constants.JoinKind;
+import sqlsolver.sql.ast.constants.SetOpKind;
+import sqlsolver.sql.plan.*;
+import sqlsolver.superopt.fragment.*;
+import sqlsolver.superopt.substitution.Substitution;
+
+class Instantiation
+{
   private final Substitution rule;
   private final Model model;
   private final PlanContext newPlan;
@@ -29,7 +28,8 @@ class Instantiation {
 
   private String error;
 
-  Instantiation(Substitution rule, Model model) {
+  Instantiation(Substitution rule, Model model)
+  {
     this.rule = rule;
     this.model = model;
     this.newPlan = model.plan().copy();
@@ -37,71 +37,78 @@ class Instantiation {
     this.usedSubqueryNode = Lazy.mk(TIntHashSet::new);
   }
 
-  PlanContext instantiatedPlan() {
+  PlanContext instantiatedPlan()
+  {
     return newPlan;
   }
 
-  int instantiate() {
-    try {
+  int instantiate()
+  {
+    try
+    {
       return instantiate(rule._1().root());
-    } catch (Throwable ex) {
+    }
+    catch (Throwable ex)
+    {
       error = dumpException(ex);
       return NO_SUCH_NODE;
     }
   }
 
-  String lastError() {
+  String lastError()
+  {
     return error;
   }
 
-  private int instantiate(Op op) {
+  private int instantiate(Op op)
+  {
     final OpKind kind = op.kind();
-    switch (kind) {
-      case INPUT:
-        return instantiateInput((Input) op);
+    switch (kind)
+    {
+      case INPUT: return instantiateInput((Input) op);
       case INNER_JOIN:
-      case LEFT_JOIN:
-        return instantiateJoin((Join) op);
-      case SIMPLE_FILTER:
-        return instantiateFilter((SimpleFilter) op);
-      case IN_SUB_FILTER:
-        return instantiateInSub((InSubFilter) op);
-      case UNION:
-        return instantiateSetOp((Union) op);
-      case PROJ:
-        return instantiateProj((Proj) op);
-      case AGG:
-        return instantiateAgg((Agg) op);
-      default:
-        return fail(OptimizerSupport.FAILURE_UNKNOWN_OP);
+      case LEFT_JOIN: return instantiateJoin((Join) op);
+      case SIMPLE_FILTER: return instantiateFilter((SimpleFilter) op);
+      case IN_SUB_FILTER: return instantiateInSub((InSubFilter) op);
+      case UNION: return instantiateSetOp((Union) op);
+      case PROJ: return instantiateProj((Proj) op);
+      case AGG: return instantiateAgg((Agg) op);
+      default: return fail(OptimizerSupport.FAILURE_UNKNOWN_OP);
     }
   }
 
-  private int instantiateInput(Input input) {
+  private int instantiateInput(Input input)
+  {
     final Integer nodeId = model.ofTable(instantiationOf(input.table()));
-    if (nodeId == null) return fail(OptimizerSupport.FAILURE_INCOMPLETE_MODEL);
+    if (nodeId == null)
+      return fail(OptimizerSupport.FAILURE_INCOMPLETE_MODEL);
 
     newPlan.detachNode(nodeId);
     return nodeId;
   }
 
-  private int instantiateJoin(Join join) {
+  private int instantiateJoin(Join join)
+  {
     final int lhs = instantiate(join.predecessors()[0]);
     final int rhs = instantiate(join.predecessors()[1]);
-    if (lhs == NO_SUCH_NODE || rhs == NO_SUCH_NODE) return NO_SUCH_NODE;
+    if (lhs == NO_SUCH_NODE || rhs == NO_SUCH_NODE)
+      return NO_SUCH_NODE;
 
     List<Value> lhsKeys = interpretAttrs(join.lhsAttrs());
     List<Value> rhsKeys = interpretAttrs(join.rhsAttrs());
 
-    if (lhsKeys == null || rhsKeys == null) return fail(OptimizerSupport.FAILURE_INCOMPLETE_MODEL);
+    if (lhsKeys == null || rhsKeys == null)
+      return fail(OptimizerSupport.FAILURE_INCOMPLETE_MODEL);
     if (lhsKeys.size() != rhsKeys.size() || lhsKeys.isEmpty())
       return fail(OptimizerSupport.FAILURE_MISMATCHED_JOIN_KEYS);
 
     lhsKeys = reBinder.rebindRefs(lhsKeys, outValuesOf(lhs));
     rhsKeys = reBinder.rebindRefs(rhsKeys, outValuesOf(rhs));
-    if (lhsKeys == null || rhsKeys == null) return fail(OptimizerSupport.FAILURE_FOREIGN_VALUE);
+    if (lhsKeys == null || rhsKeys == null)
+      return fail(OptimizerSupport.FAILURE_FOREIGN_VALUE);
 
-    final JoinKind joinKind = join.kind() == OpKind.INNER_JOIN ? JoinKind.INNER_JOIN : JoinKind.LEFT_JOIN;
+    final JoinKind joinKind =
+        join.kind() == OpKind.INNER_JOIN ? JoinKind.INNER_JOIN : JoinKind.LEFT_JOIN;
     final Expression joinCond = PlanSupport.mkJoinCond(lhsKeys.size());
     final JoinNode joinNode = JoinNode.mk(joinKind, joinCond);
     final int joinNodeId = newPlan.bindNode(joinNode);
@@ -114,13 +121,16 @@ class Instantiation {
     return joinNodeId;
   }
 
-  private List<Value> interpretAttrs(Symbol attrs) {
+  private List<Value> interpretAttrs(Symbol attrs)
+  {
     final List<Value> nominalInterpretation = model.ofAttrs(instantiationOf(attrs));
-    if (nominalInterpretation == null) return null;
+    if (nominalInterpretation == null)
+      return null;
 
     final Symbol actualSrcSym = rule.constraints().sourceOf(attrs);
     final Symbol nominalSrcSym = rule.constraints().sourceOf(instantiationOf(attrs));
-    if (actualSrcSym == null || actualSrcSym.kind() != Symbol.Kind.TABLE || nominalSrcSym.kind() != Symbol.Kind.TABLE)
+    if (actualSrcSym == null || actualSrcSym.kind() != Symbol.Kind.TABLE
+        || nominalSrcSym.kind() != Symbol.Kind.TABLE)
       return nominalInterpretation;
 
     final int actualSource = model.ofTable(actualSrcSym);
@@ -129,21 +139,26 @@ class Instantiation {
     final ValuesRegistry valuesReg = newPlan.valuesReg();
     final Values actualValues = valuesReg.valuesOf(actualSource);
     final Values nominalValues = valuesReg.valuesOf(nominalSource);
-    if (actualValues.size() != nominalValues.size()) return null;
+    if (actualValues.size() != nominalValues.size())
+      return null;
 
     final List<Value> actualInterpretation = new ArrayList<>(nominalInterpretation.size());
-    for (Value nominalValue : nominalInterpretation) {
+    for (Value nominalValue : nominalInterpretation)
+    {
       final int index = nominalValues.indexOf(nominalValue);
-      if (index < 0) return null;
+      if (index < 0)
+        return null;
       actualInterpretation.add(actualValues.get(index));
     }
 
     return actualInterpretation;
   }
 
-  private int instantiateFilter(SimpleFilter filter) {
+  private int instantiateFilter(SimpleFilter filter)
+  {
     final int child = instantiate(filter.predecessors()[0]);
-    if (child == NO_SUCH_NODE) return NO_SUCH_NODE;
+    if (child == NO_SUCH_NODE)
+      return NO_SUCH_NODE;
 
     final Expression predicate = model.ofPred(instantiationOf(filter.predicate()));
     List<Value> values = interpretAttrs(filter.attrs());
@@ -151,21 +166,26 @@ class Instantiation {
       return fail(OptimizerSupport.FAILURE_INCOMPLETE_MODEL);
 
     values = reBinder.rebindRefs(values, outValuesOf(child));
-    if (values == null) return fail(OptimizerSupport.FAILURE_FOREIGN_VALUE);
+    if (values == null)
+      return fail(OptimizerSupport.FAILURE_FOREIGN_VALUE);
 
     return mkFilterNode(predicate, values, child);
   }
 
-  private int instantiateInSub(InSubFilter inSub) {
+  private int instantiateInSub(InSubFilter inSub)
+  {
     final int lhs = instantiate(inSub.predecessors()[0]);
     final int rhs = instantiate(inSub.predecessors()[1]);
-    if (lhs == NO_SUCH_NODE || rhs == NO_SUCH_NODE) return NO_SUCH_NODE;
+    if (lhs == NO_SUCH_NODE || rhs == NO_SUCH_NODE)
+      return NO_SUCH_NODE;
 
     List<Value> values = interpretAttrs(inSub.attrs());
-    if (values == null || values.isEmpty()) return fail(OptimizerSupport.FAILURE_INCOMPLETE_MODEL);
+    if (values == null || values.isEmpty())
+      return fail(OptimizerSupport.FAILURE_INCOMPLETE_MODEL);
 
     values = reBinder.rebindRefs(values, outValuesOf(lhs));
-    if (values == null) return fail(OptimizerSupport.FAILURE_FOREIGN_VALUE);
+    if (values == null)
+      return fail(OptimizerSupport.FAILURE_FOREIGN_VALUE);
 
     final Expression expression = PlanSupport.mkColRefsExpr(values.size());
     final InSubNode inSubNode = InSubNode.mk(expression);
@@ -177,24 +197,30 @@ class Instantiation {
     return inSubNodeId;
   }
 
-  private int instantiateProj(Proj proj) {
+  private int instantiateProj(Proj proj)
+  {
     final int child = instantiate(proj.predecessors()[0]);
-    if (child == NO_SUCH_NODE) return NO_SUCH_NODE;
+    if (child == NO_SUCH_NODE)
+      return NO_SUCH_NODE;
 
     final List<Value> outAttrs = model.ofSchema(instantiationOf(proj.schema()));
-    if (outAttrs == null) return fail(OptimizerSupport.FAILURE_INCOMPLETE_MODEL);
+    if (outAttrs == null)
+      return fail(OptimizerSupport.FAILURE_INCOMPLETE_MODEL);
 
     List<Value> inAttrs = interpretAttrs(proj.attrs());
-    if (inAttrs == null) return fail(OptimizerSupport.FAILURE_INCOMPLETE_MODEL);
+    if (inAttrs == null)
+      return fail(OptimizerSupport.FAILURE_INCOMPLETE_MODEL);
 
     inAttrs = reBinder.rebindRefs(inAttrs, outValuesOf(child));
-    if (inAttrs == null) return fail(OptimizerSupport.FAILURE_FOREIGN_VALUE);
+    if (inAttrs == null)
+      return fail(OptimizerSupport.FAILURE_FOREIGN_VALUE);
 
     final ValuesRegistry valuesReg = newPlan.valuesReg();
     final List<String> names = ListSupport.map(outAttrs, Value::name);
     final List<Expression> exprs = ListSupport.map(outAttrs, valuesReg::exprOf);
 
-    if (!bindRefs(exprs, inAttrs)) return fail(OptimizerSupport.FAILURE_MISMATCHED_REFS);
+    if (!bindRefs(exprs, inAttrs))
+      return fail(OptimizerSupport.FAILURE_MISMATCHED_REFS);
 
     final ProjNode projNode = ProjNode.mk(proj.deduplicated(), names, exprs);
     projNode.setQualification(qualificationOf(outAttrs));
@@ -207,10 +233,12 @@ class Instantiation {
     return projNodeId;
   }
 
-  private int instantiateSetOp(Union union) {
+  private int instantiateSetOp(Union union)
+  {
     final int lhs = instantiate(union.predecessors()[0]);
     final int rhs = instantiate(union.predecessors()[1]);
-    if (lhs == NO_SUCH_NODE || rhs == NO_SUCH_NODE) return NO_SUCH_NODE;
+    if (lhs == NO_SUCH_NODE || rhs == NO_SUCH_NODE)
+      return NO_SUCH_NODE;
 
     final SetOpNode unionNode = SetOpNode.mk(union.deduplicated(), SetOpKind.UNION);
     final int unionNodeId = newPlan.bindNode(unionNode);
@@ -220,9 +248,11 @@ class Instantiation {
     return unionNodeId;
   }
 
-  private int instantiateAgg(Agg agg) {
+  private int instantiateAgg(Agg agg)
+  {
     final int child = instantiate(agg.predecessors()[0]);
-    if (child == NO_SUCH_NODE) return NO_SUCH_NODE;
+    if (child == NO_SUCH_NODE)
+      return NO_SUCH_NODE;
 
     final List<Value> outVals = interpretAttrs(agg.schema());
     List<Value> aggRefs = interpretAttrs(agg.aggregateAttrs());
@@ -235,28 +265,34 @@ class Instantiation {
 
     final List<Value> inValues = outValuesOf(child);
     aggRefs = reBinder.rebindRefs(aggRefs, inValues);
-    if (aggRefs == null) return fail(OptimizerSupport.FAILURE_FOREIGN_VALUE);
+    if (aggRefs == null)
+      return fail(OptimizerSupport.FAILURE_FOREIGN_VALUE);
 
     final List<Value> oldGroupRefs = newArrayList(groupRefs);
     groupRefs = reBinder.rebindRefs(groupRefs, ListSupport.join(outVals, inValues));
-    if (groupRefs == null) return fail(OptimizerSupport.FAILURE_FOREIGN_VALUE);
+    if (groupRefs == null)
+      return fail(OptimizerSupport.FAILURE_FOREIGN_VALUE);
 
     final ValuesRegistry reg = newPlan.valuesReg();
     final List<Expression> aggExprs = ListSupport.map(outVals, reg::exprOf);
     final Map<Value, Value> mapping = buildAggRefMapping(aggExprs, aggRefs);
-    if (mapping == null) return fail(OptimizerSupport.FAILURE_MALFORMED_AGG);
+    if (mapping == null)
+      return fail(OptimizerSupport.FAILURE_MALFORMED_AGG);
     zip(oldGroupRefs, groupRefs, mapping::put);
 
-    for (int i = 0, bound = aggExprs.size(), exprIdx = 0; i < bound; ++i) {
+    for (int i = 0, bound = aggExprs.size(), exprIdx = 0; i < bound; ++i)
+    {
       Expression aggExpr = aggExprs.get(i);
 
-      if (Aggregate.isInstance(aggExpr.template())) {
+      if (Aggregate.isInstance(aggExpr.template()))
+      {
         aggExpr = aggFuncs.get(exprIdx++);
         aggExprs.set(i, aggExpr);
         reg.bindExpr(outVals.get(i), aggExpr);
       }
 
-      if (!rebindAggExpr(aggExpr, mapping)) return fail(OptimizerSupport.FAILURE_MALFORMED_AGG);
+      if (!rebindAggExpr(aggExpr, mapping))
+        return fail(OptimizerSupport.FAILURE_MALFORMED_AGG);
     }
 
     if (havingPred != null && havingPred.colRefs().size() != groupRefs.size())
@@ -277,7 +313,8 @@ class Instantiation {
     final List<Value> refs = new ArrayList<>();
     for (Expression attrExpr : aggNode.attrExprs()) refs.addAll(reg.valueRefsOf(attrExpr));
     for (Expression groupByExpr : aggNode.groupByExprs()) refs.addAll(reg.valueRefsOf(groupByExpr));
-    if (havingPred != null) refs.addAll(reg.valueRefsOf(havingPred));
+    if (havingPred != null)
+      refs.addAll(reg.valueRefsOf(havingPred));
     refs.removeIf(outVals::contains);
 
     final List<Expression> projAttrExprs = ListSupport.map(refs, PlanSupport::mkColRefExpr);
@@ -292,55 +329,70 @@ class Instantiation {
     return aggNodeId;
   }
 
-  private int fail(String reason) {
+  private int fail(String reason)
+  {
     error = reason;
     return NO_SUCH_NODE;
   }
 
-  private Symbol instantiationOf(Symbol symbol) {
+  private Symbol instantiationOf(Symbol symbol)
+  {
     return rule.constraints().instantiationOf(symbol);
   }
 
-  private List<Value> outValuesOf(int nodeId) {
+  private List<Value> outValuesOf(int nodeId)
+  {
     return newPlan.valuesReg().valuesOf(nodeId);
   }
 
-  private boolean bindRefs(List<Expression> exprs, List<Value> refs) {
+  private boolean bindRefs(List<Expression> exprs, List<Value> refs)
+  {
     final ValuesRegistry reg = newPlan.valuesReg();
     int offset = 0;
-    for (Expression expr : exprs) {
+    for (Expression expr : exprs)
+    {
       final int numRefs = expr.colRefs().size();
-      if (numRefs == 0) continue;
-      if (offset + numRefs > refs.size()) return false;
+      if (numRefs == 0)
+        continue;
+      if (offset + numRefs > refs.size())
+        return false;
       reg.bindValueRefs(expr, newArrayList(refs.subList(offset, offset + numRefs)));
       offset += numRefs;
     }
     return true;
   }
 
-  private int mkFilterNode(Expression expr, List<Value> refs, int child) {
+  private int mkFilterNode(Expression expr, List<Value> refs, int child)
+  {
     final InfoCache infoCache = model.plan().infoCache();
 
     final int subqueryNode = infoCache.getSubqueryNodeOf(expr);
-    if (subqueryNode != NO_SUCH_NODE) {
-      if (usedSubqueryNode.get().add(subqueryNode)) {
+    if (subqueryNode != NO_SUCH_NODE)
+    {
+      if (usedSubqueryNode.get().add(subqueryNode))
+      {
         newPlan.detachNode(subqueryNode);
         newPlan.setChild(subqueryNode, 0, child);
         rebindFilterExpr(subqueryNode, refs, 0);
         return subqueryNode;
-      } else {
+      }
+      else
+      {
         return fail(OptimizerSupport.FAILURE_ABUSED_SUBQUERY);
       }
     }
 
     final int[] components = infoCache.getVirtualExprComponents(expr);
-    if (components != null) {
+    if (components != null)
+    {
       int offset = 0;
 
       newPlan.setChild(components[0], 0, child);
-      for (int i = 0, bound = components.length; i < bound; ++i) {
+      for (int i = 0, bound = components.length; i < bound; ++i)
+      {
         offset += rebindFilterExpr(components[i], refs, offset);
-        if (i > 0) newPlan.setChild(components[i], 0, components[i - 1]);
+        if (i > 0)
+          newPlan.setChild(components[i], 0, components[i - 1]);
         newPlan.detachNode(components[i]);
       }
 
@@ -355,18 +407,21 @@ class Instantiation {
     return filterNodeId;
   }
 
-  private int rebindFilterExpr(int nodeId, List<Value> refs, int offset) {
+  private int rebindFilterExpr(int nodeId, List<Value> refs, int offset)
+  {
     final PlanKind kind = newPlan.kindOf(nodeId);
     final PlanNode node = newPlan.nodeAt(nodeId);
     final ValuesRegistry valuesReg = newPlan.valuesReg();
 
     final int numRefs;
-    if (kind == PlanKind.Filter) {
+    if (kind == PlanKind.Filter)
+    {
       final Expression expr = ((SimpleFilterNode) node).predicate();
       numRefs = expr.colRefs().size();
       valuesReg.bindValueRefs(expr, newArrayList(refs.subList(offset, offset + numRefs)));
-
-    } else if (kind == PlanKind.InSub) {
+    }
+    else if (kind == PlanKind.InSub)
+    {
       final Expression lhsExpr = ((InSubNode) node).expr();
       final Expression subqueryExpr = newPlan.infoCache().getSubqueryExprOf(nodeId);
       final int lhsNumRefs = lhsExpr.colRefs().size();
@@ -375,13 +430,15 @@ class Instantiation {
       final List<Value> subqueryExprRefs = refs.subList(offset, offset + numRefs);
       valuesReg.bindValueRefs(lhsExpr, newArrayList(lhsExprRefs));
       valuesReg.bindValueRefs(subqueryExpr, newArrayList(subqueryExprRefs));
-
-    } else if (kind == PlanKind.Exists) {
+    }
+    else if (kind == PlanKind.Exists)
+    {
       final Expression subqueryExpr = newPlan.infoCache().getSubqueryExprOf(nodeId);
       numRefs = subqueryExpr.colRefs().size();
       valuesReg.bindValueRefs(subqueryExpr, newArrayList(refs.subList(offset, offset + numRefs)));
-
-    } else {
+    }
+    else
+    {
       assert false;
       return -1;
     }
@@ -389,26 +446,32 @@ class Instantiation {
     return numRefs;
   }
 
-  private boolean rebindAggExpr(Expression expr, Map<Value, Value> mapping) {
+  private boolean rebindAggExpr(Expression expr, Map<Value, Value> mapping)
+  {
     final ValuesRegistry valuesReg = newPlan.valuesReg();
     final List<Value> oldRefs = valuesReg.valueRefsOf(expr);
     final List<Value> newRefs = ListSupport.map(oldRefs, mapping::get);
-    if (newRefs.contains(null)) return false;
+    if (newRefs.contains(null))
+      return false;
     valuesReg.bindValueRefs(expr, newRefs);
     return true;
   }
 
-  private Map<Value, Value> buildAggRefMapping(List<Expression> exprs, List<Value> aggRefs) {
+  private Map<Value, Value> buildAggRefMapping(List<Expression> exprs, List<Value> aggRefs)
+  {
     final ValuesRegistry valuesReg = newPlan.valuesReg();
     final Map<Value, Value> mapping = new HashMap<>(4);
     int offset = 0;
-    for (Expression expr : exprs) {
-      if (!Aggregate.isInstance(expr.template())) continue;
+    for (Expression expr : exprs)
+    {
+      if (!Aggregate.isInstance(expr.template()))
+        continue;
 
       final int numRefs = expr.colRefs().size();
       final List<Value> oldRefs = valuesReg.valueRefsOf(expr);
       final List<Value> newRefs = newArrayList(aggRefs.subList(offset, offset + numRefs));
-      if (oldRefs.size() != numRefs) return null;
+      if (oldRefs.size() != numRefs)
+        return null;
 
       offset += numRefs;
       zip(oldRefs, newRefs, mapping::put);
@@ -417,20 +480,26 @@ class Instantiation {
     return mapping;
   }
 
-  private static List<Value> interleaveJoinKeys(List<Value> lhsJoinKeys, List<Value> rhsJoinKeys) {
+  private static List<Value> interleaveJoinKeys(List<Value> lhsJoinKeys, List<Value> rhsJoinKeys)
+  {
     final List<Value> joinKeys = new ArrayList<>(lhsJoinKeys.size() << 1);
-    for (int i = 0, bound = lhsJoinKeys.size(); i < bound; i++) {
+    for (int i = 0, bound = lhsJoinKeys.size(); i < bound; i++)
+    {
       joinKeys.add(lhsJoinKeys.get(i));
       joinKeys.add(rhsJoinKeys.get(i));
     }
     return joinKeys;
   }
 
-  private static String qualificationOf(List<Value> attrs) {
+  private static String qualificationOf(List<Value> attrs)
+  {
     String qualification = null;
-    for (Value attr : attrs) {
-      if (qualification == null) qualification = attr.qualification();
-      else if (!qualification.equals(attr.qualification())) return null;
+    for (Value attr : attrs)
+    {
+      if (qualification == null)
+        qualification = attr.qualification();
+      else if (!qualification.equals(attr.qualification()))
+        return null;
     }
     return qualification;
   }

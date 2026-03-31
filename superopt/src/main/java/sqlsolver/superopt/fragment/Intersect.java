@@ -1,8 +1,10 @@
 package sqlsolver.superopt.fragment;
 
-public interface Intersect extends SetOp{
+public interface Intersect extends SetOp
+{
   @Override
-  default OpKind kind() {
+  default OpKind kind()
+  {
     return OpKind.INTERSECT;
   }
 }

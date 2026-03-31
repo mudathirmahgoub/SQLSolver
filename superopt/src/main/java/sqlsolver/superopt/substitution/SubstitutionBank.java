@@ -1,11 +1,11 @@
 package sqlsolver.superopt.substitution;
 
-import sqlsolver.superopt.util.Fingerprint;
-
 import java.util.Collection;
 import java.util.function.Predicate;
+import sqlsolver.superopt.util.Fingerprint;
 
-public interface SubstitutionBank {
+public interface SubstitutionBank
+{
   int size();
 
   boolean add(Substitution substitution);
@@ -22,7 +22,8 @@ public interface SubstitutionBank {
 
   Iterable<Substitution> ruleOfFingerprint(Fingerprint fingerprint);
 
-  static SubstitutionBank mk() {
+  static SubstitutionBank mk()
+  {
     return new SubstitutionBankImpl();
   }
 }

@@ -1,15 +1,13 @@
 package sqlsolver.superopt.uexpr.normalizer;
 
-import sqlsolver.superopt.uexpr.*;
-import sqlsolver.superopt.uexpr.*;
+import static sqlsolver.superopt.uexpr.UExprSupport.transformSubTerms;
 
 import java.util.ArrayList;
 import java.util.List;
+import sqlsolver.superopt.uexpr.*;
 
-import static sqlsolver.superopt.uexpr.UExprSupport.transformSubTerms;
-
-public class UExprPreprocessor {
-
+public class UExprPreprocessor
+{
   /* ================================ *
    * Merge OR operands: ||[P]+[Q]||
    * ================================ */
@@ -17,18 +15,19 @@ public class UExprPreprocessor {
   /**
    * Under certain circumstances, P OR Q -> P'
    */
-  private UTerm mergeOrOperands(UTerm uexp) {
+  private UTerm mergeOrOperands(UTerm uexp)
+  {
     uexp = mergeOrOperandsGT0(uexp);
     return uexp;
   }
 
-  private UTerm argOfPositivePred(UTerm uexp) {
-    if (uexp instanceof UPred pred) {
-      if (pred.isPredKind(UPred.PredKind.GT)
-              && pred.args().get(1).equals(UConst.ZERO))
+  private UTerm argOfPositivePred(UTerm uexp)
+  {
+    if (uexp instanceof UPred pred)
+    {
+      if (pred.isPredKind(UPred.PredKind.GT) && pred.args().get(1).equals(UConst.ZERO))
         return pred.args().get(0);
-      if (pred.isPredKind(UPred.PredKind.LT)
-              && pred.args().get(0).equals(UConst.ZERO))
+      if (pred.isPredKind(UPred.PredKind.LT) && pred.args().get(0).equals(UConst.ZERO))
         return pred.args().get(1);
     }
     return null;
@@ -39,28 +38,36 @@ public class UExprPreprocessor {
    * ||[A > 0] + [B > 0]|| -> [A + B > 0]
    * ||[A > 0] + [B > 0] + ...|| -> ||[A + B > 0] + ...||
    */
-  private UTerm mergeOrOperandsGT0(UTerm uexp) {
+  private UTerm mergeOrOperandsGT0(UTerm uexp)
+  {
     uexp = transformSubTerms(uexp, this::mergeOrOperandsGT0);
-    if (uexp instanceof USquash squash) {
+    if (uexp instanceof USquash squash)
+    {
       UTerm body = squash.body();
-      if (body instanceof UAdd add) {
+      if (body instanceof UAdd add)
+      {
         List<UTerm> newTerms = new ArrayList<>();
         List<UTerm> posTerms = new ArrayList<>();
         // traverse sub-terms of the addition
-        for (UTerm term : add.subTerms()) {
+        for (UTerm term : add.subTerms())
+        {
           UTerm arg = argOfPositivePred(term);
-          if (arg != null) {
+          if (arg != null)
+          {
             // positive predicates will be merged
             posTerms.add(arg);
-          } else {
+          }
+          else
+          {
             // the rest remains the same
             newTerms.add(term);
           }
         }
-        if (posTerms.isEmpty()) return uexp;
-        newTerms.add(UPred.mkBinary(UPred.PredKind.GT,
-                  UAdd.mk(posTerms), UConst.zero()));
-        if (newTerms.size() == 1) return newTerms.get(0);
+        if (posTerms.isEmpty())
+          return uexp;
+        newTerms.add(UPred.mkBinary(UPred.PredKind.GT, UAdd.mk(posTerms), UConst.zero()));
+        if (newTerms.size() == 1)
+          return newTerms.get(0);
         return USquash.mk(UAdd.mk(newTerms));
       }
     }
@@ -71,9 +78,9 @@ public class UExprPreprocessor {
    * Top-level interface
    * ================================ */
 
-  public UTerm preprocess(UTerm uexp) {
+  public UTerm preprocess(UTerm uexp)
+  {
     uexp = mergeOrOperands(uexp);
     return uexp;
   }
-
 }

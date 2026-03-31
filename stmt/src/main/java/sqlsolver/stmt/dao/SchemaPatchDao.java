@@ -1,11 +1,11 @@
 package sqlsolver.stmt.dao;
 
+import java.util.List;
 import sqlsolver.sql.schema.SchemaPatch;
 import sqlsolver.stmt.dao.internal.DbSchemaPatchDao;
 
-import java.util.List;
-
-public interface SchemaPatchDao {
+public interface SchemaPatchDao
+{
   List<SchemaPatch> findByApp(String appName);
 
   void save(SchemaPatch patch);
@@ -16,7 +16,8 @@ public interface SchemaPatchDao {
 
   void endBatch();
 
-  static SchemaPatchDao instance() {
+  static SchemaPatchDao instance()
+  {
     return DbSchemaPatchDao.instance();
   }
 }

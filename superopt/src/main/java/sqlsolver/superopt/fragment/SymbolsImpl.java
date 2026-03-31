@@ -2,15 +2,16 @@ package sqlsolver.superopt.fragment;
 
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.ListMultimap;
-import sqlsolver.common.utils.Lazy;
-
 import java.util.List;
 import java.util.Map;
+import sqlsolver.common.utils.Lazy;
 
-class SymbolsImpl implements Symbols {
+class SymbolsImpl implements Symbols
+{
   private final Lazy<ListMultimap<Op, Symbol>> tables, attrs, preds, schemas, funcs;
 
-  SymbolsImpl() {
+  SymbolsImpl()
+  {
     tables = Lazy.mk(SymbolsImpl::initMap);
     attrs = Lazy.mk(SymbolsImpl::initMap);
     preds = Lazy.mk(SymbolsImpl::initMap);
@@ -18,12 +19,12 @@ class SymbolsImpl implements Symbols {
     funcs = Lazy.mk(SymbolsImpl::initMap);
   }
 
-  SymbolsImpl(
-      ListMultimap<Op, Symbol> tables,
+  SymbolsImpl(ListMultimap<Op, Symbol> tables,
       ListMultimap<Op, Symbol> attrs,
       ListMultimap<Op, Symbol> preds,
       ListMultimap<Op, Symbol> schemas,
-      ListMultimap<Op, Symbol> funcs) {
+      ListMultimap<Op, Symbol> funcs)
+  {
     this.tables = Lazy.mk(tables);
     this.attrs = Lazy.mk(attrs);
     this.preds = Lazy.mk(preds);
@@ -31,7 +32,8 @@ class SymbolsImpl implements Symbols {
     this.funcs = Lazy.mk(funcs);
   }
 
-  static Symbols merge(Symbols symbols0, Symbols symbols1) {
+  static Symbols merge(Symbols symbols0, Symbols symbols1)
+  {
     final SymbolsImpl s0 = (SymbolsImpl) symbols0, s1 = (SymbolsImpl) symbols1;
     final ListMultimap<Op, Symbol> tables = merge(s0.tables.get(), s1.tables.get());
     final ListMultimap<Op, Symbol> attrs = merge(s0.attrs.get(), s1.attrs.get());
@@ -42,7 +44,8 @@ class SymbolsImpl implements Symbols {
   }
 
   private static ListMultimap<Op, Symbol> merge(
-      ListMultimap<Op, Symbol> map0, ListMultimap<Op, Symbol> map1) {
+      ListMultimap<Op, Symbol> map0, ListMultimap<Op, Symbol> map1)
+  {
     final ListMultimap<Op, Symbol> newMap = initMap();
     newMap.putAll(map0);
     newMap.putAll(map1);
@@ -50,13 +53,16 @@ class SymbolsImpl implements Symbols {
   }
 
   @Override
-  public int size() {
+  public int size()
+  {
     return tables.get().size() + attrs.get().size() + preds.get().size();
   }
 
   @Override
-  public void bindSymbol(Op op) {
-    switch (op.kind()) {
+  public void bindSymbol(Op op)
+  {
+    switch (op.kind())
+    {
       case INPUT -> add(op, Symbol.Kind.TABLE);
       case IN_SUB_FILTER -> add(op, Symbol.Kind.ATTRS);
       case PROJ -> {
@@ -132,23 +138,29 @@ class SymbolsImpl implements Symbols {
 
   @Override
   public Op ownerOf(Symbol symbol) {
-    for (Map.Entry<Op, Symbol> entry : getMap(symbol.kind()).entries()) {
-      if (entry.getValue() == symbol) return entry.getKey();
+    for (Map.Entry<Op, Symbol> entry : getMap(symbol.kind()).entries())
+        {
+          if (entry.getValue() == symbol)
+            return entry.getKey();
+        }
+        return null;
     }
-    return null;
-  }
 
-  @Override
-  public boolean contains(Symbol symbol) {
-    return symbol.ctx() == this || ownerOf(symbol) != null;
-  }
+    @Override
+    public boolean contains(Symbol symbol)
+    {
+      return symbol.ctx() == this || ownerOf(symbol) != null;
+    }
 
-  private static ListMultimap<Op, Symbol> initMap() {
-    return LinkedListMultimap.create(4);
-  }
+    private static ListMultimap<Op, Symbol> initMap()
+    {
+      return LinkedListMultimap.create(4);
+    }
 
-  private ListMultimap<Op, Symbol> getMap(Symbol.Kind kind) {
-    return switch (kind) {
+    private ListMultimap<Op, Symbol> getMap(Symbol.Kind kind)
+    {
+      return switch (kind)
+      {
       case TABLE -> tables.get();
       case ATTRS -> attrs.get();
       case PRED -> preds.get();

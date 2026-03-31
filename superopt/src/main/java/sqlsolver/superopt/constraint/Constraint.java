@@ -3,8 +3,10 @@ package sqlsolver.superopt.constraint;
 import sqlsolver.superopt.fragment.Symbol;
 import sqlsolver.superopt.fragment.SymbolNaming;
 
-public interface Constraint {
-  enum Kind {
+public interface Constraint
+{
+  enum Kind
+  {
     TableEq(2),
     AttrsEq(2),
     PredicateEq(2),
@@ -19,7 +21,8 @@ public interface Constraint {
     private static final Constraint.Kind[] EQ_CONSTRAINT_KIND_OF_SYM_KIND =
         new Constraint.Kind[Symbol.Kind.values().length];
 
-    static {
+    static
+    {
       EQ_CONSTRAINT_KIND_OF_SYM_KIND[Symbol.Kind.TABLE.ordinal()] = TableEq;
       EQ_CONSTRAINT_KIND_OF_SYM_KIND[Symbol.Kind.ATTRS.ordinal()] = AttrsEq;
       EQ_CONSTRAINT_KIND_OF_SYM_KIND[Symbol.Kind.PRED.ordinal()] = PredicateEq;
@@ -29,23 +32,29 @@ public interface Constraint {
 
     private final int numSyms;
 
-    Kind(int numSyms) {
+    Kind(int numSyms)
+    {
       this.numSyms = numSyms;
     }
 
-    public int numSyms() {
+    public int numSyms()
+    {
       return numSyms;
     }
 
-    public boolean isEq() {
-      return this == TableEq || this == AttrsEq || this == PredicateEq || this == SchemaEq || this == FuncEq;
+    public boolean isEq()
+    {
+      return this == TableEq || this == AttrsEq || this == PredicateEq || this == SchemaEq
+          || this == FuncEq;
     }
 
-    public boolean isIntegrityConstraint() {
+    public boolean isIntegrityConstraint()
+    {
       return this == Unique || this == NotNull || this == Reference;
     }
 
-    public static Constraint.Kind eqOfSymbol(Symbol.Kind symKind) {
+    public static Constraint.Kind eqOfSymbol(Symbol.Kind symKind)
+    {
       return EQ_CONSTRAINT_KIND_OF_SYM_KIND[symKind.ordinal()];
     }
   }
@@ -58,15 +67,18 @@ public interface Constraint {
 
   StringBuilder stringify(SymbolNaming naming, StringBuilder builder);
 
-  default String stringify(SymbolNaming naming) {
+  default String stringify(SymbolNaming naming)
+  {
     return stringify(naming, new StringBuilder()).toString();
   }
 
-  static Constraint parse(String str, SymbolNaming naming) {
+  static Constraint parse(String str, SymbolNaming naming)
+  {
     return ConstraintImpl.parse(str, naming);
   }
 
-  static Constraint mk(Kind kind, Symbol... symbols) {
+  static Constraint mk(Kind kind, Symbol... symbols)
+  {
     return new ConstraintImpl(kind, symbols);
   }
 }

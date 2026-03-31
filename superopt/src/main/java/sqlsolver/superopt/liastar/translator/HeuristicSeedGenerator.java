@@ -8,8 +8,10 @@ import sqlsolver.superopt.uexpr.USum;
 import sqlsolver.superopt.uexpr.UTerm;
 import sqlsolver.superopt.uexpr.UVar;
 
-public class HeuristicSeedGenerator {
-  public BVM generateSeed(UTerm uexp1, UTerm uexp2, UVar outVar) {
+public class HeuristicSeedGenerator
+{
+  public BVM generateSeed(UTerm uexp1, UTerm uexp2, UVar outVar)
+  {
     // preprocess input
     uexp1 = uexp1.copy();
     uexp2 = uexp2.copy();
@@ -26,11 +28,11 @@ public class HeuristicSeedGenerator {
     List<UTerm> subSums = new ArrayList<>();
     Set<Integer> subSumIndexSet1 = new HashSet<>();
     Set<Integer> subSumIndexSet2 = new HashSet<>();
-    while (!sums.isEmpty()) {
+    while (!sums.isEmpty())
+    {
       // generate a BVM layer for current summations "sums"
-      result.add(
-          generateOneLayer(
-              sums, sumIndexSet1, sumIndexSet2, outVar, subSums, subSumIndexSet1, subSumIndexSet2));
+      result.add(generateOneLayer(
+          sums, sumIndexSet1, sumIndexSet2, outVar, subSums, subSumIndexSet1, subSumIndexSet2));
       // for next iteration
       sums = subSums;
       sumIndexSet1 = subSumIndexSet1;
@@ -42,14 +44,14 @@ public class HeuristicSeedGenerator {
     return new BVM(result);
   }
 
-  private Set<UVar> generateOneLayer(
-      List<UTerm> sums,
+  private Set<UVar> generateOneLayer(List<UTerm> sums,
       Set<Integer> sumIndexSet1,
       Set<Integer> sumIndexSet2,
       UVar outVar,
       List<UTerm> subSums,
       Set<Integer> subSumIndexSet1,
-      Set<Integer> subSumIndexSet2) {
+      Set<Integer> subSumIndexSet2)
+  {
     // compute a matching at the current layer
     NameSequence boundVarName = NameSequence.mkIndexed("b", 0);
     final HeuristicBoundVarMatcher matcher = new HeuristicBoundVarMatcher(boundVarName, outVar);
@@ -58,13 +60,17 @@ public class HeuristicSeedGenerator {
 
     // find summations at the next layer
     final List<USum> subSums1 = new ArrayList<>(), subSums2 = new ArrayList<>();
-    for (int i = 0; i < sums.size(); ++i) {
+    for (int i = 0; i < sums.size(); ++i)
+    {
       // For each term, find top-level summations within it
       List<USum> tmpSubSums = findTopLevelSums(sums.get(i));
       // collect those sub-summations & classify them according to on which side they are
-      if (sumIndexSet1.contains(i)) subSums1.addAll(tmpSubSums);
-      else if (sumIndexSet2.contains(i)) subSums2.addAll(tmpSubSums);
-      else assert false;
+      if (sumIndexSet1.contains(i))
+        subSums1.addAll(tmpSubSums);
+      else if (sumIndexSet2.contains(i))
+        subSums2.addAll(tmpSubSums);
+      else
+        assert false;
     }
     subSums.addAll(subSums1);
     subSums.addAll(subSums2);

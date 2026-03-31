@@ -5,11 +5,14 @@ import sqlsolver.superopt.fragment.LeftJoin;
 import sqlsolver.superopt.fragment.Op;
 
 /** Rule that matches a Join with Filter as its second child. */
-public class MalformedJoin extends BaseMatchingRule {
+public class MalformedJoin extends BaseMatchingRule
+{
   @Override
-  public boolean enterInnerJoin(InnerJoin op) {
+  public boolean enterInnerJoin(InnerJoin op)
+  {
     final Op[] in = op.predecessors();
-    if (in[0].kind().isFilter() || in[1].kind().isFilter()) {
+    if (in[0].kind().isFilter() || in[1].kind().isFilter())
+    {
       matched = true;
       return false;
     }
@@ -17,9 +20,11 @@ public class MalformedJoin extends BaseMatchingRule {
   }
 
   @Override
-  public boolean enterLeftJoin(LeftJoin op) {
+  public boolean enterLeftJoin(LeftJoin op)
+  {
     final Op[] in = op.predecessors();
-    if (in[0].kind().isFilter() || in[1].kind().isFilter()) {
+    if (in[0].kind().isFilter() || in[1].kind().isFilter())
+    {
       matched = true;
       return false;
     }

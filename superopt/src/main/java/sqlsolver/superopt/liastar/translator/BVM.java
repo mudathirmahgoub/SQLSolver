@@ -7,10 +7,12 @@ import java.util.stream.Collectors;
 import sqlsolver.superopt.uexpr.UVar;
 
 /** Bound var matching. */
-public class BVM {
+public class BVM
+{
   final List<Set<UVar>> matching;
 
-  public BVM(List<Set<UVar>> matching) {
+  public BVM(List<Set<UVar>> matching)
+  {
     this.matching = matching;
   }
 
@@ -20,7 +22,8 @@ public class BVM {
    * @param depth the layer index (ascending; the outermost layer has index 0)
    * @return a set representing bound vars at the specified layer
    */
-  public Set<UVar> get(int depth) {
+  public Set<UVar> get(int depth)
+  {
     return matching.get(depth);
   }
 
@@ -30,31 +33,35 @@ public class BVM {
    *
    * @return the resulting BVM after swap
    */
-  public BVM swapVars(UVar v1, UVar v2) {
+  public BVM swapVars(UVar v1, UVar v2)
+  {
     final List<Set<UVar>> newMatching = new ArrayList<>();
     final BVM newBvm = new BVM(newMatching);
     // swap vars in each layer
-    for (Set<UVar> layer : matching) {
-      newMatching.add(
-          layer.stream()
-              .map(v -> v.equals(v1) ? v2 : (v.equals(v2) ? v1 : v))
-              .collect(Collectors.toSet()));
+    for (Set<UVar> layer : matching)
+    {
+      newMatching.add(layer.stream()
+                          .map(v -> v.equals(v1) ? v2 : (v.equals(v2) ? v1 : v))
+                          .collect(Collectors.toSet()));
     }
     return newBvm;
   }
 
   @Override
-  public int hashCode() {
+  public int hashCode()
+  {
     return matching.hashCode();
   }
 
   @Override
-  public boolean equals(Object o) {
+  public boolean equals(Object o)
+  {
     return o instanceof BVM bvm && matching.equals(bvm.matching);
   }
 
   @Override
-  public String toString() {
+  public String toString()
+  {
     return matching.toString();
   }
 }

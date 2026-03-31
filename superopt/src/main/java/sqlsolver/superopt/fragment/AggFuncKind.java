@@ -2,7 +2,8 @@ package sqlsolver.superopt.fragment;
 
 import java.util.List;
 
-public enum AggFuncKind {
+public enum AggFuncKind
+{
   SUM("sum"),
   AVERAGE("average"),
   COUNT("count"),
@@ -12,11 +13,13 @@ public enum AggFuncKind {
 
   private final String text;
 
-  AggFuncKind(String text) {
+  AggFuncKind(String text)
+  {
     this.text = text;
   }
 
-  public String text() {
+  public String text()
+  {
     return text;
   }
 

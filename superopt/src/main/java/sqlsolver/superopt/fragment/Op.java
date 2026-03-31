@@ -2,9 +2,13 @@ package sqlsolver.superopt.fragment;
 
 import sqlsolver.common.utils.TreeNode;
 
-public interface Op extends TreeNode<Symbols, Op>, Comparable<Op> {
-  static Op mk(OpKind type) {
-    return switch (type) {
+public interface Op extends TreeNode<Symbols, Op>,
+                            Comparable<Op>
+{
+  static Op mk(OpKind type)
+  {
+    return switch (type)
+    {
       case INPUT -> new InputOp();
       case INNER_JOIN -> new InnerJoinOp();
       case CROSS_JOIN -> new CrossJoinOp();

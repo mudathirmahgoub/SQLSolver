@@ -1,8 +1,10 @@
 package sqlsolver.superopt.fragment;
 
-public interface Sort extends Op {
+public interface Sort extends Op
+{
   @Override
-  default OpKind kind() {
+  default OpKind kind()
+  {
     return OpKind.SORT;
   }
 }
