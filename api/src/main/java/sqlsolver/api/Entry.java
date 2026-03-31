@@ -1,12 +1,10 @@
 package sqlsolver.api;
 
-import sqlsolver.api.entry.Verification;
-import sqlsolver.common.utils.Args;
-import sqlsolver.superopt.logic.LogicSupport;
-import sqlsolver.superopt.logic.VerificationResult;
-
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -15,9 +13,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import sqlsolver.api.entry.Verification;
+import sqlsolver.common.utils.Args;
+import sqlsolver.common.utils.Printer;
+import sqlsolver.superopt.logic.LogicSupport;
+import sqlsolver.superopt.logic.VerificationResult;
 
-public class Entry {
-  public static void main(String[] argStrings) {
+public class Entry
+{
+  public static void main(String[] argStrings) throws FileNotFoundException
+  {
     /*
      * There should be at least three arguments:
      * -sql1 indicates the first sql file.
@@ -31,7 +36,7 @@ public class Entry {
      * are the two SQL statements that need to be verified for equivalence.
      */
     final Args args = Args.parse(argStrings, 0);
-    final String firstQueryPathString = args.getOptional( "sql1", String.class, null);
+    final String firstQueryPathString = args.getOptional("sql1", String.class, null);
     final String secondQueryPathString = args.getOptional("sql2", String.class, null);
     final String schemaPathString = args.getOptional("schema", String.class, null);
 
@@ -39,10 +44,12 @@ public class Entry {
     final Boolean help = args.getOptional("help", Boolean.class, false);
     final String outputPathString = args.getOptional("output", String.class, null);
 
-    if (help) {
+    if (help)
+    {
       StringBuilder sb = new StringBuilder("");
-      sb.append("java -jar sqlsolver.jar [-help] -sql1=<path/to/query1> -sql2=<path/to/query2>\n" +
-                "                        -schema=<path/to/schema> [-print] [-output=<path/to/output>]\n\n");
+      sb.append("java -jar sqlsolver.jar [-help] -sql1=<path/to/query1> -sql2=<path/to/query2>\n"
+          + "                        -schema=<path/to/schema> [-print] "
+          + "[-output=<path/to/output>]\n\n");
       sb.append("options:\n");
       sb.append("  -help                    show this help message and exit.\n");
       sb.append("  -sql1=<path/to/query1>   the first sql file.\n");
@@ -50,55 +57,65 @@ public class Entry {
       sb.append("  -schema=<path/to/schema> the schema file.\n");
       sb.append("  -print                   print the result to standard output stream.\n");
       sb.append("  -output=<path/to/output> the file that store the verification result.\n");
-      System.out.println(sb);
+      Printer.output.println(sb);
       return;
     }
 
-    if (firstQueryPathString == null) {
+    if (firstQueryPathString == null)
+    {
       System.err.println("missing first sql file: -sql1=<path/to/query1>");
       return;
     }
 
-    if (secondQueryPathString == null) {
+    if (secondQueryPathString == null)
+    {
       System.err.println("missing second sql file: -sql2=<path/to/query2>");
       return;
     }
 
-    if (schemaPathString == null) {
+    if (schemaPathString == null)
+    {
       System.err.println("missing schema file: -schema=<path/to/schema>");
       return;
     }
-
 
     final Path firstQueryPath = Paths.get(firstQueryPathString);
     final Path secondQueryPath = Paths.get(secondQueryPathString);
     final Path schemaPath = Paths.get(schemaPathString);
     List<VerificationResult> results;
-
+    
     // verify the SQLs
-    try {
+    try
+    {
       results = Verification.verify(Files.readAllLines(firstQueryPath),
-              Files.readAllLines(secondQueryPath),
-              Files.readString(schemaPath));
-    } catch (IOException e) {
+          Files.readAllLines(secondQueryPath),
+          Files.readString(schemaPath));
+    }
+    catch (IOException e)
+    {
       if (LogicSupport.dumpLiaFormulas)
         e.printStackTrace();
       return;
     }
-
-    // print it throw system.out.println
-    if (print) {
-      System.out.println(results);
+    
+    // print it throw Printer.output.println
+    if (print)
+    {
+      Printer.output.println(results);
     }
 
     // output result into the target file
-    if (outputPathString != null) {
-      try (FileWriter fileWriter = new FileWriter(outputPathString)) {
-        for (VerificationResult result : results)
-          fileWriter.append(result.toString() + "\n");
-      } catch (IOException e) {
+    if (outputPathString != null)
+    {
+      try (FileWriter fileWriter = new FileWriter(outputPathString))
+      {
+        for (VerificationResult result : results) fileWriter.append(result.toString() + "\n");
+      }
+      catch (IOException e)
+      {
         e.printStackTrace();
       }
     }
+    Printer.output.close();
   }
 }

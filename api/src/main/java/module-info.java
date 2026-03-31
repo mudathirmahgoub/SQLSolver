@@ -1,4 +1,5 @@
-module sqlsolver.api {
+module sqlsolver.api
+{
   exports sqlsolver.api;
 
   requires sqlsolver.sql;

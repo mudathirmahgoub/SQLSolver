@@ -5,7 +5,8 @@ import org.apache.calcite.sql.SqlNode;
 import sqlsolver.sql.plan.PlanContext;
 import sqlsolver.sql.schema.Schema;
 
-public class QueryPairImpl implements QueryPair {
+public class QueryPairImpl implements QueryPair
+{
   /**
    * lineNum indicates the line number of the first sql.
    * The caseId corresponds to lineNum + 1 >> 1.
@@ -24,13 +25,17 @@ public class QueryPairImpl implements QueryPair {
   private final SqlNode q0, q1;
   private final RelNode p0, p1;
 
-  QueryPairImpl(
-          int lineNum,
-          Schema schema,
-          String sql0, String sql1,
-          String originSql0, String originSql1,
-          SqlNode q0, SqlNode q1,
-          RelNode p0, RelNode p1) {
+  QueryPairImpl(int lineNum,
+      Schema schema,
+      String sql0,
+      String sql1,
+      String originSql0,
+      String originSql1,
+      SqlNode q0,
+      SqlNode q1,
+      RelNode p0,
+      RelNode p1)
+  {
     this.lineNum = lineNum;
     this.schema = schema;
     this.sql0 = sql0;
@@ -44,52 +49,62 @@ public class QueryPairImpl implements QueryPair {
   }
 
   @Override
-  public int pairId() {
+  public int pairId()
+  {
     return lineNum + 1 >> 1;
   }
 
   @Override
-  public Schema getSchema() {
+  public Schema getSchema()
+  {
     return schema;
   }
 
   @Override
-  public String getSql0() {
+  public String getSql0()
+  {
     return sql0;
   }
 
   @Override
-  public String getSql1() {
+  public String getSql1()
+  {
     return sql1;
   }
 
   @Override
-  public String getOriginSql0() {
+  public String getOriginSql0()
+  {
     return originSql0;
   }
 
   @Override
-  public String getOriginSql1() {
+  public String getOriginSql1()
+  {
     return originSql1;
   }
 
   @Override
-  public SqlNode getAst0() {
+  public SqlNode getAst0()
+  {
     return q0;
   }
 
   @Override
-  public SqlNode getAst1() {
+  public SqlNode getAst1()
+  {
     return q1;
   }
 
   @Override
-  public RelNode getPlan0() {
+  public RelNode getPlan0()
+  {
     return p0;
   }
 
   @Override
-  public RelNode getPlan1() {
+  public RelNode getPlan1()
+  {
     return p1;
   }
 }

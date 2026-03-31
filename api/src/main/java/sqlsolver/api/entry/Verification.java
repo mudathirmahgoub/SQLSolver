@@ -1,16 +1,16 @@
 package sqlsolver.api.entry;
 
-import sqlsolver.superopt.logic.VerificationResult;
+import java.util.List;
 import org.apache.calcite.rel.RelNode;
 import sqlsolver.sql.schema.Schema;
-import java.util.List;
+import sqlsolver.superopt.logic.VerificationResult;
 
 /**
  * The entry of the SqlSolver.
  * Verify sql are equivalent or not.
  */
-public interface Verification {
-
+public interface Verification
+{
   /**
    * Verify two sql equivalence.
    *
@@ -19,7 +19,8 @@ public interface Verification {
    * @param schema  given a schema, it is the schema of all sql in the sqlList.
    * @return a list of string indicates that whether two sql are equivalent.
    */
-  static VerificationResult verify(String sql0, String sql1, String schema) {
+  static VerificationResult verify(String sql0, String sql1, String schema)
+  {
     return VerificationImpl.verify(sql0, sql1, schema);
   }
 
@@ -33,14 +34,16 @@ public interface Verification {
    * @param schema  given a schema, it is the schema of all sql in the sqlList.
    * @return a list of string indicates that whether two sql are equivalent.
    */
-  static List<VerificationResult> verify(List<String> sqlList0, List<String> sqlList1, String schema) {
+  static List<VerificationResult> verify(
+      List<String> sqlList0, List<String> sqlList1, String schema)
+  {
     return VerificationImpl.verify(sqlList0, sqlList1, schema, -1);
   }
 
   /**
    * Verify pairwise sql equivalence in the sqlList.
-   * It resembles {@link Verification#verify(List, List, String)} except that it sets an intended upper bound
-   * for each run of verifying a pair.
+   * It resembles {@link Verification#verify(List, List, String)} except that it sets an intended
+   * upper bound for each run of verifying a pair.
    *
    * @param timeout when verification of a pair takes this amount of time, the pair is skipped;
    *                timeout should be in seconds;
@@ -49,7 +52,9 @@ public interface Verification {
    *
    * @see Verification#verify(List, List, String)
    */
-  static List<VerificationResult> verify(List<String> sqlList0, List<String> sqlList1, String schema, long timeout) {
+  static List<VerificationResult> verify(
+      List<String> sqlList0, List<String> sqlList1, String schema, long timeout)
+  {
     return VerificationImpl.verify(sqlList0, sqlList1, schema, timeout);
   }
 
@@ -61,7 +66,8 @@ public interface Verification {
    * @param schema  given a schema string, it is the schema of all sql in the sqlList.
    * @return a list of string indicates that whether two sql are equivalent.
    */
-  static VerificationResult verify(RelNode plan0, RelNode plan1, String schema) {
+  static VerificationResult verify(RelNode plan0, RelNode plan1, String schema)
+  {
     return VerificationImpl.verify(plan0, plan1, schema);
   }
 
@@ -73,7 +79,8 @@ public interface Verification {
    * @param schema  given a schema, it is the schema of all sql in the sqlList.
    * @return a list of string indicates that whether two sql are equivalent.
    */
-  static VerificationResult verify(RelNode plan0, RelNode plan1, Schema schema) {
+  static VerificationResult verify(RelNode plan0, RelNode plan1, Schema schema)
+  {
     return VerificationImpl.verify(plan0, plan1, schema);
   }
 }

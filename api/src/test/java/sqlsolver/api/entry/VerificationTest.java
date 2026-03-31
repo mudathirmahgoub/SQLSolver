@@ -1,26 +1,27 @@
 package sqlsolver.api.entry;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import sqlsolver.api.TestHelper;
 import sqlsolver.superopt.logic.LogicSupport;
 import sqlsolver.superopt.logic.VerificationResult;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-
-public class VerificationTest {
-
+public class VerificationTest
+{
   @Test
-  void test() {
-    final String schema = "CREATE TABLE dept\n" +
-            "(\n" +
-            "    deptno int not null,\n" +
-            "    name   varchar(10)     not null,\n" +
-            "    primary key (deptno)\n" +
-            ");";
-    final String sql0 = "SELECT dept.deptno FROM dept AS dept WHERE dept.deptno = 7 AND dept.deptno = 8";
+  void test()
+  {
+    final String schema = "CREATE TABLE dept\n"
+        + "(\n"
+        + "    deptno int not null,\n"
+        + "    name   varchar(10)     not null,\n"
+        + "    primary key (deptno)\n"
+        + ");";
+    final String sql0 =
+        "SELECT dept.deptno FROM dept AS dept WHERE dept.deptno = 7 AND dept.deptno = 8";
     final String sql1 = "SELECT dept.deptno FROM dept WHERE dept.deptno = 7 AND dept.deptno = 8";
 
     LogicSupport.dumpLiaFormulas = true;
@@ -29,7 +30,8 @@ public class VerificationTest {
   }
 
   @Test
-  void testList() {
+  void testList()
+  {
     final List<String> lines1 = new ArrayList<>();
     final List<String> lines2 = new ArrayList<>();
     lines1.add("SELECT i, j FROM a");
@@ -39,8 +41,10 @@ public class VerificationTest {
     lines1.add("SELECT p, q FROM d WHERE p IN (10, 20)");
     lines2.add("SELECT p, q FROM d WHERE p = 10 OR p = 20");
 
-    final List<VerificationResult> results = Verification.verify(lines1, lines2, TestHelper.TEST_SCHEMA);
-    for (VerificationResult result : results) {
+    final List<VerificationResult> results =
+        Verification.verify(lines1, lines2, TestHelper.TEST_SCHEMA);
+    for (VerificationResult result : results)
+    {
       assertEquals(result.toString(), "EQ");
     }
   }
