@@ -1,6 +1,7 @@
 package sqlsolver.common.field;
 
-public interface FieldKey<T> {
+public interface FieldKey<T>
+{
   String name();
 
   T getFrom(Fields target);

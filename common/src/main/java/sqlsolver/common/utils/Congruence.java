@@ -11,7 +11,8 @@ import java.util.Set;
  * <p>Some methods returns an equivalence class, which is a modifiable set. Putting object into it
  * logically put new object into the equivalent class.
  */
-public interface Congruence<K, T> extends Copyable<Congruence<K, T>> {
+public interface Congruence<K, T> extends Copyable<Congruence<K, T>>
+{
   /** Returns all keys */
   Set<K> keys();
 
@@ -39,7 +40,8 @@ public interface Congruence<K, T> extends Copyable<Congruence<K, T>> {
    */
   Set<T> mkEqClass(T x);
 
-  default Congruence<K, T> copy() {
+  default Congruence<K, T> copy()
+  {
     return this;
   }
 }

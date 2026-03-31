@@ -1,4 +1,5 @@
-module sqlsolver.common {
+module sqlsolver.common
+{
   exports sqlsolver.common.config;
   exports sqlsolver.common.utils;
   exports sqlsolver.common.tree;

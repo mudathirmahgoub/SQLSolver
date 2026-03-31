@@ -2,7 +2,8 @@ package sqlsolver.common.tree;
 
 import sqlsolver.common.field.FieldKey;
 
-public interface LabeledTreeContext<Kind> extends TreeContext<Kind> {
+public interface LabeledTreeContext<Kind> extends TreeContext<Kind>
+{
   LabeledTreeFields<Kind> fieldsOf(int nodeId); // immutable
 
   <T> T setFieldOf(int nodeId, FieldKey<T> field, T value);
@@ -16,7 +17,8 @@ public interface LabeledTreeContext<Kind> extends TreeContext<Kind> {
   /** For internal use. Avoid call this directly. */
   void setParentOf(int childId, int parentId);
 
-  default <T> T fieldOf(int nodeId, FieldKey<T> field) {
+  default<T> T fieldOf(int nodeId, FieldKey<T> field)
+  {
     return fieldsOf(nodeId).$(field);
   }
 }

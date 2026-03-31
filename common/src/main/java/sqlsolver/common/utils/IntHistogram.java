@@ -2,7 +2,8 @@ package sqlsolver.common.utils;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public interface IntHistogram {
+public interface IntHistogram
+{
   int numRanges();
 
   int numSamples();
@@ -27,11 +28,15 @@ public interface IntHistogram {
 
   IntHistogram copy();
 
-  default IntHistogram merge(IntHistogram other) {
-    for (int i = 0, bound = other.numRanges(); i < bound; ++i) {
-      if (other.populationAt(i) == 0) continue;
+  default IntHistogram merge(IntHistogram other)
+  {
+    for (int i = 0, bound = other.numRanges(); i < bound; ++i)
+    {
+      if (other.populationAt(i) == 0)
+        continue;
       final int rangeIdx = findCoveringRange(other.beginOfRange(i), other.endOfRange(i));
-      if (rangeIdx == -1) {
+      if (rangeIdx == -1)
+      {
         findCoveringRange(other.beginOfRange(i), other.endOfRange(i));
         throw new IllegalArgumentException("unaligned histogram cannot be merged");
       }
@@ -40,13 +45,17 @@ public interface IntHistogram {
     return this;
   }
 
-  default double estimatedPercentile(double percentile) {
-    if (percentile < 0.0 || percentile > 1.0) throw new IllegalArgumentException();
+  default double estimatedPercentile(double percentile)
+  {
+    if (percentile < 0.0 || percentile > 1.0)
+      throw new IllegalArgumentException();
 
     int count = (int) (percentile * numSamples());
-    for (int i = 0, bound = numRanges(); i < bound; ++i) {
+    for (int i = 0, bound = numRanges(); i < bound; ++i)
+    {
       final int population = populationAt(i);
-      if (count <= population) {
+      if (count <= population)
+      {
         final int begin = beginOfRange(i), end = endOfRange(i);
         return begin + (count / (double) population) * (end - begin);
       }
@@ -56,15 +65,18 @@ public interface IntHistogram {
     return 0;
   }
 
-  static IntHistogram mkFixed(int fromInclusive, int toExclusive, int step) {
+  static IntHistogram mkFixed(int fromInclusive, int toExclusive, int step)
+  {
     return FixedStepFixedRangeIntHistogram.mk(fromInclusive, toExclusive, step);
   }
 
-  static IntHistogram mkDynamic(int fromInclusive, int step) {
+  static IntHistogram mkDynamic(int fromInclusive, int step)
+  {
     return FixedStepDynamicRangeIntHistogram.mk(fromInclusive, step);
   }
 
-  static void main(String[] args) {
+  static void main(String[] args)
+  {
     final IntHistogram hist0 = IntHistogram.mkFixed(0, 100, 30);
     final IntHistogram hist1 = IntHistogram.mkDynamic(0, 10);
     final IntStatistic stat = IntStatistic.mk();

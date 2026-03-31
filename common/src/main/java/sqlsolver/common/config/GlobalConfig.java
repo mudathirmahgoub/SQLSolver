@@ -4,17 +4,23 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-public class GlobalConfig {
+public class GlobalConfig
+{
   /** Z3 timeout used by SQLSolver, in millis. */
   public static final int SQLSOLVER_Z3_TIMEOUT;
 
-  static  {
+  static
+  {
     Properties properties = new Properties();
-    try (FileInputStream fileInputStream = new FileInputStream("sqlsolver.properties")) {
+    try (FileInputStream fileInputStream = new FileInputStream("sqlsolver.properties"))
+    {
       properties.load(fileInputStream);
-    } catch (IOException e) {
+    }
+    catch (IOException e)
+    {
       System.err.println("Failed to load the configuration file. SQLSolver will use its defaults.");
     }
-    SQLSOLVER_Z3_TIMEOUT = Integer.parseInt(properties.getProperty("sqlsolver.z3.timeout", "10000"));
+    SQLSOLVER_Z3_TIMEOUT =
+        Integer.parseInt(properties.getProperty("sqlsolver.z3.timeout", "10000"));
   }
 }

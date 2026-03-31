@@ -3,23 +3,28 @@ package sqlsolver.common.utils;
 import java.util.Iterator;
 import java.util.function.Predicate;
 
-class FilteredIterator<E> implements Iterator<E> {
+class FilteredIterator<E> implements Iterator<E>
+{
   private final Iterator<? extends E> iter;
   private final Predicate<? super E> predicate;
   private E next;
   private boolean hasNext;
 
-  FilteredIterator(Iterator<? extends E> iter, Predicate<? super E> predicate) {
+  FilteredIterator(Iterator<? extends E> iter, Predicate<? super E> predicate)
+  {
     this.iter = iter;
     this.predicate = predicate;
 
     forward();
   }
 
-  private void forward() {
-    while (iter.hasNext()) {
+  private void forward()
+  {
+    while (iter.hasNext())
+    {
       final E next = iter.next();
-      if (predicate.test(next)) {
+      if (predicate.test(next))
+      {
         this.next = next;
         this.hasNext = true;
         return;
@@ -30,12 +35,14 @@ class FilteredIterator<E> implements Iterator<E> {
   }
 
   @Override
-  public boolean hasNext() {
+  public boolean hasNext()
+  {
     return hasNext;
   }
 
   @Override
-  public E next() {
+  public E next()
+  {
     final E ret = next;
     forward();
     return ret;

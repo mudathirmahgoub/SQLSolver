@@ -3,8 +3,9 @@ package sqlsolver.common.tree;
 import java.util.List;
 
 /** A convenient wrapper for a tree node. Operations are delegated to the context. */
-public interface UniformTreeNode<
-    Kind, C extends UniformTreeContext<Kind>, N extends UniformTreeNode<Kind, C, N>> {
+public interface UniformTreeNode<Kind, C extends UniformTreeContext<Kind>, N
+                                     extends UniformTreeNode<Kind, C, N>>
+{
   C context();
 
   int nodeId();

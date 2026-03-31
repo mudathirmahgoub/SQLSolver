@@ -1,62 +1,75 @@
 package sqlsolver.common.utils;
 
-public class LongMetric implements Metric<Long, LongMetric> {
+public class LongMetric implements Metric<Long, LongMetric>
+{
   private final String name;
   private final long initValue;
   private long value;
 
-  public LongMetric(String name) {
+  public LongMetric(String name)
+  {
     this(name, 0);
   }
 
-  public LongMetric(String name, long initValue) {
+  public LongMetric(String name, long initValue)
+  {
     this.name = name;
     this.initValue = initValue;
   }
 
   @Override
-  public String name() {
+  public String name()
+  {
     return name;
   }
 
   @Override
-  public Long value() {
+  public Long value()
+  {
     return value;
   }
 
-  public void add(long increment) {
+  public void add(long increment)
+  {
     value += increment;
   }
 
-  public Timer timeIt() {
+  public Timer timeIt()
+  {
     return new Timer();
   }
 
   @Override
-  public void reset() {
+  public void reset()
+  {
     value = initValue;
   }
 
   @Override
-  public void assign(LongMetric other) {
+  public void assign(LongMetric other)
+  {
     value = other.value;
   }
 
   @Override
-  public void accumulate(LongMetric other) {
+  public void accumulate(LongMetric other)
+  {
     value += other.value;
   }
 
   @Override
-  public String toString() {
+  public String toString()
+  {
     return name + "=" + value;
   }
 
-  public class Timer implements AutoCloseable {
+  public class Timer implements AutoCloseable
+  {
     private final long begin = System.currentTimeMillis();
 
     @Override
-    public void close() {
+    public void close()
+    {
       add(System.currentTimeMillis() - begin);
     }
   }

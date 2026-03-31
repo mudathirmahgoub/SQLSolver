@@ -1,6 +1,7 @@
 package sqlsolver.common.utils;
 
-public interface Metric<V, M extends Metric<V, M>> {
+public interface Metric<V, M extends Metric<V, M>>
+{
   String name();
 
   V value();

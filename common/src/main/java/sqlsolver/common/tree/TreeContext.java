@@ -4,7 +4,8 @@ package sqlsolver.common.tree;
  * A general tree whose nodes are typed. Nodes are uniquely identified by an integer. Methods of
  * this class take such an id to operate nodes.
  */
-public interface TreeContext<Kind> {
+public interface TreeContext<Kind>
+{
   int NO_SUCH_NODE = 0;
 
   int maxNodeId();
@@ -22,9 +23,7 @@ public interface TreeContext<Kind> {
   /** Detach a node from its parent. */
   void detachNode(int nodeId);
 
-  default void myDetachNode(int nodeIs) {
-
-  }
+  default void myDetachNode(int nodeIs) {}
 
   /** Delete a node from this context. */
   void deleteNode(int nodeId);
@@ -42,16 +41,21 @@ public interface TreeContext<Kind> {
    *
    * <p>Note: when called on an incomplete tree (actually a forest), the result is undefined.
    */
-  default int root() {
-    if (maxNodeId() == 0) return NO_SUCH_NODE;
-    else return TreeSupport.rootOf(this, 1);
+  default int root()
+  {
+    if (maxNodeId() == 0)
+      return NO_SUCH_NODE;
+    else
+      return TreeSupport.rootOf(this, 1);
   }
 
-  default int numNodes() {
+  default int numNodes()
+  {
     return TreeSupport.countNodes(this);
   }
 
-  default void deleteDetached(int rootId) {
+  default void deleteDetached(int rootId)
+  {
     TreeSupport.deleteDetached(this, rootId);
   }
 }

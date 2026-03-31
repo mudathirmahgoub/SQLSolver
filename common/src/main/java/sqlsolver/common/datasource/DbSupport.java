@@ -2,20 +2,21 @@ package sqlsolver.common.datasource;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-
-import javax.sql.DataSource;
 import java.util.Properties;
+import javax.sql.DataSource;
 
 /**
  * Building connection with databases.
  * Only support MySQL, PostgreSQL, SQLServer.
  */
-public interface DbSupport {
+public interface DbSupport
+{
   String MySQL = "mysql";
   String PostgreSQL = "postgresql";
   String SQLServer = "sqlserver";
 
-  static DataSource makeDataSource(Properties dbProps) {
+  static DataSource makeDataSource(Properties dbProps)
+  {
     final HikariConfig config = new HikariConfig();
     config.setJdbcUrl(dbProps.getProperty("jdbcUrl"));
     config.setUsername(dbProps.getProperty("username"));
@@ -23,8 +24,10 @@ public interface DbSupport {
     return new HikariDataSource(config);
   }
 
-  static Properties dbProps(String dbType, String dbName) {
-    return switch (dbType) {
+  static Properties dbProps(String dbType, String dbName)
+  {
+    return switch (dbType)
+    {
       case MySQL -> DbSupport.mysqlProps(dbName);
       case PostgreSQL -> DbSupport.pgProps(dbName);
       case SQLServer -> DbSupport.sqlserverProps(dbName);
