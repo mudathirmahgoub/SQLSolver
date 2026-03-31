@@ -209,7 +209,7 @@ public class Main {
             "CREATE TABLE b ( x INT PRIMARY KEY, y INT, z INT );";
 
     VerificationResult result = Verification.verify(sql1, sql2, schema);
-    System.out.println(result);
+    Printer.output.println(result);
   }
 }
 ```

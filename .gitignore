@@ -24,3 +24,8 @@ opt_result*
 enum.log*
 target/
 #support/
+*.class
+*.g4
+*.lua
+*.properties
+*.tokens

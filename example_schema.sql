@@ -1,0 +1,1 @@
+CREATE TABLE R ( x INT not null, y INT not null, z INT not null );
