@@ -1,10 +1,10 @@
 package sqlsolver.sql.support.resolution;
 
+import java.util.List;
 import sqlsolver.sql.ast.SqlNode;
 
-import java.util.List;
-
-public interface ParamDesc {
+public interface ParamDesc
+{
   SqlNode node();
 
   List<ParamModifier> modifiers();

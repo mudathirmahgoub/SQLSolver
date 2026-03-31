@@ -1,38 +1,45 @@
 package sqlsolver.sql.plan;
 
-import sqlsolver.common.utils.SetSupport;
-import sqlsolver.sql.ast.constants.ConstraintKind;
-import sqlsolver.sql.schema.Column;
-import sqlsolver.sql.schema.Table;
+import static java.util.function.Predicate.not;
+import static sqlsolver.common.utils.IterableSupport.any;
+import static sqlsolver.sql.SqlSupport.isEquiConstPredicate;
 
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import sqlsolver.common.utils.SetSupport;
+import sqlsolver.sql.ast.constants.ConstraintKind;
+import sqlsolver.sql.schema.Column;
+import sqlsolver.sql.schema.Table;
 
-import static java.util.function.Predicate.not;
-import static sqlsolver.common.utils.IterableSupport.any;
-import static sqlsolver.sql.SqlSupport.isEquiConstPredicate;
-
-class UniquenessInference {
+class UniquenessInference
+{
   private final PlanContext ctx;
 
-  UniquenessInference(PlanContext ctx) {
+  UniquenessInference(PlanContext ctx)
+  {
     this.ctx = ctx;
   }
 
-  boolean isUnique(int surfaceId) {
+  boolean isUnique(int surfaceId)
+  {
     return isUniqueCoreAt(new HashSet<>(ctx.valuesReg().valuesOf(surfaceId)), surfaceId);
   }
 
-  boolean isUniqueCoreAt(Collection<Value> toCheck, int surfaceId) {
-    if (toCheck instanceof Set<Value>) return isUniqueCoreAt((Set<Value>) toCheck, surfaceId);
-    else return isUniqueCoreAt(new HashSet<>(toCheck), surfaceId);
+  boolean isUniqueCoreAt(Collection<Value> toCheck, int surfaceId)
+  {
+    if (toCheck instanceof Set<Value>)
+      return isUniqueCoreAt((Set<Value>) toCheck, surfaceId);
+    else
+      return isUniqueCoreAt(new HashSet<>(toCheck), surfaceId);
   }
 
-  boolean isUniqueCoreAt(Set<Value> toCheck, int surfaceId) {
+  boolean isUniqueCoreAt(Set<Value> toCheck, int surfaceId)
+  {
     final PlanKind kind = ctx.kindOf(surfaceId);
-    return switch (kind) {
+    return switch (kind)
+    {
       case Input -> onInput(toCheck, surfaceId);
       case Join -> onJoin(toCheck, surfaceId);
       case Proj -> onProj(toCheck, surfaceId);
@@ -83,40 +90,47 @@ class UniquenessInference {
     // as long as ["t.m"] is the unique-core of t
     if (PlanSupport.isDedup(ctx, surfaceId)) return true;
     final Set<Value> refAttrs = new HashSet<>(toCheck.size());
-    for (Value value : toCheck) {
-      final Value ref = PlanSupport.deRef(ctx, value);
-      if (ref != null) refAttrs.add(ref);
+    for (Value value : toCheck)
+        {
+          final Value ref = PlanSupport.deRef(ctx, value);
+          if (ref != null)
+            refAttrs.add(ref);
+        }
+        return isUniqueCoreAt(refAttrs, ctx.childOf(surfaceId, 0));
     }
-    return isUniqueCoreAt(refAttrs, ctx.childOf(surfaceId, 0));
-  }
 
-  private boolean onFilter(Set<Value> toCheck, int surfaceId) {
-    // Filter: check if the attrs are the unique core of Filter's input
-    final ValuesRegistry valuesReg = ctx.valuesReg();
-    final Expression predicate = ((SimpleFilterNode) ctx.nodeAt(surfaceId)).predicate();
-    if (isEquiConstPredicate(predicate.template())) {
-      // If the filter is in form of "col_ref = const_value", then add "col_ref" to `to_check`
-      // e.g. [] is the unique core of Filter<t.a = 1>(t)
-      // as long as ["t.a"] is the unique core of t.
-      final Values refs = valuesReg.valueRefsOf(predicate);
-      assert refs.size() == 1;
-      toCheck.add(refs.get(0));
+    private boolean onFilter(Set<Value> toCheck, int surfaceId)
+    {
+      // Filter: check if the attrs are the unique core of Filter's input
+      final ValuesRegistry valuesReg = ctx.valuesReg();
+      final Expression predicate = ((SimpleFilterNode) ctx.nodeAt(surfaceId)).predicate();
+      if (isEquiConstPredicate(predicate.template()))
+      {
+        // If the filter is in form of "col_ref = const_value", then add "col_ref" to `to_check`
+        // e.g. [] is the unique core of Filter<t.a = 1>(t)
+        // as long as ["t.a"] is the unique core of t.
+        final Values refs = valuesReg.valueRefsOf(predicate);
+        assert refs.size() == 1;
+        toCheck.add(refs.get(0));
+      }
+      return isUniqueCoreAt(toCheck, ctx.childOf(surfaceId, 0));
     }
-    return isUniqueCoreAt(toCheck, ctx.childOf(surfaceId, 0));
-  }
 
-  private boolean onAgg(Set<Value> toCheck, int surfaceId) {
-    // Agg: check if all group keys are contained by `toCheck`
-    // e.g., ["t.a","t.b"] is the unique core of Agg<group=["t.a"]>(t)
-    final ValuesRegistry valuesReg = ctx.valuesReg();
-    final List<Expression> groupExprs = ((AggNode) ctx.nodeAt(surfaceId)).groupByExprs();
-    final Set<Value> groupAttrs = SetSupport.flatMap(groupExprs, valuesReg::valueRefsOf);
+    private boolean onAgg(Set<Value> toCheck, int surfaceId)
+    {
+      // Agg: check if all group keys are contained by `toCheck`
+      // e.g., ["t.a","t.b"] is the unique core of Agg<group=["t.a"]>(t)
+      final ValuesRegistry valuesReg = ctx.valuesReg();
+      final List<Expression> groupExprs = ((AggNode) ctx.nodeAt(surfaceId)).groupByExprs();
+      final Set<Value> groupAttrs = SetSupport.flatMap(groupExprs, valuesReg::valueRefsOf);
 
-    for (Value value : toCheck) {
-      final Value ref = PlanSupport.deRef(ctx, value);
-      if (ref == null) return false;
-      groupAttrs.remove(ref);
+      for (Value value : toCheck)
+      {
+        final Value ref = PlanSupport.deRef(ctx, value);
+        if (ref == null)
+          return false;
+        groupAttrs.remove(ref);
+      }
+      return groupAttrs.isEmpty();
     }
-    return groupAttrs.isEmpty();
   }
-}

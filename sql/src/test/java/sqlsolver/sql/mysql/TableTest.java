@@ -1,5 +1,7 @@
 package sqlsolver.sql.mysql;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import sqlsolver.common.datasource.DbSupport;
@@ -8,22 +10,21 @@ import sqlsolver.sql.schema.Schema;
 import sqlsolver.sql.schema.SchemaSupport;
 import sqlsolver.sql.schema.Table;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-public class TableTest {
+public class TableTest
+{
   @Test
   @DisplayName("[Stmt.Table] from CREATE TABLE")
-  void test() {
-    final String createTable =
-        ""
-            + "create table `public`.t ("
-            + "`i` int(10) primary key references b(x),"
-            + "j varchar(512) NOT NULL DEFAULT 'a',"
-            + "k int AUTO_INCREMENT CHECK (k < 100),"
-            + "index (j(100)),"
-            + "unique (j DESC) using rtree,"
-            + "constraint fk_cons foreign key fk (k) references b(y)"
-            + ") ENGINE = 'myisam';";
+  void test()
+  {
+    final String createTable = ""
+        + "create table `public`.t ("
+        + "`i` int(10) primary key references b(x),"
+        + "j varchar(512) NOT NULL DEFAULT 'a',"
+        + "k int AUTO_INCREMENT CHECK (k < 100),"
+        + "index (j(100)),"
+        + "unique (j DESC) using rtree,"
+        + "constraint fk_cons foreign key fk (k) references b(y)"
+        + ") ENGINE = 'myisam';";
     final Schema schema = SchemaSupport.parseSchema(DbSupport.MySQL, createTable);
     final Table table = schema.table("t");
 

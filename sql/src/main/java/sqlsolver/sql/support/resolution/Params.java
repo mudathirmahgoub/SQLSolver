@@ -1,12 +1,12 @@
 package sqlsolver.sql.support.resolution;
 
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 import sqlsolver.sql.ast.AdditionalInfo;
 import sqlsolver.sql.ast.SqlNode;
 
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-
-public interface Params extends AdditionalInfo<Params> {
+public interface Params extends AdditionalInfo<Params>
+{
   AdditionalInfo.Key<Params> PARAMS = ParamsImpl::new;
 
   int numParams();

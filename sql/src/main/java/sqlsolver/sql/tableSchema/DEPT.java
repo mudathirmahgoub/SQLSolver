@@ -14,33 +14,42 @@ import org.apache.calcite.sql.SqlCall;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.util.ImmutableBitSet;
 
-public class DEPT implements Table{
-  public RelDataType getRowType(RelDataTypeFactory typeFactory) {
+public class DEPT implements Table
+{
+  public RelDataType getRowType(RelDataTypeFactory typeFactory)
+  {
     RelDataTypeFactory.FieldInfoBuilder b = typeFactory.builder();
     b.add("DEPTNO", typeFactory.createJavaType(Integer.class));
     b.add("NAME", typeFactory.createJavaType(String.class));
     return b.build();
   }
   @Override
-  public boolean isRolledUp(String s) {
-        return false;
-    }
-  @Override
-  public boolean rolledUpColumnValidInsideAgg(String s, SqlCall sqlCall, SqlNode sqlNode, CalciteConnectionConfig calciteConnectionConfig) {
+  public boolean isRolledUp(String s)
+  {
     return false;
   }
-  public Statistic getStatistic() {
-//        return Statistics.of(100, ImmutableList.<ImmutableBitSet>of());
-    RelFieldCollation.Direction dir = RelFieldCollation.Direction.ASCENDING;
-    RelFieldCollation collation = new RelFieldCollation(0, dir, RelFieldCollation.NullDirection.UNSPECIFIED);
-    return Statistics.of(5, ImmutableList.of(ImmutableBitSet.of(0)),
-            ImmutableList.of(RelCollations.of(collation)));
+  @Override
+  public boolean rolledUpColumnValidInsideAgg(
+      String s, SqlCall sqlCall, SqlNode sqlNode, CalciteConnectionConfig calciteConnectionConfig)
+  {
+    return false;
   }
-  public Schema.TableType getJdbcTableType() {
-        return Schema.TableType.STREAM;
-    }
+  public Statistic getStatistic()
+  {
+    //        return Statistics.of(100, ImmutableList.<ImmutableBitSet>of());
+    RelFieldCollation.Direction dir = RelFieldCollation.Direction.ASCENDING;
+    RelFieldCollation collation =
+        new RelFieldCollation(0, dir, RelFieldCollation.NullDirection.UNSPECIFIED);
+    return Statistics.of(
+        5, ImmutableList.of(ImmutableBitSet.of(0)), ImmutableList.of(RelCollations.of(collation)));
+  }
+  public Schema.TableType getJdbcTableType()
+  {
+    return Schema.TableType.STREAM;
+  }
 
-  public Table stream() {
-        return null;
-    }
+  public Table stream()
+  {
+    return null;
+  }
 }

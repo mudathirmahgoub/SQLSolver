@@ -1,20 +1,22 @@
 package sqlsolver.sql.plan;
 
-import org.junit.jupiter.api.Test;
-import sqlsolver.common.datasource.DbSupport;
-import sqlsolver.sql.schema.Schema;
-import sqlsolver.sql.schema.SchemaSupport;
-import sqlsolver.sql.SqlSupport;
-import sqlsolver.sql.ast.SqlNode;
-
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class UniquenessInferenceTest {
+import org.junit.jupiter.api.Test;
+import sqlsolver.common.datasource.DbSupport;
+import sqlsolver.sql.SqlSupport;
+import sqlsolver.sql.ast.SqlNode;
+import sqlsolver.sql.schema.Schema;
+import sqlsolver.sql.schema.SchemaSupport;
+
+class UniquenessInferenceTest
+{
   @Test
-  void testJoin() {
+  void testJoin()
+  {
     final String schemaDef =
         "Create Table t (i int primary key, j int); Create Table s (m int primary key, n int)";
     final Schema schema = SchemaSupport.parseSchema(DbSupport.MySQL, schemaDef);
@@ -42,7 +44,8 @@ class UniquenessInferenceTest {
   }
 
   @Test
-  void testFilter() {
+  void testFilter()
+  {
     final String schemaDef = "Create Table t (i int, j int, primary key(i,j)); ";
     final Schema schema = SchemaSupport.parseSchema(DbSupport.MySQL, schemaDef);
 
@@ -58,7 +61,8 @@ class UniquenessInferenceTest {
   }
 
   @Test
-  void testAgg() {
+  void testAgg()
+  {
     final String schemaDef = "Create Table t (i int, j int); ";
     final Schema schema = SchemaSupport.parseSchema(DbSupport.MySQL, schemaDef);
 

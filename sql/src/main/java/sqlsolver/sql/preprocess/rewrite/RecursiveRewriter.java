@@ -1,10 +1,9 @@
 package sqlsolver.sql.preprocess.rewrite;
 
+import java.util.List;
 import org.apache.calcite.sql.*;
 import org.apache.calcite.sql.fun.SqlCase;
 import org.apache.calcite.sql.parser.SqlParserPos;
-
-import java.util.List;
 
 /**
  * <p>
@@ -18,8 +17,8 @@ import java.util.List;
  * once a rewrite has been done.
  * </p>
  */
-public abstract class RecursiveRewriter extends SqlNodePreprocess {
-
+public abstract class RecursiveRewriter extends SqlNodePreprocess
+{
   private boolean allowsMultipleApplications = false;
 
   /**
@@ -27,7 +26,8 @@ public abstract class RecursiveRewriter extends SqlNodePreprocess {
    * once a rewrite has been done.
    * It is <code>false</code> by default.
    */
-  public void setAllowsMultipleApplications(boolean b) {
+  public void setAllowsMultipleApplications(boolean b)
+  {
     allowsMultipleApplications = b;
   }
 
@@ -47,32 +47,41 @@ public abstract class RecursiveRewriter extends SqlNodePreprocess {
    * @param node the SqlNode to be preprocessed
    * @return whether preprocessing is performed then
    */
-  protected boolean prepare(SqlNode node) {
+  protected boolean prepare(SqlNode node)
+  {
     return true;
   }
 
   @Override
-  public final SqlNode preprocess(SqlNode node) {
-    if (node != null && prepare(node)) return preprocess0(node);
+  public final SqlNode preprocess(SqlNode node)
+  {
+    if (node != null && prepare(node))
+      return preprocess0(node);
     return node;
   }
 
-  public SqlNode preprocess0(SqlNode node) {
-    if (node == null) return null;
+  public SqlNode preprocess0(SqlNode node)
+  {
+    if (node == null)
+      return null;
     // current-level replacement
     SqlNode newExpr = handleNode(node);
-    if (newExpr != node && !allowsMultipleApplications) {
+    if (newExpr != node && !allowsMultipleApplications)
+    {
       // the desired rewrite has been performed
       return newExpr;
     }
     // recursion
-    if (newExpr instanceof SqlSelect select) {
+    if (newExpr instanceof SqlSelect select)
+    {
       // handle SELECT list
       SqlNodeList items = select.getSelectList();
-      for (int i = 0; i < items.size(); i++) {
+      for (int i = 0; i < items.size(); i++)
+      {
         SqlNode item = items.get(i);
         SqlNode newItem = preprocess0(item);
-        if (newItem != item) {
+        if (newItem != item)
+        {
           items.set(i, newItem);
         }
       }
@@ -82,63 +91,84 @@ public abstract class RecursiveRewriter extends SqlNodePreprocess {
       select.setWhere(preprocess0(select.getWhere()));
       // handle groupBy
       SqlNodeList groups = select.getGroup();
-      if (groups != null) {
-        for (int i = 0; i < groups.size(); i++) {
+      if (groups != null)
+      {
+        for (int i = 0; i < groups.size(); i++)
+        {
           SqlNode group = groups.get(i);
           SqlNode newGroup = preprocess0(group);
-          if (newGroup != group) {
+          if (newGroup != group)
+          {
             groups.set(i, newGroup);
           }
         }
       }
       // handle have
       select.setHaving(preprocess0(select.getHaving()));
-    } else if (newExpr instanceof SqlOrderBy orderBy) {
+    }
+    else if (newExpr instanceof SqlOrderBy orderBy)
+    {
       final SqlNodeList orderList = orderBy.orderList;
-      for (int i = 0; i < orderList.size(); i++) {
+      for (int i = 0; i < orderList.size(); i++)
+      {
         SqlNode item = orderList.get(i);
         SqlNode newItem = preprocess0(item);
-        if (newItem != item) {
+        if (newItem != item)
+        {
           orderList.set(i, newItem);
         }
       }
 
       SqlNode offset = orderBy.offset;
-      if (offset != null) {
+      if (offset != null)
+      {
         offset = preprocess(offset);
       }
 
       SqlNode fetch = orderBy.fetch;
-      if (fetch != null) {
+      if (fetch != null)
+      {
         fetch = preprocess(fetch);
       }
 
       // rebuild SqlOrderBy
-      return new SqlOrderBy(SqlParserPos.ZERO, preprocess0(orderBy.query), orderList, offset, fetch);
-    } else if (newExpr instanceof SqlBasicCall call) {
+      return new SqlOrderBy(
+          SqlParserPos.ZERO, preprocess0(orderBy.query), orderList, offset, fetch);
+    }
+    else if (newExpr instanceof SqlBasicCall call)
+    {
       // normal recursion
       List<SqlNode> args = call.getOperandList();
-      for (int i = 0; i < args.size(); i++) {
+      for (int i = 0; i < args.size(); i++)
+      {
         call.setOperand(i, preprocess0(args.get(i)));
       }
-    } else if (newExpr instanceof SqlCase cas) {
+    }
+    else if (newExpr instanceof SqlCase cas)
+    {
       SqlNodeList whens = cas.getWhenOperands();
-      for (int i = 0; i < whens.size(); i++) {
+      for (int i = 0; i < whens.size(); i++)
+      {
         whens.set(i, preprocess0(whens.get(i)));
       }
       SqlNodeList thens = cas.getThenOperands();
-      for (int i = 0; i < thens.size(); i++) {
+      for (int i = 0; i < thens.size(); i++)
+      {
         thens.set(i, preprocess0(thens.get(i)));
       }
       cas.setOperand(3, cas.getElseOperand());
-    } else if (newExpr instanceof SqlJoin join) {
+    }
+    else if (newExpr instanceof SqlJoin join)
+    {
       // SqlJoin
-      return new SqlJoin(SqlParserPos.ZERO, preprocess0(join.getLeft()),
-              join.isNaturalNode(), join.getJoinTypeNode(),
-              preprocess0(join.getRight()), join.getConditionTypeNode(),
-              preprocess0(join.getCondition()));
+      return new SqlJoin(SqlParserPos.ZERO,
+          preprocess0(join.getLeft()),
+          join.isNaturalNode(),
+          join.getJoinTypeNode(),
+          preprocess0(join.getRight()),
+          join.getConditionTypeNode(),
+          preprocess0(join.getCondition()));
     }
     return newExpr;
   }
-
 }

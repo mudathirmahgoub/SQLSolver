@@ -1,14 +1,13 @@
 package sqlsolver.sql.ast;
 
-import sqlsolver.common.field.FieldKey;
-import sqlsolver.sql.ast.constants.*;
-import sqlsolver.sql.ast.constants.*;
-
 import static sqlsolver.sql.ast.SqlKind.Expr;
 import static sqlsolver.sql.ast.SqlNodeFields.Expr_Kind;
 
+import sqlsolver.common.field.FieldKey;
+import sqlsolver.sql.ast.constants.*;
 
-public interface ExprFields {
+public interface ExprFields
+{
   // Variable
   FieldKey<VariableScope> Variable_Scope = ExprKind.Variable.field("Scope", VariableScope.class);
   FieldKey<String> Variable_Name = ExprKind.Variable.textField("Name");
@@ -22,7 +21,7 @@ public interface ExprFields {
   FieldKey<SqlNode> Collate_Expr = ExprKind.Collate.nodeField("Expr"); // Expr
   FieldKey<SqlNode> Collate_Collation = ExprKind.Collate.nodeField("Collation"); // Symbol
   // Interval
-  FieldKey<SqlNode> Interval_Expr = ExprKind.Interval.nodeField("Expr");// Expr
+  FieldKey<SqlNode> Interval_Expr = ExprKind.Interval.nodeField("Expr"); // Expr
   FieldKey<IntervalUnit> Interval_Unit = ExprKind.Interval.field("Unit", IntervalUnit.class);
   // Symbol
   FieldKey<String> Symbol_Text = ExprKind.Symbol.textField("Text");
@@ -37,7 +36,8 @@ public interface ExprFields {
   FieldKey<String> Aggregate_WindowName = ExprKind.Aggregate.textField("WindowName");
   FieldKey<SqlNode> Aggregate_WindowSpec = ExprKind.Aggregate.nodeField("WindowSpec"); // WindowSpec
   FieldKey<SqlNode> Aggregate_Filter = ExprKind.Aggregate.nodeField("Filter"); // Expr
-  FieldKey<SqlNodes> Aggregate_WithinGroupOrder = ExprKind.Aggregate.nodesField("WithinGroupOrder"); // Grouping
+  FieldKey<SqlNodes> Aggregate_WithinGroupOrder =
+      ExprKind.Aggregate.nodesField("WithinGroupOrder"); // Grouping
   FieldKey<SqlNodes> Aggregate_Order = ExprKind.Aggregate.nodesField("Order");
   FieldKey<String> Aggregate_Sep = ExprKind.Aggregate.textField("Sep");
   // Wildcard
@@ -89,7 +89,8 @@ public interface ExprFields {
   FieldKey<SqlNode> QueryExpr_Query = ExprKind.QueryExpr.nodeField("Query"); // Query
   // Indirection
   FieldKey<SqlNode> Indirection_Expr = ExprKind.Indirection.nodeField("Expr"); // Expr
-  FieldKey<SqlNodes> Indirection_Comps = ExprKind.Indirection.nodesField("Comps"); // IndirectionComp
+  FieldKey<SqlNodes> Indirection_Comps =
+      ExprKind.Indirection.nodesField("Comps"); // IndirectionComp
   // IndirectionComp
   FieldKey<Boolean> IndirectionComp_Subscript = ExprKind.IndirectionComp.boolField("Subscript");
   FieldKey<SqlNode> IndirectionComp_Start = ExprKind.IndirectionComp.nodeField("Start"); // Expr
@@ -107,15 +108,21 @@ public interface ExprFields {
   FieldKey<SqlDataType> TypeCoercion_Type = ExprKind.TypeCoercion.field("Type", SqlDataType.class);
   FieldKey<String> TypeCoercion_String = ExprKind.TypeCoercion.textField("RawType");
   // DataTimeOverlap
-  FieldKey<SqlNode> DateTimeOverlap_LeftStart = ExprKind.DateTimeOverlap.nodeField("LeftStart"); // Expr
+  FieldKey<SqlNode> DateTimeOverlap_LeftStart =
+      ExprKind.DateTimeOverlap.nodeField("LeftStart"); // Expr
   FieldKey<SqlNode> DateTimeOverlap_LeftEnd = ExprKind.DateTimeOverlap.nodeField("LeftEnd"); // Expr
-  FieldKey<SqlNode> DateTimeOverlap_RightStart = ExprKind.DateTimeOverlap.nodeField("RightStart"); // Expr
-  FieldKey<SqlNode> DateTimeOverlap_RightEnd = ExprKind.DateTimeOverlap.nodeField("RightEnd"); // Expr
+  FieldKey<SqlNode> DateTimeOverlap_RightStart =
+      ExprKind.DateTimeOverlap.nodeField("RightStart"); // Expr
+  FieldKey<SqlNode> DateTimeOverlap_RightEnd =
+      ExprKind.DateTimeOverlap.nodeField("RightEnd"); // Expr
 
-  static int getOperatorPrecedence(SqlNode node) {
-    if (!Expr.isInstance(node)) return -1;
+  static int getOperatorPrecedence(SqlNode node)
+  {
+    if (!Expr.isInstance(node))
+      return -1;
     final ExprKind exprKind = node.$(Expr_Kind);
-    return switch (exprKind) {
+    return switch (exprKind)
+    {
       case Unary -> node.$(Unary_Op).precedence();
       case Binary -> node.$(Binary_Op).precedence();
       case Ternary -> node.$(Ternary_Op).precedence();

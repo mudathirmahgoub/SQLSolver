@@ -1,14 +1,20 @@
 package sqlsolver.sql.plan;
 
-abstract class TypedAlgorithm<T> {
+abstract class TypedAlgorithm<T>
+{
   protected final PlanContext context;
 
-  protected TypedAlgorithm(PlanContext context) {this.context = context;}
+  protected TypedAlgorithm(PlanContext context)
+  {
+    this.context = context;
+  }
 
-  T on(PlanNode node) {
+  T on(PlanNode node)
+  {
     prologue(node);
 
-    T val = switch (node.kind()) {
+    T val = switch (node.kind())
+    {
       case Input -> onInput((InputNode) node);
       default -> null;
     };

@@ -1,6 +1,7 @@
 package sqlsolver.sql.ast.constants;
 
-public enum SubqueryOption {
+public enum SubqueryOption
+{
   ANY,
   ALL,
   SOME

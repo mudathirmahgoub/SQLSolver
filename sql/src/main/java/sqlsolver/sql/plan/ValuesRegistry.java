@@ -1,10 +1,10 @@
 package sqlsolver.sql.plan;
 
+import java.util.List;
 import sqlsolver.sql.schema.Column;
 
-import java.util.List;
-
-public interface ValuesRegistry {
+public interface ValuesRegistry
+{
   Values valuesOf(int nodeId);
 
   int initiatorOf(Value value);

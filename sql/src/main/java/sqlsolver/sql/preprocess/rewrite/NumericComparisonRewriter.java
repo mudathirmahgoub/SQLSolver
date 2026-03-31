@@ -1,20 +1,19 @@
 package sqlsolver.sql.preprocess.rewrite;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.calcite.sql.*;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-
-
 // a OP b -> a * 10^n OP b * 10^n
-public class NumericComparisonRewriter extends RecursiveRewriter {
-
+public class NumericComparisonRewriter extends RecursiveRewriter
+{
   private List<SqlOperator> comparisons;
 
-  public NumericComparisonRewriter() {
+  public NumericComparisonRewriter()
+  {
     comparisons = new ArrayList<>();
     comparisons.add(SqlStdOperatorTable.EQUALS);
     comparisons.add(SqlStdOperatorTable.LESS_THAN);
@@ -23,13 +22,16 @@ public class NumericComparisonRewriter extends RecursiveRewriter {
     comparisons.add(SqlStdOperatorTable.GREATER_THAN_OR_EQUAL);
   }
 
-  private int getScale(SqlNode node) {
-    if (node instanceof SqlBasicCall call) {
+  private int getScale(SqlNode node)
+  {
+    if (node instanceof SqlBasicCall call)
+    {
       assert call.operandCount() == 2;
       SqlOperator op = call.getOperator();
       SqlNode left = call.operand(0), right = call.operand(1);
       int scaleLeft = getScale(left), scaleRight = getScale(right);
-      switch (op.getKind()) {
+      switch (op.getKind())
+      {
         case PLUS, MINUS -> { return Math.max(scaleLeft, scaleRight); }
         case TIMES -> { return scaleLeft + scaleRight; }
       }

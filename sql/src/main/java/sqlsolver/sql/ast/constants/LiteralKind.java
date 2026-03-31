@@ -1,6 +1,7 @@
 package sqlsolver.sql.ast.constants;
 
-public enum LiteralKind {
+public enum LiteralKind
+{
   TEXT,
   INTEGER,
   LONG,

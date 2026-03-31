@@ -1,12 +1,12 @@
 package sqlsolver.sql.support.resolution;
 
-import sqlsolver.sql.schema.Column;
-import sqlsolver.sql.ast.AdditionalInfo;
-
 import java.util.List;
 import java.util.Set;
+import sqlsolver.sql.ast.AdditionalInfo;
+import sqlsolver.sql.schema.Column;
 
-public interface JoinGraph extends AdditionalInfo<JoinGraph> {
+public interface JoinGraph extends AdditionalInfo<JoinGraph>
+{
   AdditionalInfo.Key<JoinGraph> JOIN_GRAPH = JoinGraphBuilder::build;
 
   Set<Relation> tables();
@@ -21,7 +21,8 @@ public interface JoinGraph extends AdditionalInfo<JoinGraph> {
 
   void addJoin(Relation leftTbl, Column leftCol, Relation rightTbl, Column rightCol);
 
-  interface JoinKey {
+  interface JoinKey
+  {
     Column lhsKey();
 
     Column rhsKey();

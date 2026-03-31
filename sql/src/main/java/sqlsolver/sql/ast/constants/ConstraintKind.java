@@ -1,6 +1,7 @@
 package sqlsolver.sql.ast.constants;
 
-public enum ConstraintKind {
+public enum ConstraintKind
+{
   UNIQUE,
   PRIMARY,
   NOT_NULL,

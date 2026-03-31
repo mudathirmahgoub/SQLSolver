@@ -1,12 +1,15 @@
 package sqlsolver.sql.plan;
 
-public interface ExistsNode extends PlanNode {
+public interface ExistsNode extends PlanNode
+{
   @Override
-  default PlanKind kind() {
+  default PlanKind kind()
+  {
     return PlanKind.Exists;
   }
 
-  static ExistsNode mk() {
+  static ExistsNode mk()
+  {
     return new ExistsNodeImpl();
   }
 }

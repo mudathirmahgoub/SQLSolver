@@ -1,6 +1,7 @@
 package sqlsolver.sql.ast.constants;
 
-public enum Category {
+public enum Category
+{
   INTEGRAL,
   FRACTION,
   BOOLEAN,

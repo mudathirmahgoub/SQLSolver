@@ -1,13 +1,15 @@
 package sqlsolver.sql.ast.constants;
 
-public enum WindowUnit {
+public enum WindowUnit
+{
   ROWS,
   RANGE,
   GROUPS;
 
   private final String text = name();
 
-  public String text() {
+  public String text()
+  {
     return text;
   }
 }

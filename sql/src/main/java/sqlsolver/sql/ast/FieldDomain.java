@@ -1,10 +1,10 @@
 package sqlsolver.sql.ast;
 
+import java.util.List;
 import sqlsolver.common.field.FieldKey;
 
-import java.util.List;
-
-public interface FieldDomain {
+public interface FieldDomain
+{
   String name();
 
   boolean isInstance(SqlNode node);
@@ -13,19 +13,23 @@ public interface FieldDomain {
 
   <T, R extends T> FieldKey<R> field(String name, Class<T> clazz);
 
-  default FieldKey<String> textField(String name) {
+  default FieldKey<String> textField(String name)
+  {
     return field(name, String.class);
   }
 
-  default FieldKey<Boolean> boolField(String name) {
+  default FieldKey<Boolean> boolField(String name)
+  {
     return field(name, Boolean.class);
   }
 
-  default FieldKey<SqlNode> nodeField(String name) {
+  default FieldKey<SqlNode> nodeField(String name)
+  {
     return field(name, SqlNode.class);
   }
 
-  default FieldKey<SqlNodes> nodesField(String name) {
+  default FieldKey<SqlNodes> nodesField(String name)
+  {
     return field(name, SqlNodes.class);
   }
 }

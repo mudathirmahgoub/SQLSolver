@@ -1,26 +1,31 @@
 package sqlsolver.sql.plan;
 
-class InSubNodeImpl implements InSubNode {
+class InSubNodeImpl implements InSubNode
+{
   private final Expression expr;
   private boolean isPlain;
 
-  InSubNodeImpl(Expression expr) {
+  InSubNodeImpl(Expression expr)
+  {
     this.expr = expr;
     this.isPlain = true;
   }
 
   @Override
-  public boolean isPlain() {
+  public boolean isPlain()
+  {
     return isPlain;
   }
 
   @Override
-  public void setPlain(boolean plain) {
+  public void setPlain(boolean plain)
+  {
     isPlain = plain;
   }
 
   @Override
-  public Expression expr() {
+  public Expression expr()
+  {
     return expr;
   }
 }

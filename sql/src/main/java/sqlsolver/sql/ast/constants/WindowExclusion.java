@@ -1,6 +1,7 @@
 package sqlsolver.sql.ast.constants;
 
-public enum WindowExclusion {
+public enum WindowExclusion
+{
   CURRENT_ROW("CURRENT ROW"),
   GROUP("GROUP"),
   TIES("TIES"),
@@ -8,11 +9,13 @@ public enum WindowExclusion {
 
   private final String text;
 
-  WindowExclusion(String text) {
+  WindowExclusion(String text)
+  {
     this.text = text;
   }
 
-  public String text() {
+  public String text()
+  {
     return text;
   }
 }

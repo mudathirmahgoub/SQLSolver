@@ -1,5 +1,10 @@
 package sqlsolver.sql.schema;
 
+import static sqlsolver.common.utils.Commons.joining;
+import static sqlsolver.sql.SqlSupport.quoted;
+import static sqlsolver.sql.ast.constants.ConstraintKind.FOREIGN;
+
+import java.util.List;
 import sqlsolver.common.utils.Commons;
 import sqlsolver.sql.ast.SqlNode;
 import sqlsolver.sql.ast.SqlNodes;
@@ -7,13 +12,8 @@ import sqlsolver.sql.ast.constants.ConstraintKind;
 import sqlsolver.sql.ast.constants.IndexKind;
 import sqlsolver.sql.ast.constants.KeyDirection;
 
-import java.util.List;
-
-import static sqlsolver.common.utils.Commons.joining;
-import static sqlsolver.sql.SqlSupport.quoted;
-import static sqlsolver.sql.ast.constants.ConstraintKind.FOREIGN;
-
-class ConstraintImpl implements Constraint {
+class ConstraintImpl implements Constraint
+{
   private final ConstraintKind type;
   private final List<Column> columns;
   private List<KeyDirection> directions;
@@ -25,78 +25,95 @@ class ConstraintImpl implements Constraint {
   private Table refTable;
   private List<Column> refColumns;
 
-  private ConstraintImpl(ConstraintKind type, List<Column> columns) {
+  private ConstraintImpl(ConstraintKind type, List<Column> columns)
+  {
     this.type = type;
     this.columns = columns;
   }
 
-  static ConstraintImpl build(ConstraintKind type, List<Column> columns) {
+  static ConstraintImpl build(ConstraintKind type, List<Column> columns)
+  {
     return new ConstraintImpl(type, columns);
   }
 
   @Override
-  public List<Column> columns() {
+  public List<Column> columns()
+  {
     return columns;
   }
 
   @Override
-  public List<KeyDirection> directions() {
+  public List<KeyDirection> directions()
+  {
     return directions;
   }
 
   @Override
-  public ConstraintKind kind() {
+  public ConstraintKind kind()
+  {
     return type;
   }
 
   @Override
-  public Table refTable() {
+  public Table refTable()
+  {
     return refTable;
   }
 
   @Override
-  public List<Column> refColumns() {
+  public List<Column> refColumns()
+  {
     return refColumns;
   }
 
-  SqlNode refTableName() {
+  SqlNode refTableName()
+  {
     return refTableName;
   }
 
-  SqlNodes refColNames() {
+  SqlNodes refColNames()
+  {
     return refColNames;
   }
 
-  void setRefTable(Table refTable) {
+  void setRefTable(Table refTable)
+  {
     this.refTable = refTable;
   }
 
-  void setRefColumns(List<Column> refColumns) {
+  void setRefColumns(List<Column> refColumns)
+  {
     this.refColumns = refColumns;
   }
 
-  void setRefTableName(SqlNode refTableName) {
+  void setRefTableName(SqlNode refTableName)
+  {
     this.refTableName = refTableName;
   }
 
-  void setRefColNames(SqlNodes refColNames) {
+  void setRefColNames(SqlNodes refColNames)
+  {
     this.refColNames = refColNames;
   }
 
-  void setIndexType(IndexKind indexType) {
+  void setIndexType(IndexKind indexType)
+  {
     this.indexType = indexType;
   }
 
-  void setDirections(List<KeyDirection> directions) {
+  void setDirections(List<KeyDirection> directions)
+  {
     this.directions = directions;
   }
 
   @Override
-  public String toString() {
+  public String toString()
+  {
     final StringBuilder builder =
         new StringBuilder(32).append(type == null ? "INDEX" : type.name()).append(' ');
     Commons.joining("[", ",", "]", false, columns, builder);
-    if (type == FOREIGN) {
+    if (type == FOREIGN)
+    {
       builder.append(" -> ");
       Commons.joining("[", ",", "]", false, refColumns, builder);
     }
@@ -104,10 +121,11 @@ class ConstraintImpl implements Constraint {
   }
 
   @Override
-  public StringBuilder toDdl(String dbType, StringBuilder buffer) {
-    if (type == FOREIGN) {
-      buffer
-          .append("ALTER TABLE ")
+  public StringBuilder toDdl(String dbType, StringBuilder buffer)
+  {
+    if (type == FOREIGN)
+    {
+      buffer.append("ALTER TABLE ")
           .append(quoted(dbType, columns.get(0).tableName()))
           .append(" ADD FOREIGN KEY (");
       joining(",", columns, buffer, Column::name);

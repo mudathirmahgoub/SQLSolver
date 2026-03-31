@@ -8,21 +8,24 @@ import java.util.List;
  * and parent class of all handlers
  * that rewrite SQL by analyzing string
  */
-public abstract class SqlHandler {
-
+public abstract class SqlHandler
+{
   private static List<SqlHandler> handlers = null;
 
   /**
    * HINT: Add new SQL handlers HERE.
    */
-  private static void registerHandlers() {
+  private static void registerHandlers()
+  {
     handlers.add(new DateFormatHandler());
     handlers.add(new SemiAntiJoinHandler());
     handlers.add(new DefaultInnerJoinHandler());
   }
 
-  private static synchronized void init() {
-    if (handlers == null) {
+  private static synchronized void init()
+  {
+    if (handlers == null)
+    {
       handlers = new ArrayList<>();
       registerHandlers();
     }
@@ -35,14 +38,19 @@ public abstract class SqlHandler {
    * @param sql the SQL to be handled.
    * @return the SQL after handled by all registered preprocessors.
    */
-  public static String handleAll(String sql) {
+  public static String handleAll(String sql)
+  {
     init();
-    for (SqlHandler handler : handlers) {
-      try {
+    for (SqlHandler handler : handlers)
+    {
+      try
+      {
         sql = handler.handle(sql);
-      } catch (Exception e) {
+      }
+      catch (Exception e)
+      {
         // keep the last result upon exception
-//        e.printStackTrace();
+        //        e.printStackTrace();
       }
     }
     return sql;

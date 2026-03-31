@@ -1,34 +1,37 @@
 package sqlsolver.sql.preprocess.rewrite;
 
-import org.apache.calcite.sql.*;
-import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.calcite.util.DateString;
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import org.apache.calcite.sql.*;
+import org.apache.calcite.sql.parser.SqlParserPos;
+import org.apache.calcite.util.DateString;
 
 /**
  * The rewriter class is for handling Date operators:
  * date_sub(Date, Interval) will be calculated into date(Date)
  * date + interval will be calculated into date(Date)
  */
-public class DateOpRewriter extends RecursiveRewriter {
-
+public class DateOpRewriter extends RecursiveRewriter
+{
   /**
    * Calculate the result of given dateStr and field and amount.
    */
-  private String dateAdd(String dateStr, int field, int amount) {
+  private String dateAdd(String dateStr, int field, int amount)
+  {
     DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-    try {
+    try
+    {
       Date date = format.parse(dateStr);
       Calendar calendar = new GregorianCalendar();
       calendar.setTime(date);
       calendar.add(field, amount);
       Date newDate = calendar.getTime();
       return format.format(newDate);
-    } catch (ParseException e) {
+    }
+    catch (ParseException e)
+    {
       assert false;
     }
     return null;
@@ -37,10 +40,12 @@ public class DateOpRewriter extends RecursiveRewriter {
   /**
    * Calculate the result of two SqlNodes including date/interval literal.
    */
-  private SqlBasicCall dateAdd(SqlBasicCall basicCall, SqlIntervalLiteral intNode) {
+  private SqlBasicCall dateAdd(SqlBasicCall basicCall, SqlIntervalLiteral intNode)
+  {
     final String dateStr = basicCall.operand(0).toString().replace("'", "");
     int field = -1;
-    switch (intNode.getTypeName()) {
+    switch (intNode.getTypeName())
+    {
       case INTERVAL_DAY -> field = Calendar.DAY_OF_MONTH;
       case INTERVAL_MONTH -> field = Calendar.MONTH;
       case INTERVAL_YEAR -> field = Calendar.YEAR;

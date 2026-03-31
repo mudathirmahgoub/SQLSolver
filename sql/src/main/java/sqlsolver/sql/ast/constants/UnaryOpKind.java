@@ -1,6 +1,7 @@
 package sqlsolver.sql.ast.constants;
 
-public enum UnaryOpKind {
+public enum UnaryOpKind
+{
   NOT("NOT", 4, true),
   SQRT_ROOT("|/", 6, true),
   CUBE_ROOT("||/", 6, true),
@@ -15,27 +16,35 @@ public enum UnaryOpKind {
   private final int precedence;
   private final boolean atLeft;
 
-  UnaryOpKind(String text, int precedence, boolean atLeft) {
+  UnaryOpKind(String text, int precedence, boolean atLeft)
+  {
     this.text = text;
     this.precedence = precedence;
     this.atLeft = atLeft;
   }
 
-  public String text() {
+  public String text()
+  {
     return text;
   }
 
-  public static UnaryOpKind ofOp(String text) {
-    if (text.equals("!")) return FACTORIAL;
-    for (UnaryOpKind value : values()) if (value.text().equalsIgnoreCase(text)) return value;
+  public static UnaryOpKind ofOp(String text)
+  {
+    if (text.equals("!"))
+      return FACTORIAL;
+    for (UnaryOpKind value : values())
+      if (value.text().equalsIgnoreCase(text))
+        return value;
     return null;
   }
 
-  public int precedence() {
+  public int precedence()
+  {
     return precedence;
   }
 
-  public boolean isLogic() {
+  public boolean isLogic()
+  {
     return this == NOT;
   }
 }

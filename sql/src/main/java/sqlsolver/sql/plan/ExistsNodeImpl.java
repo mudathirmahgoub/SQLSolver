@@ -1,5 +1,6 @@
 package sqlsolver.sql.plan;
 
-class ExistsNodeImpl implements ExistsNode {
+class ExistsNodeImpl implements ExistsNode
+{
   ExistsNodeImpl() {}
 }

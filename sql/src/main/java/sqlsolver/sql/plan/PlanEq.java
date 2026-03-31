@@ -1,46 +1,55 @@
 package sqlsolver.sql.plan;
 
-import gnu.trove.list.TIntList;
-import gnu.trove.list.array.TIntArrayList;
-
-import java.util.List;
-import java.util.Objects;
-
 import static sqlsolver.common.utils.IterableSupport.*;
 import static sqlsolver.common.utils.ListSupport.join;
 
-public class PlanEq {
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
+import java.util.List;
+import java.util.Objects;
+
+public class PlanEq
+{
   private final PlanContext plan0, plan1;
 
-  public PlanEq(PlanContext plan0, PlanContext plan1) {
+  public PlanEq(PlanContext plan0, PlanContext plan1)
+  {
     this.plan0 = plan0;
     this.plan1 = plan1;
   }
 
-  boolean isEqTree() {
+  boolean isEqTree()
+  {
     return isEqTree(plan0.root(), plan1.root());
   }
 
-  boolean isEqTree(int root0, int root1) {
+  boolean isEqTree(int root0, int root1)
+  {
     return isStructuralEq(root0, root1) && isSemanticEq(root0, root1);
   }
 
-  private boolean isStructuralEq(int node0, int node1) {
-    if (plan0.kindOf(node0) != plan1.kindOf(node1)) return false;
+  private boolean isStructuralEq(int node0, int node1)
+  {
+    if (plan0.kindOf(node0) != plan1.kindOf(node1))
+      return false;
     final PlanKind kind = plan0.kindOf(node0);
-    for (int i = 0, bound = kind.numChildren(); i < bound; ++i) {
-      if (!isStructuralEq(plan0.childOf(node0, i), plan1.childOf(node1, i))) return false;
+    for (int i = 0, bound = kind.numChildren(); i < bound; ++i)
+    {
+      if (!isStructuralEq(plan0.childOf(node0, i), plan1.childOf(node1, i)))
+        return false;
     }
     return true;
   }
 
-  public boolean isSemanticEqForNodes(int node0, int node1) {
+  public boolean isSemanticEqForNodes(int node0, int node1)
+  {
     final PlanKind kind0 = plan0.kindOf(node0);
     final PlanKind kind1 = plan1.kindOf(node1);
-    if(kind0 != kind1)
+    if (kind0 != kind1)
       return false;
 
-    return switch (kind0) {
+    return switch (kind0)
+    {
       case SetOp -> isEqSetOp(node0, node1);
       case Sort -> isEqSort(node0, node1);
       case Limit -> isEqLimit(node0, node1);
@@ -215,11 +224,12 @@ public class PlanEq {
 
   private TIntList computeIndexedRefs(List<Value> refs, List<Value> values) {
     final TIntList indexedRefs = new TIntArrayList(refs.size());
-    for (Value ref : refs) {
-      final int index = values.indexOf(ref);
-      assert index >= 0;
-      indexedRefs.add(index);
+    for (Value ref : refs)
+        {
+          final int index = values.indexOf(ref);
+          assert index >= 0;
+          indexedRefs.add(index);
+        }
+        return indexedRefs;
     }
-    return indexedRefs;
   }
-}

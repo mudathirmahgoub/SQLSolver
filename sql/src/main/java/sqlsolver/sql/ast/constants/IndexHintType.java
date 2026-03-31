@@ -1,6 +1,7 @@
 package sqlsolver.sql.ast.constants;
 
-public enum IndexHintType {
+public enum IndexHintType
+{
   FORCE,
   IGNORE,
   USE

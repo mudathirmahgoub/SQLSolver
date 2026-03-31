@@ -3,7 +3,8 @@ package sqlsolver.sql.ast;
 import sqlsolver.common.tree.LabeledTreeContext;
 import sqlsolver.sql.schema.Schema;
 
-public interface SqlContext extends LabeledTreeContext<SqlKind> {
+public interface SqlContext extends LabeledTreeContext<SqlKind>
+{
   Schema schema();
 
   String dbType();
@@ -20,7 +21,8 @@ public interface SqlContext extends LabeledTreeContext<SqlKind> {
 
   void clearAdditionalInfo();
 
-  static SqlContext mk(int expectedNumNodes) {
+  static SqlContext mk(int expectedNumNodes)
+  {
     return new SqlContextImpl(expectedNumNodes, null);
   }
 }

@@ -1,9 +1,8 @@
 package sqlsolver.sql.preprocess.handler;
 
-import sqlsolver.sql.preprocess.rewrite.SemiAntiJoinRewriter;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import sqlsolver.sql.preprocess.rewrite.SemiAntiJoinRewriter;
 
 /**
  * This co-works with SemiAntiJoinRewriter.
@@ -13,7 +12,8 @@ import java.util.regex.Pattern;
  * <br/>-><br/>
  * LEFT JOIN (R) A ON SEMI_JOIN() AND P</code>
  */
-public class SemiAntiJoinHandler extends SqlHandler {
+public class SemiAntiJoinHandler extends SqlHandler
+{
   // What if P is "B OR C"?
   //   it should choose the "left-most" condition
   //  regardless of precedence of ops
@@ -21,19 +21,23 @@ public class SemiAntiJoinHandler extends SqlHandler {
   private static String sqlUpper = null;
 
   // the position of the " ON " corresponding to the join at <start>
-  private static int findJoinCondition(String sql, int start) {
+  private static int findJoinCondition(String sql, int start)
+  {
     int firstLeftParen = sql.indexOf("(", start);
     int firstOn = sql.indexOf(" ON ", start);
     // "ON" must be present in <sql> after <start>
     assert firstOn >= start;
-    if (firstLeftParen == -1 || firstLeftParen > firstOn) {
+    if (firstLeftParen == -1 || firstLeftParen > firstOn)
+    {
       // no paren between JOIN and ON; the first ON is the desired one
       return firstOn;
     }
     // skip closed parens & find ON
     start = firstLeftParen + 1;
-    for (int count = 1; count > 0; start++) {
-      switch (sql.charAt(start)) {
+    for (int count = 1; count > 0; start++)
+    {
+      switch (sql.charAt(start))
+      {
         case '(' -> count++;
         case ')' -> count--;
       }

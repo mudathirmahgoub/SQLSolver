@@ -1,6 +1,7 @@
 package sqlsolver.sql.plan;
 
-public interface Value extends Qualified {
+public interface Value extends Qualified
+{
   String TYPE_NAT = "NATURAL"; // some values are always non-negative (e.g. multiplicity of a tuple)
   String TYPE_INT = "INTEGER";
   String TYPE_BIGINT = "BIGINT";
@@ -25,22 +26,26 @@ public interface Value extends Qualified {
 
   Value copy();
 
-  static boolean isIntegralType(String type) {
-    return TYPE_BOOL.equals(type)
-            || TYPE_NAT.equals(type) || TYPE_INT.equals(type)
-            || TYPE_BIGINT.equals(type);
+  static boolean isIntegralType(String type)
+  {
+    return TYPE_BOOL.equals(type) || TYPE_NAT.equals(type) || TYPE_INT.equals(type)
+        || TYPE_BIGINT.equals(type);
   }
 
-  static boolean isRealType(String type) {
+  static boolean isRealType(String type)
+  {
     return TYPE_DECIMAL.equals(type) || TYPE_DOUBLE.equals(type);
   }
 
-  static boolean isNumberType(String type) {
+  static boolean isNumberType(String type)
+  {
     return isIntegralType(type) || isRealType(type);
   }
 
-  static int getNumberPrecisionLevel(String type) {
-    switch (type) {
+  static int getNumberPrecisionLevel(String type)
+  {
+    switch (type)
+    {
       case TYPE_BOOL -> {
         return 0;
       }

@@ -1,9 +1,10 @@
 package sqlsolver.sql.support.resolution;
 
-import sqlsolver.sql.schema.Column;
 import sqlsolver.sql.ast.SqlNode;
+import sqlsolver.sql.schema.Column;
 
-public interface Attribute {
+public interface Attribute
+{
   String name();
 
   Relation owner();

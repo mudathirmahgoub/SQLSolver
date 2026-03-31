@@ -2,7 +2,8 @@ package sqlsolver.sql.ast.constants;
 
 import java.util.Set;
 
-public interface DataTypeName {
+public interface DataTypeName
+{
   // integral
   String TINYINT = "tinyint";
   String INT = "int";
@@ -68,21 +69,19 @@ public interface DataTypeName {
   String LINE = "line";
   String LSEG = "lseg";
   String PATH = "path";
-  Set<String> GEOMETRY_TYPES =
-      Set.of(
-          GEOMETRY,
-          GEOMETRYCOLLECTION,
-          POINT,
-          MULTIPOINT,
-          LINESTRING,
-          MULTILINESTRING,
-          POLYGON,
-          MULTIPOLYGON,
-          BOX,
-          CIRCLE,
-          LINE,
-          LSEG,
-          PATH);
+  Set<String> GEOMETRY_TYPES = Set.of(GEOMETRY,
+      GEOMETRYCOLLECTION,
+      POINT,
+      MULTIPOINT,
+      LINESTRING,
+      MULTILINESTRING,
+      POLYGON,
+      MULTIPOLYGON,
+      BOX,
+      CIRCLE,
+      LINE,
+      LSEG,
+      PATH);
   // interval
   String INTERVAL = "interval";
   // net

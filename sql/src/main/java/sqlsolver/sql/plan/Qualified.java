@@ -1,6 +1,7 @@
 package sqlsolver.sql.plan;
 
-public interface Qualified {
+public interface Qualified
+{
   String qualification();
 
   void setQualification(String qualification);

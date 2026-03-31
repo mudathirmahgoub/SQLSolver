@@ -1,6 +1,7 @@
 package sqlsolver.sql.mysql;
 
-public interface MySQLRecognizerCommon {
+public interface MySQLRecognizerCommon
+{
   int NoMode = 0;
   int AnsiQuotes = 1;
   int HighNotPrecedence = 1 << 1;
@@ -12,7 +13,8 @@ public interface MySQLRecognizerCommon {
 
   int sqlMode();
 
-  default boolean isSqlModeActive(int mode) {
+  default boolean isSqlModeActive(int mode)
+  {
     return (sqlMode() & mode) != 0;
   }
 }

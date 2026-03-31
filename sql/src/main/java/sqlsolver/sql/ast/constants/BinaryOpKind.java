@@ -1,6 +1,7 @@
 package sqlsolver.sql.ast.constants;
 
-public enum BinaryOpKind {
+public enum BinaryOpKind
+{
   BITWISE_XOR("^", 12),
   EXP("^", 12),
   MULT("*", 11),
@@ -44,60 +45,68 @@ public enum BinaryOpKind {
   private final int precedence;
   private final BinaryOpKind standard;
 
-  BinaryOpKind(String text, int precedence) {
+  BinaryOpKind(String text, int precedence)
+  {
     this.text = text.toUpperCase();
     this.precedence = precedence < 0 ? Integer.MAX_VALUE : precedence;
     this.standard = null;
   }
 
-  BinaryOpKind(String text, int precedence, BinaryOpKind standard) {
+  BinaryOpKind(String text, int precedence, BinaryOpKind standard)
+  {
     this.text = text.toUpperCase();
     this.precedence = precedence < 0 ? Integer.MAX_VALUE : precedence;
     this.standard = standard;
   }
 
-  public String text() {
+  public String text()
+  {
     return text;
   }
 
-  public static BinaryOpKind ofOp(String opText) {
+  public static BinaryOpKind ofOp(String opText)
+  {
     opText = opText.toUpperCase();
-    if (opText.equals("DIV")) return DIV;
-    if (opText.equals("MOD")) return MOD;
-    if (opText.equals("!=")) return NOT_EQUAL;
-    for (BinaryOpKind op : values()) if (op.text.equals(opText)) return op;
+    if (opText.equals("DIV"))
+      return DIV;
+    if (opText.equals("MOD"))
+      return MOD;
+    if (opText.equals("!="))
+      return NOT_EQUAL;
+    for (BinaryOpKind op : values())
+      if (op.text.equals(opText))
+        return op;
     return null;
   }
 
-  public BinaryOpKind toStandardOp() {
+  public BinaryOpKind toStandardOp()
+  {
     return standard == null ? this : standard;
   }
 
-  public boolean isArithmetic() {
+  public boolean isArithmetic()
+  {
     return precedence >= BITWISE_OR.precedence;
   }
 
-  public boolean isRelation() {
+  public boolean isRelation()
+  {
     return precedence == LIKE.precedence && this != AT_TIME_ZONE && this != CONCAT;
   }
 
-  public boolean isLogic() {
+  public boolean isLogic()
+  {
     return precedence <= AND.precedence;
   }
 
-  public boolean isComparison() {
-    return this == EQUAL
-            || this == IS
-            || this == NULL_SAFE_EQUAL
-            || this == GREATER_OR_EQUAL
-            || this == GREATER_THAN
-            || this == LESS_OR_EQUAL
-            || this == LESS_THAN
-            || this == NOT_EQUAL;
-
+  public boolean isComparison()
+  {
+    return this == EQUAL || this == IS || this == NULL_SAFE_EQUAL || this == GREATER_OR_EQUAL
+        || this == GREATER_THAN || this == LESS_OR_EQUAL || this == LESS_THAN || this == NOT_EQUAL;
   }
 
-  public int precedence() {
+  public int precedence()
+  {
     return precedence;
   }
 }

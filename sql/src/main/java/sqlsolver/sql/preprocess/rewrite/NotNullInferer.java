@@ -1,19 +1,21 @@
 package sqlsolver.sql.preprocess.rewrite;
 
+import java.util.List;
 import org.apache.calcite.sql.*;
 import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
 
-import java.util.List;
-
 // WHERE ... AND A NOT LIKE B AND ...
 // ->
 // WHERE ... AND A NOT LIKE B AND A IS NOT NULL AND ...
-public class NotNullInferer extends SqlNodePreprocess {
-
-  private SqlNode handleWhere(SqlNode where) {
-    if (where instanceof SqlBasicCall call) {
-      switch (call.getKind()) {
+public class NotNullInferer extends SqlNodePreprocess
+{
+  private SqlNode handleWhere(SqlNode where)
+  {
+    if (where instanceof SqlBasicCall call)
+    {
+      switch (call.getKind())
+      {
         case AND -> {
           call.setOperand(0, handleWhere(call.operand(0)));
           call.setOperand(1, handleWhere(call.operand(1)));

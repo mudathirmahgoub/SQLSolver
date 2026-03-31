@@ -1,32 +1,31 @@
 package sqlsolver.sql.mysql;
 
+import static com.google.common.collect.Iterables.getOnlyElement;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
+
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import sqlsolver.common.datasource.DbSupport;
 import sqlsolver.sql.ast.constants.ConstraintKind;
 import sqlsolver.sql.schema.*;
-import sqlsolver.sql.schema.*;
 
-import java.util.List;
-
-import static com.google.common.collect.Iterables.getOnlyElement;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
-
-public class SchemaTest {
+public class SchemaTest
+{
   @Test
   @DisplayName("[Stmt.Schema] from CREATE TABLE")
-  void test() {
-    final String createTable =
-        "create table `public`.t ("
-            + "`i` int(10) primary key references b(x),"
-            + "j varchar(512) NOT NULL DEFAULT 'a',"
-            + "k int AUTO_INCREMENT CHECK (k < 100),"
-            + "index (j(100)),"
-            + "unique (j DESC) using rtree,"
-            + "constraint fk_cons foreign key fk (k) references b(y)"
-            + ") ENGINE = 'myisam';"
-            + "create table b (x int(10), y int);";
+  void test()
+  {
+    final String createTable = "create table `public`.t ("
+        + "`i` int(10) primary key references b(x),"
+        + "j varchar(512) NOT NULL DEFAULT 'a',"
+        + "k int AUTO_INCREMENT CHECK (k < 100),"
+        + "index (j(100)),"
+        + "unique (j DESC) using rtree,"
+        + "constraint fk_cons foreign key fk (k) references b(y)"
+        + ") ENGINE = 'myisam';"
+        + "create table b (x int(10), y int);";
 
     final Schema schema = SchemaSupport.parseSchema(DbSupport.MySQL, createTable);
 

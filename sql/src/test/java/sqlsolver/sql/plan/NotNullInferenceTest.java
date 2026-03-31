@@ -1,18 +1,20 @@
 package sqlsolver.sql.plan;
 
-import org.junit.jupiter.api.Test;
-import sqlsolver.common.datasource.DbSupport;
-import sqlsolver.sql.schema.Schema;
-import sqlsolver.sql.schema.SchemaSupport;
-import sqlsolver.sql.SqlSupport;
-import sqlsolver.sql.ast.SqlNode;
-
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class NotNullInferenceTest {
+import org.junit.jupiter.api.Test;
+import sqlsolver.common.datasource.DbSupport;
+import sqlsolver.sql.SqlSupport;
+import sqlsolver.sql.ast.SqlNode;
+import sqlsolver.sql.schema.Schema;
+import sqlsolver.sql.schema.SchemaSupport;
+
+class NotNullInferenceTest
+{
   @Test
-  void testJoin() {
+  void testJoin()
+  {
     final String schemaDef =
         "Create Table t (i int NOT NULL, j int); Create Table s (m int NOT NULL, n int)";
     final Schema schema = SchemaSupport.parseSchema(DbSupport.MySQL, schemaDef);
@@ -41,7 +43,8 @@ class NotNullInferenceTest {
   }
 
   @Test
-  void testFilter() {
+  void testFilter()
+  {
     final String schemaDef = "Create Table t (i int NOT NULL, j int)";
     final Schema schema = SchemaSupport.parseSchema(DbSupport.MySQL, schemaDef);
 
@@ -56,7 +59,8 @@ class NotNullInferenceTest {
   }
 
   @Test
-  void testAgg() {
+  void testAgg()
+  {
     final String schemaDef = "Create Table t (i int NOT NULL, j int)";
     final Schema schema = SchemaSupport.parseSchema(DbSupport.MySQL, schemaDef);
 

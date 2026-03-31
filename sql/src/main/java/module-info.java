@@ -1,4 +1,5 @@
-module sqlsolver.sql {
+module sqlsolver.sql
+{
   exports sqlsolver.sql;
   exports sqlsolver.sql.util;
   exports sqlsolver.sql.support.action;

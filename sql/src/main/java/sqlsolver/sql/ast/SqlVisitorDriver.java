@@ -1,14 +1,18 @@
 package sqlsolver.sql.ast;
 
-
 import sqlsolver.common.field.FieldKey;
 
-interface SqlVisitorDriver {
-  static boolean enter(SqlNode n, SqlVisitor v) {
-    if (n == null) return false;
-    if (!v.enter(n)) return false;
+interface SqlVisitorDriver
+{
+  static boolean enter(SqlNode n, SqlVisitor v)
+  {
+    if (n == null)
+      return false;
+    if (!v.enter(n))
+      return false;
 
-    return switch (n.kind()) {
+    return switch (n.kind())
+    {
       case Expr -> enterExpr(n, v);
       case TableSource -> enterTableSource(n, v);
       case TableName -> v.enterTableName(n);
@@ -97,178 +101,120 @@ interface SqlVisitorDriver {
       case Invalid:
         break;
 
-      case Expr:
-        leaveExpr(n, v);
-        break;
+      case Expr: leaveExpr(n, v); break;
 
-      case TableSource:
-        leaveTableSource(n, v);
+      case TableSource: leaveTableSource(n, v);
 
-      case TableName:
-        v.leaveTableName(n);
-        break;
+      case TableName: v.leaveTableName(n); break;
 
-      case ColName:
-        v.leaveColumnName(n);
-        break;
+      case ColName: v.leaveColumnName(n); break;
 
-      case Name2:
-        v.leaveName2(n);
-        break;
+      case Name2: v.leaveName2(n); break;
 
-      case Name3:
-        v.leaveCommonName(n);
-        return;
+      case Name3: v.leaveCommonName(n); return;
 
-      case CreateTable:
-        v.leaveCreateTable(n);
-        break;
+      case CreateTable: v.leaveCreateTable(n); break;
 
-      case ColDef:
-        v.leaveColumnDef(n);
-        break;
+      case ColDef: v.leaveColumnDef(n); break;
 
-      case Reference:
-        v.leaveReferences(n);
-        break;
+      case Reference: v.leaveReferences(n); break;
 
-      case IndexDef:
-        v.leaveIndexDef(n);
-        break;
+      case IndexDef: v.leaveIndexDef(n); break;
 
-      case KeyPart:
-        v.leaveKeyPart(n);
-        break;
+      case KeyPart: v.leaveKeyPart(n); break;
 
-      case WindowSpec:
-        v.leaveWindowSpec(n);
-        break;
+      case WindowSpec: v.leaveWindowSpec(n); break;
 
-      case WindowFrame:
-        v.leaveWindowFrame(n);
-        break;
+      case WindowFrame: v.leaveWindowFrame(n); break;
 
-      case FrameBound:
-        v.leaveFrameBound(n);
-        break;
+      case FrameBound: v.leaveFrameBound(n); break;
 
-      case OrderItem:
-        v.leaveOrderItem(n);
-        break;
+      case OrderItem: v.leaveOrderItem(n); break;
 
-      case GroupItem:
-        v.leaveGroupItem(n);
-        break;
+      case GroupItem: v.leaveGroupItem(n); break;
 
-      case SelectItem:
-        v.leaveSelectItem(n);
-        break;
+      case SelectItem: v.leaveSelectItem(n); break;
 
-      case IndexHint:
-        v.leaveIndexHint(n);
-        break;
+      case IndexHint: v.leaveIndexHint(n); break;
 
-      case QuerySpec:
-        v.leaveQuerySpec(n);
-        break;
+      case QuerySpec: v.leaveQuerySpec(n); break;
 
-      case Query:
-        v.leaveQuery(n);
-        break;
+      case Query: v.leaveQuery(n); break;
 
-      case SetOp:
-        v.leaveSetOp(n);
-        break;
+      case SetOp: v.leaveSetOp(n); break;
     }
 
     v.leave(n);
   }
 
-  private static void safeAccept(SqlNode n, SqlVisitor v) {
-    if (n != null) n.accept(v);
+  private static void safeAccept(SqlNode n, SqlVisitor v)
+  {
+    if (n != null)
+      n.accept(v);
   }
 
-  private static void safeVisitChild(FieldKey<SqlNode> key, SqlNode n, SqlVisitor v) {
+  private static void safeVisitChild(FieldKey<SqlNode> key, SqlNode n, SqlVisitor v)
+  {
     final SqlNode child = n.$(key);
-    if (v.enterChild(n, key, child)) safeAccept(child, v);
+    if (v.enterChild(n, key, child))
+      safeAccept(child, v);
     v.leaveChild(n, key, child);
   }
 
-  private static void safeVisitList(FieldKey<SqlNodes> key, SqlNode n, SqlVisitor v) {
+  private static void safeVisitList(FieldKey<SqlNodes> key, SqlNode n, SqlVisitor v)
+  {
     final SqlNodes children = n.$(key);
     if (v.enterChildren(n, key, children))
-      if (children != null) for (SqlNode child : children) safeAccept(child, v);
+      if (children != null)
+        for (SqlNode child : children) safeAccept(child, v);
     v.leaveChildren(n, key, children);
   }
 
-  private static boolean enterExpr(SqlNode n, SqlVisitor v) {
+  private static boolean enterExpr(SqlNode n, SqlVisitor v)
+  {
     assert SqlKind.Expr.isInstance(n);
 
-    switch (n.$(SqlNodeFields.Expr_Kind)) {
-      case Variable:
-        return v.enterVariable(n);
-      case ColRef:
-        return v.enterColumnRef(n);
-      case Literal:
-        return v.enterLiteral(n);
-      case FuncCall:
-        return v.enterFuncCall(n);
-      case Collate:
-        return v.enterCollation(n);
-      case Param:
-        return v.enterParamMarker(n);
-      case Unary:
-        return v.enterUnary(n);
-      case GroupingOp:
-        return v.enterGroupingOp(n);
-      case Tuple:
-        return v.enterTuple(n);
-      case Match:
-        return v.enterMatch(n);
-      case Cast:
-        return v.enterCast(n);
-      case Symbol:
-        return v.enterSymbol(n);
-      case Default:
-        return v.enterDefault(n);
-      case Values:
-        return v.enterValues(n);
-      case Interval:
-        return v.enterInterval(n);
-      case Exists:
-        return v.enterExists(n);
-      case QueryExpr:
-        return v.enterQueryExpr(n);
-      case Wildcard:
-        return v.enterWildcard(n);
-      case Aggregate:
-        return v.enterAggregate(n);
-      case ConvertUsing:
-        return v.enterConvertUsing(n);
-      case Case:
-        return v.enterCase(n);
-      case When:
-        return v.enterWhen(n);
-      case Binary:
-        return v.enterBinary(n);
-      case Ternary:
-        return v.enterTernary(n);
-      case Indirection:
-        return v.enterIndirection(n);
-      case IndirectionComp:
-        return v.enterIndirectionComp(n);
-      case Array:
-        return v.enterArray(n);
+    switch (n.$(SqlNodeFields.Expr_Kind))
+    {
+      case Variable: return v.enterVariable(n);
+      case ColRef: return v.enterColumnRef(n);
+      case Literal: return v.enterLiteral(n);
+      case FuncCall: return v.enterFuncCall(n);
+      case Collate: return v.enterCollation(n);
+      case Param: return v.enterParamMarker(n);
+      case Unary: return v.enterUnary(n);
+      case GroupingOp: return v.enterGroupingOp(n);
+      case Tuple: return v.enterTuple(n);
+      case Match: return v.enterMatch(n);
+      case Cast: return v.enterCast(n);
+      case Symbol: return v.enterSymbol(n);
+      case Default: return v.enterDefault(n);
+      case Values: return v.enterValues(n);
+      case Interval: return v.enterInterval(n);
+      case Exists: return v.enterExists(n);
+      case QueryExpr: return v.enterQueryExpr(n);
+      case Wildcard: return v.enterWildcard(n);
+      case Aggregate: return v.enterAggregate(n);
+      case ConvertUsing: return v.enterConvertUsing(n);
+      case Case: return v.enterCase(n);
+      case When: return v.enterWhen(n);
+      case Binary: return v.enterBinary(n);
+      case Ternary: return v.enterTernary(n);
+      case Indirection: return v.enterIndirection(n);
+      case IndirectionComp: return v.enterIndirectionComp(n);
+      case Array: return v.enterArray(n);
       case Unknown:
     }
 
     return false;
   }
 
-  private static boolean enterTableSource(SqlNode n, SqlVisitor v) {
+  private static boolean enterTableSource(SqlNode n, SqlVisitor v)
+  {
     assert SqlKind.TableSource.isInstance(n);
 
-    return switch (n.$(SqlNodeFields.TableSource_Kind)) {
+    return switch (n.$(SqlNodeFields.TableSource_Kind))
+    {
       case SimpleSource -> v.enterSimpleTableSource(n);
       case JoinedSource -> v.enterJoinedTableSource(n);
       case DerivedSource -> v.enterDerivedTableSource(n);
@@ -358,117 +304,68 @@ interface SqlVisitorDriver {
         v.leaveColumnDef(n);
         return;
 
-      case ColRef:
-        v.leaveColumnRef(n);
-        return;
+      case ColRef: v.leaveColumnRef(n); return;
 
-      case FuncCall:
-        v.leaveFuncCall(n);
+      case FuncCall: v.leaveFuncCall(n);
 
-      case Literal:
-        v.leaveLiteral(n);
-        return;
+      case Literal: v.leaveLiteral(n); return;
 
-      case Collate:
-        v.leaveCollation(n);
-        return;
+      case Collate: v.leaveCollation(n); return;
 
-      case Param:
-        v.leaveParamMarker(n);
-        return;
+      case Param: v.leaveParamMarker(n); return;
 
-      case Unary:
-        v.leaveUnary(n);
-        return;
+      case Unary: v.leaveUnary(n); return;
 
-      case GroupingOp:
-        v.leaveGroupingOp(n);
-        return;
+      case GroupingOp: v.leaveGroupingOp(n); return;
 
-      case Tuple:
-        v.leaveTuple(n);
-        return;
+      case Tuple: v.leaveTuple(n); return;
 
-      case Match:
-        v.leaveMatch(n);
-        return;
+      case Match: v.leaveMatch(n); return;
 
-      case Cast:
-        v.leaveCast(n);
-        return;
+      case Cast: v.leaveCast(n); return;
 
-      case Symbol:
-        v.leaveSymbol(n);
-        return;
+      case Symbol: v.leaveSymbol(n); return;
 
-      case Default:
-        v.leaveDefault(n);
-        return;
+      case Default: v.leaveDefault(n); return;
 
-      case Values:
-        v.leaveValues(n);
-        return;
+      case Values: v.leaveValues(n); return;
 
-      case Interval:
-        v.leaveInterval(n);
-        return;
+      case Interval: v.leaveInterval(n); return;
 
-      case Exists:
-        v.leaveExists(n);
-        return;
+      case Exists: v.leaveExists(n); return;
 
-      case QueryExpr:
-        v.leaveQueryExpr(n);
-        return;
+      case QueryExpr: v.leaveQueryExpr(n); return;
 
-      case Wildcard:
-        v.leaveWildcard(n);
-        return;
+      case Wildcard: v.leaveWildcard(n); return;
 
-      case Aggregate:
-        v.leaveAggregate(n);
-        return;
+      case Aggregate: v.leaveAggregate(n); return;
 
-      case ConvertUsing:
-        v.leaveConvertUsing(n);
-        return;
+      case ConvertUsing: v.leaveConvertUsing(n); return;
 
-      case Case:
-        v.leaveCase(n);
-        return;
+      case Case: v.leaveCase(n); return;
 
-      case When:
-        v.leaveWhen(n);
-        return;
+      case When: v.leaveWhen(n); return;
 
-      case Binary:
-        v.leaveBinary(n);
-        return;
+      case Binary: v.leaveBinary(n); return;
 
-      case Ternary:
-        v.leaveTernary(n);
-        return;
+      case Ternary: v.leaveTernary(n); return;
 
-      case Indirection:
-        v.leaveIndirection(n);
-        return;
+      case Indirection: v.leaveIndirection(n); return;
 
-      case IndirectionComp:
-        v.leaveIndirectionComp(n);
-        return;
+      case IndirectionComp: v.leaveIndirectionComp(n); return;
 
-      case Array:
-        v.leaveArray(n);
-        return;
+      case Array: v.leaveArray(n); return;
 
       case Unknown:
     }
   }
 
-  private static void leaveTableSource(SqlNode n, SqlVisitor v) {
+  private static void leaveTableSource(SqlNode n, SqlVisitor v)
+  {
     assert SqlKind.TableSource.isInstance(n);
 
-    switch (n.$(SqlNodeFields.TableSource_Kind)) {
+    switch (n.$(SqlNodeFields.TableSource_Kind))
+    {
       case SimpleSource -> v.leaveSimpleTableSource(n);
       case JoinedSource -> v.leaveJoinedTableSource(n);
       case DerivedSource -> v.leaveDerivedTableSource(n);

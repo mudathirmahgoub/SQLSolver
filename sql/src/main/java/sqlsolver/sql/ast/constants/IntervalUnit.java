@@ -1,6 +1,7 @@
 package sqlsolver.sql.ast.constants;
 
-public enum IntervalUnit {
+public enum IntervalUnit
+{
   MICROSECOND,
   SECOND,
   MINUTE,

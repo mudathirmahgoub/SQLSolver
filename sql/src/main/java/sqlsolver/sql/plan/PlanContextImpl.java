@@ -1,21 +1,21 @@
 package sqlsolver.sql.plan;
 
+import static sqlsolver.common.tree.TreeSupport.checkNodePresent;
+
 import gnu.trove.map.TIntIntMap;
 import gnu.trove.map.TObjectIntMap;
 import gnu.trove.map.custom_hash.TObjectIntCustomHashMap;
 import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.strategy.IdentityHashingStrategy;
-import sqlsolver.common.tree.UniformTreeContextBase;
-import sqlsolver.common.utils.COW;
-import sqlsolver.sql.schema.Schema;
-import sqlsolver.sql.ast.SqlNode;
-
 import java.util.HashMap;
 import java.util.Map;
+import sqlsolver.common.tree.UniformTreeContextBase;
+import sqlsolver.common.utils.COW;
+import sqlsolver.sql.ast.SqlNode;
+import sqlsolver.sql.schema.Schema;
 
-import static sqlsolver.common.tree.TreeSupport.checkNodePresent;
-
-class PlanContextImpl extends UniformTreeContextBase<PlanKind> implements PlanContext {
+class PlanContextImpl extends UniformTreeContextBase<PlanKind> implements PlanContext
+{
   private int root;
   private final Schema schema;
   private final COW<TObjectIntMap<PlanNode>> nodeReg;
@@ -24,7 +24,8 @@ class PlanContextImpl extends UniformTreeContextBase<PlanKind> implements PlanCo
   private final COW<TIntIntMap> subQueryPlanReg;
   private final COW<Map<SqlNode, Integer>> subQueryPlanRegSqlNode;
 
-  protected PlanContextImpl(int root, int expectedNumNodes, Schema schema) {
+  protected PlanContextImpl(int root, int expectedNumNodes, Schema schema)
+  {
     super(new PlanNd[(expectedNumNodes <= 0 ? 16 : expectedNumNodes) + 1], 2);
     this.schema = schema;
     this.nodeReg = new COW<>(mkIdentityMap(), null);
@@ -34,7 +35,8 @@ class PlanContextImpl extends UniformTreeContextBase<PlanKind> implements PlanCo
     this.subQueryPlanRegSqlNode = new COW<>(new HashMap<>(), null);
   }
 
-  private PlanContextImpl(PlanContextImpl other) {
+  private PlanContextImpl(PlanContextImpl other)
+  {
     super(copyNodesArray((PlanNd[]) other.nodes), 2);
     this.root = other.root;
     this.maxNodeId = other.maxNodeId;
@@ -47,34 +49,40 @@ class PlanContextImpl extends UniformTreeContextBase<PlanKind> implements PlanCo
   }
 
   @Override
-  public int root() {
+  public int root()
+  {
     return root;
   }
 
   @Override
-  public PlanContext setRoot(int root) {
+  public PlanContext setRoot(int root)
+  {
     this.root = root;
     return this;
   }
 
   @Override
-  public Schema schema() {
+  public Schema schema()
+  {
     return schema;
   }
 
   @Override
-  public PlanNode nodeAt(int id) {
+  public PlanNode nodeAt(int id)
+  {
     checkNodePresent(this, id);
     return ((PlanNd) nodes[id]).planNode;
   }
 
   @Override
-  public int nodeIdOf(PlanNode node) {
+  public int nodeIdOf(PlanNode node)
+  {
     return nodeReg.forRead().get(node);
   }
 
   @Override
-  public int bindNode(PlanNode node) {
+  public int bindNode(PlanNode node)
+  {
     final int newNodeId = mkNode(node.kind());
     ((PlanNd) nodes[newNodeId]).planNode = node;
     nodeReg.forWrite().put(node, newNodeId);
@@ -82,21 +90,24 @@ class PlanContextImpl extends UniformTreeContextBase<PlanKind> implements PlanCo
   }
 
   @Override
-  public void deleteNode(int nodeId) {
+  public void deleteNode(int nodeId)
+  {
     nodeReg.forWrite().remove(nodeId);
     valuesReg.deleteNode(nodeId);
     infoCache.deleteNode(nodeId);
     super.deleteNode(nodeId);
   }
 
-  public void myDeleteNode(int nodeId) {
+  public void myDeleteNode(int nodeId)
+  {
     nodeReg.forWrite().remove(nodeId);
     valuesReg.deleteNode(nodeId);
     infoCache.deleteNode(nodeId);
     super.deleteNode(nodeId, parentOf(nodeId));
   }
 
-  public int parent(int nodeId) {
+  public int parent(int nodeId)
+  {
     if (nodeId == root)
       return NO_SUCH_NODE;
     else
@@ -104,91 +115,111 @@ class PlanContextImpl extends UniformTreeContextBase<PlanKind> implements PlanCo
   }
 
   @Override
-  public void compact() {
+  public void compact()
+  {
     super.compact();
     infoCache.cleanTemporary();
   }
 
   @Override
-  protected void relocate(int from, int to) {
+  protected void relocate(int from, int to)
+  {
     nodeReg.forWrite().put(nodeAt(from), to);
     valuesReg.deleteNode(to);
     valuesReg.relocateNode(from, to);
     infoCache.deleteNode(to);
     infoCache.renumberNode(from, to);
-    if (root == from) root = to;
+    if (root == from)
+      root = to;
     super.relocate(from, to);
   }
 
   @Override
-  public ValuesRegistry valuesReg() {
+  public ValuesRegistry valuesReg()
+  {
     return valuesReg;
   }
 
   @Override
-  public InfoCache infoCache() {
+  public InfoCache infoCache()
+  {
     return infoCache;
   }
 
   @Override
-  public void setSubQueryPlanRootId(int sqlNodeId, int rootId) {
+  public void setSubQueryPlanRootId(int sqlNodeId, int rootId)
+  {
     subQueryPlanReg.forWrite().put(sqlNodeId, rootId);
   }
 
   @Override
-  public int getSubQueryPlanRootId(int sqlNodeId) {
+  public int getSubQueryPlanRootId(int sqlNodeId)
+  {
     return subQueryPlanReg.forRead().get(sqlNodeId);
   }
 
   @Override
-  public void setSubQueryPlanRootIdBySqlNode(SqlNode sqlNode, int rootId) {
+  public void setSubQueryPlanRootIdBySqlNode(SqlNode sqlNode, int rootId)
+  {
     subQueryPlanRegSqlNode.forWrite().put(sqlNode, rootId);
   }
 
   @Override
-  public int getSubQueryPlanRootIdBySqlNode(SqlNode sqlNode) {
+  public int getSubQueryPlanRootIdBySqlNode(SqlNode sqlNode)
+  {
     return subQueryPlanRegSqlNode.forRead().get(sqlNode);
   }
 
   @Override
-  public PlanContext copy() {
+  public PlanContext copy()
+  {
     return new PlanContextImpl(this);
   }
 
   @Override
-  protected Nd<PlanKind> mk(PlanKind planKind) {
+  protected Nd<PlanKind> mk(PlanKind planKind)
+  {
     return new PlanNd(planKind);
   }
 
   @Override
-  public String toString() {
+  public String toString()
+  {
     return PlanSupport.stringifyTree(this, root());
   }
 
-  private static <K> TObjectIntMap<K> mkIdentityMap() {
+  private static <K> TObjectIntMap<K> mkIdentityMap()
+  {
     return new TObjectIntCustomHashMap<>(IdentityHashingStrategy.INSTANCE);
   }
 
-  private static <K> TObjectIntMap<K> copyIdentityMap(TObjectIntMap<K> other) {
+  private static <K> TObjectIntMap<K> copyIdentityMap(TObjectIntMap<K> other)
+  {
     return new TObjectIntCustomHashMap<>(IdentityHashingStrategy.INSTANCE, other);
   }
 
-  private static PlanNd[] copyNodesArray(PlanNd[] nds) {
+  private static PlanNd[] copyNodesArray(PlanNd[] nds)
+  {
     final PlanNd[] copiedNodes = new PlanNd[nds.length];
-    for (int i = 0; i < nds.length; i++) {
-      if (nds[i] != null) copiedNodes[i] = new PlanNd(nds[i]);
+    for (int i = 0; i < nds.length; i++)
+    {
+      if (nds[i] != null)
+        copiedNodes[i] = new PlanNd(nds[i]);
     }
     return copiedNodes;
   }
 
-  private static class PlanNd extends Nd<PlanKind> {
+  private static class PlanNd extends Nd<PlanKind>
+  {
     private PlanNode planNode;
 
-    protected PlanNd(PlanKind planKind) {
+    protected PlanNd(PlanKind planKind)
+    {
       super(planKind);
     }
 
-    protected PlanNd(PlanNd other) {
+    protected PlanNd(PlanNd other)
+    {
       super(other);
       this.planNode = other.planNode;
     }

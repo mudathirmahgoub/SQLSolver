@@ -1,10 +1,10 @@
 package sqlsolver.sql.ast;
 
+import java.util.List;
 import sqlsolver.sql.ast.constants.Category;
 
-import java.util.List;
-
-public interface SqlDataType {
+public interface SqlDataType
+{
   Category category();
 
   String name();
@@ -35,7 +35,8 @@ public interface SqlDataType {
 
   SqlDataType setDimensions(int[] dimensions);
 
-  static SqlDataType mk(Category category, String name, int width, int precision) {
+  static SqlDataType mk(Category category, String name, int width, int precision)
+  {
     return new SqlDataTypeImpl(category, name, width, precision);
   }
 }

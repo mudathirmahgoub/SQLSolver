@@ -1,64 +1,68 @@
 package sqlsolver.sql.mysql;
 
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.function.Function;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import sqlsolver.sql.SqlSupport;
 import sqlsolver.sql.ast.*;
 import sqlsolver.sql.ast.constants.*;
-import sqlsolver.sql.SqlSupport;
 import sqlsolver.sql.ast.constants.ConstraintKind;
+import sqlsolver.sql.ast.constants.LiteralKind;
 import sqlsolver.sql.ast.constants.VariableScope;
 import sqlsolver.sql.mysql.internal.MySQLParser;
-import sqlsolver.sql.ast.*;
-import sqlsolver.sql.ast.constants.LiteralKind;
 
-import java.util.function.Function;
-
-import static org.junit.jupiter.api.Assertions.*;
-
-public class MySQLAstBuilderTest {
+public class MySQLAstBuilderTest
+{
   private static final MySQLAstParser PARSER = new MySQLAstParser();
 
-  private static class TestHelper {
+  private static class TestHelper
+  {
     private String sql;
     private SqlNode node;
     private final Function<MySQLParser, ParserRuleContext> rule;
 
-    private TestHelper(Function<MySQLParser, ParserRuleContext> rule) {
+    private TestHelper(Function<MySQLParser, ParserRuleContext> rule)
+    {
       this.rule = rule;
     }
 
-    private SqlNode sql(String sql) {
-      if (sql != null) return (node = PARSER.parse(sql, rule));
+    private SqlNode sql(String sql)
+    {
+      if (sql != null)
+        return (node = PARSER.parse(sql, rule));
       return null;
     }
   }
 
   @AfterEach
-  void reset() {
+  void reset()
+  {
     PARSER.setServerVersion(0);
     PARSER.setSqlMode(0);
   }
 
   @Test
   @DisplayName("[sqlparser.mysql] create table")
-  void testCreateTable() {
+  void testCreateTable()
+  {
     final TestHelper helper = new TestHelper(MySQLParser::createStatement);
     {
-      final String createTable =
-          ""
-              + "create table `public`.t ("
-              + "`i` int(10) primary key references b(x),"
-              + "j varchar(512) NOT NULL DEFAULT 'a',"
-              + "k int AUTO_INCREMENT CHECK (k < 100),"
-              + "index (j(100)),"
-              + "unique (j DESC) using rtree,"
-              + "constraint fk_cons foreign key fk (k) references b(y),"
-              + "fulltext (j),"
-              + "spatial (k,i)"
-              + ") ENGINE = 'innodb';";
+      final String createTable = ""
+          + "create table `public`.t ("
+          + "`i` int(10) primary key references b(x),"
+          + "j varchar(512) NOT NULL DEFAULT 'a',"
+          + "k int AUTO_INCREMENT CHECK (k < 100),"
+          + "index (j(100)),"
+          + "unique (j DESC) using rtree,"
+          + "constraint fk_cons foreign key fk (k) references b(y),"
+          + "fulltext (j),"
+          + "spatial (k,i)"
+          + ") ENGINE = 'innodb';";
 
       final SqlNode root = helper.sql(createTable);
       Assertions.assertEquals(SqlKind.CreateTable, root.kind());
@@ -166,17 +170,16 @@ public class MySQLAstBuilderTest {
         }
       }
 
-      final String expected =
-          "CREATE TABLE `public`.`t` (\n"
-              + "  `i` int(10) PRIMARY KEY REFERENCES `b`(`x`),\n"
-              + "  `j` varchar(512) NOT NULL,\n"
-              + "  `k` int AUTO_INCREMENT,\n"
-              + "  KEY (`j`(100)),\n"
-              + "  UNIQUE KEY (`j` DESC) USING RTREE ,\n"
-              + "  FOREIGN KEY `fk`(`k`) REFERENCES `b`(`y`),\n"
-              + "  FULLTEXT KEY (`j`),\n"
-              + "  SPATIAL KEY (`k`, `i`)\n"
-              + ") ENGINE = 'innodb'";
+      final String expected = "CREATE TABLE `public`.`t` (\n"
+          + "  `i` int(10) PRIMARY KEY REFERENCES `b`(`x`),\n"
+          + "  `j` varchar(512) NOT NULL,\n"
+          + "  `k` int AUTO_INCREMENT,\n"
+          + "  KEY (`j`(100)),\n"
+          + "  UNIQUE KEY (`j` DESC) USING RTREE ,\n"
+          + "  FOREIGN KEY `fk`(`k`) REFERENCES `b`(`y`),\n"
+          + "  FULLTEXT KEY (`j`),\n"
+          + "  SPATIAL KEY (`k`, `i`)\n"
+          + ") ENGINE = 'innodb'";
       assertEquals(expected, root.toString(false));
     }
     {
@@ -189,7 +192,8 @@ public class MySQLAstBuilderTest {
 
   @Test
   @DisplayName("[sqlparser.mysql] variable")
-  void testVariable() {
+  void testVariable()
+  {
     String sql;
     SqlNode node;
 
@@ -227,7 +231,8 @@ public class MySQLAstBuilderTest {
 
   @Test
   @DisplayName("[sqlparser.mysql] column ref")
-  void testColumnRef() {
+  void testColumnRef()
+  {
     final TestHelper helper = new TestHelper(MySQLParser::columnRef);
 
     {
@@ -238,7 +243,8 @@ public class MySQLAstBuilderTest {
 
   @Test
   @DisplayName("[sqlparser.mysql] json ref")
-  void testJsonRef() {
+  void testJsonRef()
+  {
     PARSER.setServerVersion(80000);
     final TestHelper helper = new TestHelper(MySQLParser::simpleExpr);
 
@@ -248,7 +254,8 @@ public class MySQLAstBuilderTest {
       final SqlNodes args = node.$(ExprFields.FuncCall_Args);
       assertEquals(2, args.size());
 
-      Assertions.assertEquals("json_extract", node.$(ExprFields.FuncCall_Name).$(SqlNodeFields.Name2_1));
+      Assertions.assertEquals(
+          "json_extract", node.$(ExprFields.FuncCall_Name).$(SqlNodeFields.Name2_1));
       assertEquals("`a`", args.get(0).toString());
       assertEquals("'$.b'", args.get(1).toString());
       assertEquals("JSON_EXTRACT(`a`, '$.b')", node.toString());
@@ -260,14 +267,16 @@ public class MySQLAstBuilderTest {
       final SqlNodes args = node.$(ExprFields.FuncCall_Args);
 
       assertEquals(1, args.size());
-      Assertions.assertEquals("json_unquote", node.$(ExprFields.FuncCall_Name).$(SqlNodeFields.Name2_1));
+      Assertions.assertEquals(
+          "json_unquote", node.$(ExprFields.FuncCall_Name).$(SqlNodeFields.Name2_1));
       assertEquals("JSON_UNQUOTE(JSON_EXTRACT(`a`, '$.b'))", node.toString());
     }
   }
 
   @Test
   @DisplayName("[sqlparser.mysql] literal")
-  void testLiteral() {
+  void testLiteral()
+  {
     final TestHelper helper = new TestHelper(MySQLParser::literal);
 
     {
@@ -311,7 +320,8 @@ public class MySQLAstBuilderTest {
 
   @Test
   @DisplayName("[sqlparser.mysql] func call")
-  void testFuncCall() {
+  void testFuncCall()
+  {
     final TestHelper helper = new TestHelper(MySQLParser::expr);
     {
       final SqlNode node = helper.sql("now()");
@@ -400,20 +410,23 @@ public class MySQLAstBuilderTest {
 
   @Test
   @DisplayName("[sqlparser.mysql] collation")
-  void testCollation() {
+  void testCollation()
+  {
     final TestHelper helper = new TestHelper(MySQLParser::simpleExpr);
     {
       final SqlNode node = helper.sql("a collate 'utf8'");
       Assertions.assertEquals(ExprKind.Collate, node.$(SqlNodeFields.Expr_Kind));
       assertEquals("`a`", node.$(ExprFields.Collate_Expr).toString());
-      Assertions.assertEquals("utf8", node.$(ExprFields.Collate_Collation).$(ExprFields.Symbol_Text));
+      Assertions.assertEquals(
+          "utf8", node.$(ExprFields.Collate_Collation).$(ExprFields.Symbol_Text));
       assertEquals("`a` COLLATE 'utf8'", node.toString());
     }
   }
 
   @Test
   @DisplayName("[sqlparser.mysql] param marker")
-  void testParamMarker() {
+  void testParamMarker()
+  {
     final TestHelper helper = new TestHelper(MySQLParser::simpleExpr);
     final SqlNode node = helper.sql("?");
     Assertions.assertEquals(ExprKind.Param, node.$(SqlNodeFields.Expr_Kind));
@@ -421,7 +434,8 @@ public class MySQLAstBuilderTest {
 
   @Test
   @DisplayName("[sqlparser.mysql] concat ")
-  void testConcatPipe() {
+  void testConcatPipe()
+  {
     PARSER.setSqlMode(MySQLRecognizerCommon.PipesAsConcat);
     final TestHelper helper = new TestHelper(MySQLParser::simpleExpr);
     final SqlNode node = helper.sql("'a' || b");
@@ -433,7 +447,8 @@ public class MySQLAstBuilderTest {
 
   @Test
   @DisplayName("[sqlparser.mysql] unary")
-  void testUnary() {
+  void testUnary()
+  {
     final TestHelper helper = new TestHelper(MySQLParser::expr);
     {
       final SqlNode node = helper.sql("+b");
@@ -463,7 +478,8 @@ public class MySQLAstBuilderTest {
 
   @Test
   @DisplayName("[sqlparser.mysql] grouping op")
-  void testGroupingOp() {
+  void testGroupingOp()
+  {
     PARSER.setServerVersion(80000);
     final TestHelper helper = new TestHelper(MySQLParser::groupingOperation);
     final SqlNode node = helper.sql("grouping(1,b)");
@@ -474,7 +490,8 @@ public class MySQLAstBuilderTest {
 
   @Test
   @DisplayName("[sqlparser.mysql] exists")
-  void testExists() {
+  void testExists()
+  {
     final TestHelper helper = new TestHelper(MySQLParser::simpleExpr);
     final SqlNode node = helper.sql("exists(select 1)");
     Assertions.assertEquals(ExprKind.Exists, node.$(SqlNodeFields.Expr_Kind));
@@ -482,7 +499,8 @@ public class MySQLAstBuilderTest {
 
   @Test
   @DisplayName("[sqlparser.mysql] match against")
-  void testMatchAgainst() {
+  void testMatchAgainst()
+  {
     final TestHelper helper = new TestHelper(MySQLParser::simpleExpr);
     final SqlNode node = helper.sql("match a against ('123' with query expansion)");
     assertEquals("MATCH `a` AGAINST ('123' WITH QUERY EXPANSION)", node.toString());
@@ -490,7 +508,8 @@ public class MySQLAstBuilderTest {
 
   @Test
   @DisplayName("[sqlparser.mysql] cast")
-  void testCast() {
+  void testCast()
+  {
     final TestHelper helper = new TestHelper(MySQLParser::simpleExpr);
     {
       final SqlNode node = helper.sql("convert(a, char)");
@@ -505,7 +524,8 @@ public class MySQLAstBuilderTest {
 
   @Test
   @DisplayName("[sqlparser.mysql] default")
-  void testDefault() {
+  void testDefault()
+  {
     final TestHelper helper = new TestHelper(MySQLParser::simpleExpr);
     {
       final SqlNode node = helper.sql("default(a.b)");
@@ -515,7 +535,8 @@ public class MySQLAstBuilderTest {
 
   @Test
   @DisplayName("[sqlparser.mysql] values")
-  void testValues() {
+  void testValues()
+  {
     final TestHelper helper = new TestHelper(MySQLParser::simpleExpr);
     {
       final SqlNode node = helper.sql("values(a.b.c)");
@@ -526,7 +547,8 @@ public class MySQLAstBuilderTest {
 
   @Test
   @DisplayName("[sqlparser.mysql] aggregate")
-  void testAggregate() {
+  void testAggregate()
+  {
     final TestHelper helper = new TestHelper(MySQLParser::sumExpr);
     {
       final SqlNode node = helper.sql("count(distinct a)");
@@ -535,7 +557,8 @@ public class MySQLAstBuilderTest {
     }
     {
       final SqlNode node = helper.sql("count(*)");
-      Assertions.assertEquals(ExprKind.Wildcard, node.$(ExprFields.Aggregate_Args).get(0).$(SqlNodeFields.Expr_Kind));
+      Assertions.assertEquals(
+          ExprKind.Wildcard, node.$(ExprFields.Aggregate_Args).get(0).$(SqlNodeFields.Expr_Kind));
       assertEquals("COUNT(*)", node.toString());
     }
     {
@@ -553,7 +576,8 @@ public class MySQLAstBuilderTest {
 
   @Test
   @DisplayName("[sqlparser.mysql] convert using")
-  void testConvertUsing() {
+  void testConvertUsing()
+  {
     final TestHelper helper = new TestHelper(MySQLParser::simpleExpr);
     {
       final SqlNode node = helper.sql("convert(a using '123')");
@@ -571,7 +595,8 @@ public class MySQLAstBuilderTest {
 
   @Test
   @DisplayName("[sqlparser.mysql] case when")
-  void testCaseWhen() {
+  void testCaseWhen()
+  {
     final TestHelper helper = new TestHelper(MySQLParser::simpleExpr);
     {
       final SqlNode node = helper.sql("case when true then 1 else 2 end");
@@ -585,7 +610,8 @@ public class MySQLAstBuilderTest {
 
   @Test
   @DisplayName("[sqlparser.mysql] frame")
-  void testFrame() {
+  void testFrame()
+  {
     PARSER.setServerVersion(80000);
     final TestHelper helper = new TestHelper(MySQLParser::windowFrameClause);
     {
@@ -600,17 +626,15 @@ public class MySQLAstBuilderTest {
 
   @Test
   @DisplayName("[sqlparser.mysql] window spec")
-  void testWindowSpec() {
+  void testWindowSpec()
+  {
     PARSER.setServerVersion(80000);
     final TestHelper helper = new TestHelper(MySQLParser::windowSpecDetails);
     {
-      final SqlNode node =
-          helper.sql(
-              "window_name partition by col_a "
-                  + "order by col_b desc "
-                  + "rows interval 1 year preceding exclude current row");
-      assertEquals(
-          "(`window_name` PARTITION BY `col_a` ORDER BY `col_b` DESC "
+      final SqlNode node = helper.sql("window_name partition by col_a "
+          + "order by col_b desc "
+          + "rows interval 1 year preceding exclude current row");
+      assertEquals("(`window_name` PARTITION BY `col_a` ORDER BY `col_b` DESC "
               + "ROWS INTERVAL 1 YEAR PRECEDING EXCLUDE CURRENT ROW)",
           node.toString());
     }
@@ -618,7 +642,8 @@ public class MySQLAstBuilderTest {
 
   @Test
   @DisplayName("[sqlparser.mysql] binary")
-  void testBinary() {
+  void testBinary()
+  {
     final TestHelper helper = new TestHelper(MySQLParser::expr);
     {
       final SqlNode node = helper.sql("1+2");
@@ -681,7 +706,8 @@ public class MySQLAstBuilderTest {
 
   @Test
   @DisplayName("[sqlparser.mysql] ternary")
-  void testTernary() {
+  void testTernary()
+  {
     final TestHelper helper = new TestHelper(MySQLParser::expr);
     {
       final SqlNode node = helper.sql("a = (b between 1 and 2)");
@@ -691,7 +717,8 @@ public class MySQLAstBuilderTest {
 
   @Test
   @DisplayName("[sqlparser.mysql] interval")
-  void testInterval() {
+  void testInterval()
+  {
     final TestHelper helper = new TestHelper(MySQLParser::expr);
     {
       final SqlNode node = helper.sql("interval (1+a) day + b");
@@ -701,7 +728,8 @@ public class MySQLAstBuilderTest {
 
   @Test
   @DisplayName("[sqlparser.mysql] select item")
-  void testSelectItem() {
+  void testSelectItem()
+  {
     final TestHelper helper = new TestHelper(MySQLParser::selectItem);
     {
       final SqlNode node = helper.sql("a.*");
@@ -715,7 +743,8 @@ public class MySQLAstBuilderTest {
 
   @Test
   @DisplayName("[sqlparser.mysql] index hint")
-  void testIndexHint() {
+  void testIndexHint()
+  {
     final TestHelper helper = new TestHelper(MySQLParser::indexHint);
     {
       final SqlNode node = helper.sql("ignore key for join (a, primary)");
@@ -733,7 +762,8 @@ public class MySQLAstBuilderTest {
 
   @Test
   @DisplayName("[sqlparser.mysql] simple table source")
-  void testSimpleTableSource() {
+  void testSimpleTableSource()
+  {
     final TestHelper helper = new TestHelper(MySQLParser::singleTable);
     {
       PARSER.setServerVersion(50602);
@@ -747,7 +777,8 @@ public class MySQLAstBuilderTest {
 
   @Test
   @DisplayName("[sqlparser.mysql] joined table source")
-  void testJoinedTableSource() {
+  void testJoinedTableSource()
+  {
     final TestHelper helper = new TestHelper(MySQLParser::tableReference);
     {
       final SqlNode node = helper.sql("a join (b join c)");
@@ -756,17 +787,17 @@ public class MySQLAstBuilderTest {
     {
       final SqlNode node = helper.sql("a natural left join (b join c)");
       assertEquals("`a` NATURAL LEFT JOIN (`b` INNER JOIN `c`)", node.toString());
-      assertEquals(
-          "`a`\n" + "NATURAL LEFT JOIN (\n" + "  `b`\n" + "  INNER JOIN `c`\n)",
+      assertEquals("`a`\n"
+              + "NATURAL LEFT JOIN (\n"
+              + "  `b`\n"
+              + "  INNER JOIN `c`\n)",
           node.toString(false));
     }
     {
       final SqlNode node = helper.sql("a left join b on a.col = b.col inner join c using (col)");
-      assertEquals(
-          "`a` LEFT JOIN `b` ON `a`.`col` = `b`.`col` INNER JOIN `c` USING (`col`)",
+      assertEquals("`a` LEFT JOIN `b` ON `a`.`col` = `b`.`col` INNER JOIN `c` USING (`col`)",
           node.toString());
-      assertEquals(
-          "`a`\n"
+      assertEquals("`a`\n"
               + "LEFT JOIN `b`\n"
               + "  ON `a`.`col` = `b`.`col`\n"
               + "INNER JOIN `c`\n"
@@ -777,31 +808,29 @@ public class MySQLAstBuilderTest {
 
   @Test
   @DisplayName("[sqlparser.mysql] select statement")
-  void testSelectStatement() {
+  void testSelectStatement()
+  {
     final TestHelper helper = new TestHelper(MySQLParser::selectStatement);
     {
-      final SqlNode node =
-          helper.sql(
-              ""
-                  + "select distinct "
-                  + "  a, b.*, count(1), "
-                  + "  case when c = 0 then 1 else 2 end "
-                  + "from t0 tt "
-                  + "  left join t1 on tt.a = t1.b "
-                  + "  inner join (select e from t2) as t3 on t3.e = tt.a "
-                  + "where tt.f in (select 1 from t4) "
-                  + "  and exists ("
-                  + "    select 1 from t5"
-                  + "    union all"
-                  + "    select 2 from t6"
-                  + "  ) "
-                  + "group by tt.g, tt.h "
-                  + "having sum(tt.i) < 10 "
-                  + "order by t1.x, t1.y "
-                  + "limit ?,?");
+      final SqlNode node = helper.sql(""
+          + "select distinct "
+          + "  a, b.*, count(1), "
+          + "  case when c = 0 then 1 else 2 end "
+          + "from t0 tt "
+          + "  left join t1 on tt.a = t1.b "
+          + "  inner join (select e from t2) as t3 on t3.e = tt.a "
+          + "where tt.f in (select 1 from t4) "
+          + "  and exists ("
+          + "    select 1 from t5"
+          + "    union all"
+          + "    select 2 from t6"
+          + "  ) "
+          + "group by tt.g, tt.h "
+          + "having sum(tt.i) < 10 "
+          + "order by t1.x, t1.y "
+          + "limit ?,?");
 
-      assertEquals(
-          ""
+      assertEquals(""
               + "SELECT DISTINCT "
               + "`a`, "
               + "`b`.*, "
@@ -845,8 +874,7 @@ public class MySQLAstBuilderTest {
               + "LIMIT ? OFFSET ?",
           node.toString());
 
-      assertEquals(
-          "SELECT DISTINCT\n"
+      assertEquals("SELECT DISTINCT\n"
               + "  `a`,\n"
               + "  `b`.*,\n"
               + "  COUNT(1),\n"

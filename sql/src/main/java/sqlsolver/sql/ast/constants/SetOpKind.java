@@ -1,6 +1,7 @@
 package sqlsolver.sql.ast.constants;
 
-public enum SetOpKind {
+public enum SetOpKind
+{
   UNION,
   INTERSECT,
   EXCEPT

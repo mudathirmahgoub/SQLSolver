@@ -1,6 +1,7 @@
 package sqlsolver.sql.plan;
 
-public enum PlanKind {
+public enum PlanKind
+{
   // Don't change the order, should be consistent with OperatorType
   Input(0),
   Join(2),
@@ -15,19 +16,23 @@ public enum PlanKind {
 
   private final int numChildren;
 
-  PlanKind(int numChildren) {
+  PlanKind(int numChildren)
+  {
     this.numChildren = numChildren;
   }
 
-  public boolean isFilter() {
+  public boolean isFilter()
+  {
     return this == Filter || this == InSub || this == Exists;
   }
 
-  public boolean isSubqueryFilter() {
+  public boolean isSubqueryFilter()
+  {
     return this == InSub || this == Exists;
   }
 
-  public int numChildren() {
+  public int numChildren()
+  {
     return numChildren;
   }
 }

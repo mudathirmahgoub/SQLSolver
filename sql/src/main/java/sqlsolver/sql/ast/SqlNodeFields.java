@@ -1,13 +1,12 @@
 package sqlsolver.sql.ast;
 
-import sqlsolver.common.field.FieldKey;
-import sqlsolver.sql.ast.constants.*;
-import sqlsolver.sql.ast.constants.*;
-
 import java.util.EnumSet;
 import java.util.List;
+import sqlsolver.common.field.FieldKey;
+import sqlsolver.sql.ast.constants.*;
 
-public interface SqlNodeFields { // also serves as a marker interface
+public interface SqlNodeFields
+{ // also serves as a marker interface
   //// TableName
   FieldKey<String> TableName_Schema = SqlKind.TableName.textField("Schema");
   FieldKey<String> TableName_Table = SqlKind.TableName.textField("Table");

@@ -1,6 +1,9 @@
 package sqlsolver.sql.calcite;
 
+import static sqlsolver.sql.ast.constants.ConstraintKind.*;
+
 import com.google.common.collect.ImmutableList;
+import java.util.*;
 import org.apache.calcite.config.CalciteConnectionConfig;
 import org.apache.calcite.rel.RelCollations;
 import org.apache.calcite.rel.RelFieldCollation;
@@ -21,25 +24,25 @@ import sqlsolver.sql.ast.constants.Category;
 import sqlsolver.sql.schema.Column;
 import sqlsolver.sql.schema.Constraint;
 
-import java.util.*;
-
-import static sqlsolver.sql.ast.constants.ConstraintKind.*;
-
-public class CalciteTable implements Table {
-
+public class CalciteTable implements Table
+{
   private final Map<String, SqlTypeWrapper> columns = new LinkedHashMap<>();
 
-  public CalciteTable(sqlsolver.sql.schema.Table table) {
+  public CalciteTable(sqlsolver.sql.schema.Table table)
+  {
     final List<Column> allColumns = table.columns().stream().toList();
-    for (Column column : allColumns) {
+    for (Column column : allColumns)
+    {
       final boolean nullable = !column.isFlag(Column.Flag.NOT_NULL);
       addColumn(column.name(), column.dataType().category(), nullable);
     }
   }
 
-  public void addColumn(String col, Category category, boolean nullable) {
+  public void addColumn(String col, Category category, boolean nullable)
+  {
     SqlTypeName typeName = null;
-    switch (category) {
+    switch (category)
+    {
       case INTEGRAL -> {
         typeName = SqlTypeName.INTEGER;
       }
@@ -68,39 +71,43 @@ public class CalciteTable implements Table {
   public RelDataType getRowType(RelDataTypeFactory typeFactory) {
     RelDataTypeFactory.Builder b = typeFactory.builder();
 
-    for (Map.Entry<String, SqlTypeWrapper> column : columns.entrySet()) {
-      final SqlTypeWrapper wrappedType = column.getValue();
-      final RelDataType typeWithNullability =
-              typeFactory.createTypeWithNullability(
-                      typeFactory.createSqlType(wrappedType.sqlTypeName),
-                      wrappedType.nullable);
-      b.add(column.getKey(), typeWithNullability);
+    for (Map.Entry<String, SqlTypeWrapper> column : columns.entrySet())
+        {
+          final SqlTypeWrapper wrappedType = column.getValue();
+          final RelDataType typeWithNullability = typeFactory.createTypeWithNullability(
+              typeFactory.createSqlType(wrappedType.sqlTypeName), wrappedType.nullable);
+          b.add(column.getKey(), typeWithNullability);
+        }
+        return b.build();
     }
-    return b.build();
-  }
 
-  @Override
-  public boolean isRolledUp(String s) {
-    return false;
-  }
+    @Override
+    public boolean isRolledUp(String s)
+    {
+      return false;
+    }
 
-  @Override
-  public boolean rolledUpColumnValidInsideAgg(String s, SqlCall sqlCall, SqlNode sqlNode, CalciteConnectionConfig calciteConnectionConfig) {
-    return false;
-  }
+    @Override
+    public boolean rolledUpColumnValidInsideAgg(
+        String s, SqlCall sqlCall, SqlNode sqlNode, CalciteConnectionConfig calciteConnectionConfig)
+    {
+      return false;
+    }
 
-  public Statistic getStatistic() {
-    return Statistics.of(null);
-  }
+    public Statistic getStatistic()
+    {
+      return Statistics.of(null);
+    }
 
-  public Schema.TableType getJdbcTableType() {
-    return Schema.TableType.STREAM;
-  }
+    public Schema.TableType getJdbcTableType()
+    {
+      return Schema.TableType.STREAM;
+    }
 
-  public Table stream() {
-    return null;
-  }
+    public Table stream()
+    {
+      return null;
+    }
 
-  private record SqlTypeWrapper(SqlTypeName sqlTypeName, boolean nullable) {
+    private record SqlTypeWrapper(SqlTypeName sqlTypeName, boolean nullable) {}
   }
-}

@@ -1,6 +1,7 @@
 package sqlsolver.sql.plan;
 
-public interface InSubNode extends PlanNode {
+public interface InSubNode extends PlanNode
+{
   Expression expr();
 
   boolean isPlain();
@@ -8,11 +9,13 @@ public interface InSubNode extends PlanNode {
   void setPlain(boolean isPlain);
 
   @Override
-  default PlanKind kind() {
+  default PlanKind kind()
+  {
     return PlanKind.InSub;
   }
 
-  static InSubNode mk(Expression expr) {
+  static InSubNode mk(Expression expr)
+  {
     return new InSubNodeImpl(expr);
   }
 }

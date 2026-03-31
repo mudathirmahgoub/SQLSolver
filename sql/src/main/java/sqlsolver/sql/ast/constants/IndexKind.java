@@ -1,6 +1,7 @@
 package sqlsolver.sql.ast.constants;
 
-public enum IndexKind {
+public enum IndexKind
+{
   BTREE,
   RTREE,
   HASH,
