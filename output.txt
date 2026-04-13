@@ -1,5 +1,5 @@
 Verifying pair 1
-Verification time: 127 ms
+Verification time: 120 ms
 1 EQ
 Verifying pair 2
 Term 1:
@@ -319,7 +319,7 @@ FOL formula 2:
        0))
 Set solver result (config #1): EQ
 Set solver result: EQ
-Verification time: 1304 ms
+Verification time: 1246 ms
 2 EQ
 Verifying pair 3
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -347,7 +347,7 @@ FOL formula 2:
 0
 Set solver result (config #1): EQ
 Set solver result: EQ
-Verification time: 80 ms
+Verification time: 86 ms
 3 EQ
 Verifying pair 4
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -424,7 +424,7 @@ FOL formula 2:
      0)
 Set solver result (config #1): EQ
 Set solver result: EQ
-Verification time: 102 ms
+Verification time: 92 ms
 5 EQ
 Verifying pair 6
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -460,10 +460,10 @@ FOL formula 2:
      0)
 Set solver result (config #1): EQ
 Set solver result: EQ
-Verification time: 78 ms
+Verification time: 77 ms
 6 EQ
 Verifying pair 7
-Verification time: 28 ms
+Verification time: 26 ms
 7 EQ
 Verifying pair 8
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -477,7 +477,7 @@ emp(x)
 * [$0(x) = 10]
 * [IsNull($3(x))]
 * [$7(x) = 7]
-Verification time: 41 ms
+Verification time: 32 ms
 8 EQ
 Verifying pair 9
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -491,7 +491,7 @@ emp(x)
 * [$0(x)
    + 5
    = 13]
-Verification time: 31 ms
+Verification time: 37 ms
 9 EQ
 Verifying pair 10
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -505,7 +505,7 @@ Verifying pair 10
             * [$7(x10) = $7(x4)]
             * emp(x10)
             * [$0(x) = $1(x4)]||)
-Verification time: 67 ms
+Verification time: 62 ms
 10 EQ
 Verifying pair 11
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -529,7 +529,7 @@ Verifying pair 11
    + ∑{x32}(||not([IsNull($3(x32))])
               * emp(x32)
               * [$0(x) = $1(x32)]||)]
-Verification time: 82 ms
+Verification time: 81 ms
 11 EQ
 Verifying pair 12
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -634,7 +634,7 @@ FOL: (declare-fun IsNull (Int) Int)
      (= 1 0)))
 
 smt solver: UNSATISFIABLE
-Verification time: 128 ms
+Verification time: 116 ms
 13 EQ
 Verifying pair 14
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -710,7 +710,7 @@ FOL formula 2:
      0)
 Set solver result (config #1): EQ
 Set solver result: EQ
-Verification time: 88 ms
+Verification time: 93 ms
 14 EQ
 Verifying pair 15
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -724,7 +724,7 @@ Verifying pair 15
   * not(0)
   * [$7(x) = 10]
   * emp(x)||
-Verification time: 36 ms
+Verification time: 33 ms
 15 EQ
 Verifying pair 16
 Term 1:
@@ -982,7 +982,7 @@ not(∑{x13}([$2(x) = $2(x13)]
 * emp(x)
 * ||∑{x18}([$7(x) = $7(x18)]
            * emp(x18))||
-Verification time: 212 ms
+Verification time: 222 ms
 16 EQ
 Verifying pair 17
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -1000,7 +1000,7 @@ Verifying pair 18
 [[q1]](x) := 
 [$0(x) = 23]
 + [$0(x) = 11]
-Verification time: 13 ms
+Verification time: 14 ms
 18 EQ
 Verifying pair 19
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -1020,7 +1020,7 @@ Verifying pair 19
        * ||∑{x25}([$0(x31) = $5(x25)]
                   * emp(x25)
                   * [$7(x25) = 10])||)
-Verification time: 49 ms
+Verification time: 50 ms
 19 EQ
 Verifying pair 20
 Term 1:
@@ -2604,7 +2604,7 @@ Set solver result (config #1): NEQ
   * [$5(y0) < 100]
   * ∑{x8}(emp(x8)
           * [$0(x8) < 20])||
-Verification time: 948 ms
+Verification time: 904 ms
 20 EQ
 Verifying pair 21
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -2638,7 +2638,7 @@ FOL formula 2:
 (ite (and (= u0 10) u0_notnull (= u1 "x") u1_notnull) 1 0)
 Set solver result (config #1): EQ
 Set solver result: EQ
-Verification time: 48 ms
+Verification time: 55 ms
 21 EQ
 Verifying pair 22
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -2649,7 +2649,7 @@ Verifying pair 22
 Verification time: 18 ms
 22 EQ
 Verifying pair 23
-Verification time: 33 ms
+Verification time: 37 ms
 23 EQ
 Verifying pair 24
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -2659,7 +2659,7 @@ Verifying pair 24
 [[q1]](x) := 
 ∑{x3}(||emp(x3)
         * [$0(x) = $1(x3)]||)
-Verification time: 31 ms
+Verification time: 26 ms
 24 EQ
 Verifying pair 25
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -3207,10 +3207,10 @@ FOL: (declare-fun sls_0_lambda_1_0 () Int)
      (or (not (= sls_0_mu_1 0)) (= sls_0_lambda_1_0 0))))
 
 smt solver: UNSATISFIABLE
-Verification time: 1055 ms
+Verification time: 1129 ms
 26 EQ
 Verifying pair 27
-Verification time: 24 ms
+Verification time: 22 ms
 27 EQ
 Verifying pair 28
 Set solver result (config #1): UNKNOWN
@@ -3320,7 +3320,7 @@ not(∑{x41}([$0(x) = $5(x41)]
 * ||∑{x50}([$0(x) = $5(x50)]
            * [$6(x50) = $2(x)]
            * emp(x50))||
-Verification time: 1275 ms
+Verification time: 1280 ms
 28 EQ
 Verifying pair 29
 Term 1:
@@ -4015,7 +4015,7 @@ FOL: (declare-fun IsNull (Int) Int)
      (= 1 0)))
 
 smt solver: UNSATISFIABLE
-Verification time: 539 ms
+Verification time: 525 ms
 29 EQ
 Verifying pair 30
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -4023,7 +4023,7 @@ Verifying pair 30
 0
 [[q1]](x) := 
 0
-Verification time: 50 ms
+Verification time: 53 ms
 30 EQ
 Verifying pair 31
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -4039,7 +4039,7 @@ Verifying pair 31
          * ∑{x21}(dept(x21)
                   * [$2(x20) = $1(x21)]
                   * [$0(x20) = $0(x21)])||)
-Verification time: 39 ms
+Verification time: 33 ms
 31 EQ
 Verifying pair 32
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -4047,7 +4047,7 @@ Verifying pair 32
 [$0(x) = 0]
 [[q1]](x) := 
 [$0(x) = 0]
-Verification time: 20 ms
+Verification time: 14 ms
 32 EQ
 Verifying pair 33
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -4073,7 +4073,7 @@ Verifying pair 33
    ∑{x229}(||∑{x190}([$0(x) = $7(x190)]
                      * [$0(x229) = $2(x190)]
                      * emp(x190))||)]
-Verification time: 116 ms
+Verification time: 108 ms
 33 EQ
 Verifying pair 34
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -4087,7 +4087,7 @@ dept(x)
 * ||∑{x6}([$0(x) = $7(x6)]
           * emp(x6)
           * [$5(x6) > 100])||
-Verification time: 36 ms
+Verification time: 32 ms
 34 EQ
 Verifying pair 35
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -4107,7 +4107,7 @@ Verifying pair 35
                   * [$5(x23)
                      + 1
                      = $2(x23)])||)
-Verification time: 46 ms
+Verification time: 47 ms
 35 EQ
 Verifying pair 36
 Term 1:
@@ -4603,7 +4603,7 @@ FOL formula 2:
        0))
 Set solver result (config #1): EQ
 Set solver result: EQ
-Verification time: 368 ms
+Verification time: 382 ms
 36 EQ
 Verifying pair 37
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -4678,10 +4678,10 @@ FOL formula 2:
      0)
 Set solver result (config #1): EQ
 Set solver result: EQ
-Verification time: 67 ms
+Verification time: 69 ms
 37 EQ
 Verifying pair 38
-Verification time: 16 ms
+Verification time: 18 ms
 38 EQ
 Verifying pair 39
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -4824,7 +4824,7 @@ FOL: (declare-fun IsNull (Int) Int)
      (= 1 0)))
 
 smt solver: UNSATISFIABLE
-Verification time: 88 ms
+Verification time: 90 ms
 39 EQ
 Verifying pair 40
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -4926,7 +4926,7 @@ FOL: (declare-fun IsNull (Int) Int)
      (= 1 0)))
 
 smt solver: UNSATISFIABLE
-Verification time: 52 ms
+Verification time: 61 ms
 40 EQ
 Verifying pair 41
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -4972,10 +4972,10 @@ FOL formula 2:
         a!1)))
 Set solver result (config #1): EQ
 Set solver result: EQ
-Verification time: 84 ms
+Verification time: 87 ms
 41 EQ
 Verifying pair 42
-Verification time: 28 ms
+Verification time: 24 ms
 42 EQ
 Verifying pair 43
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -4987,7 +4987,7 @@ emp(x)
 emp(x)
 * ||∑{x4}([$7(x) = $7(x4)]
           * emp(x4))||
-Verification time: 28 ms
+Verification time: 27 ms
 43 EQ
 Verifying pair 44
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -5155,7 +5155,7 @@ FOL: (declare-fun IsNull (Int) Int)
      (= 1 0)))
 
 smt solver: UNSATISFIABLE
-Verification time: 85 ms
+Verification time: 97 ms
 44 EQ
 Verifying pair 45
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -5175,7 +5175,7 @@ Verifying pair 45
             * emp(x28)||)
    + ∑{x32}(||emp(x32)
               * [$0(x) = $1(x32)]||)]
-Verification time: 47 ms
+Verification time: 1009 ms
 45 EQ
 Verifying pair 46
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -5189,7 +5189,7 @@ Verifying pair 46
            * emp(x4)
            * [$7(x4) = $7(x6)]
            * [$0(x) = $1(x4)]||)
-Verification time: 25 ms
+Verification time: 26 ms
 46 EQ
 Verifying pair 47
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -5201,7 +5201,7 @@ t(x)
 t(x)
 * ||∑{x5}([$4(x) = $5(x5)]
           * t(x5))||
-Verification time: 27 ms
+Verification time: 28 ms
 47 EQ
 Verifying pair 48
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -5265,7 +5265,7 @@ Verifying pair 49
                        * $5(x43)]
                     * [$1(x43) = $0(x42)]
                     * emp(x43)||)]
-Verification time: 78 ms
+Verification time: 74 ms
 49 EQ
 Verifying pair 50
 Set solver result (config #1): UNKNOWN
@@ -24103,7 +24103,7 @@ FOL: (declare-fun IsNull (Int) Int)
      (= 1 0)))
 
 smt solver: UNSATISFIABLE
-Verification time: 10240 ms
+Verification time: 11000 ms
 50 EQ
 Verifying pair 51
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -24246,7 +24246,7 @@ FOL: (declare-fun IsNull (Int) Int)
      (= 1 0)))
 
 smt solver: UNSATISFIABLE
-Verification time: 76 ms
+Verification time: 70 ms
 51 EQ
 Verifying pair 52
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -24282,7 +24282,7 @@ Verifying pair 52
    + ∑{x31}($0(x31)
             * ||[$0(x) = $1(x31)]
                 * emp(x31)||)]
-Verification time: 65 ms
+Verification time: 58 ms
 52 EQ
 Verifying pair 53
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -24989,7 +24989,7 @@ FOL: (declare-fun IsNull (Int) Int)
      (= 1 0)))
 
 smt solver: UNSATISFIABLE
-Verification time: 995 ms
+Verification time: 952 ms
 53 EQ
 Verifying pair 54
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -24999,7 +24999,7 @@ Verifying pair 54
 [[q1]](x) := 
 [$0(x) = 'TABLE']
 * [$1(x) = 't']
-Verification time: 27 ms
+Verification time: 20 ms
 54 EQ
 Verifying pair 55
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -25017,7 +25017,7 @@ Verifying pair 56
 [[q1]](x) := 
 [IsNull($0(x))]
 * ∑{x5}(||emp(x5)||)
-Verification time: 20 ms
+Verification time: 18 ms
 56 EQ
 Verifying pair 57
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -25049,7 +25049,7 @@ Verifying pair 57
    + [$0(x) > 20]
      * ∑{x34}(||emp(x34)
                 * [$0(x) = $7(x34)]||)]
-Verification time: 61 ms
+Verification time: 58 ms
 57 EQ
 Verifying pair 58
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -25082,7 +25082,7 @@ FOL formula 2:
 0
 Set solver result (config #1): EQ
 Set solver result: EQ
-Verification time: 40 ms
+Verification time: 41 ms
 58 EQ
 Verifying pair 59
 Set solver result (config #1): UNKNOWN
@@ -27227,7 +27227,7 @@ FOL: (declare-fun sls_3_lambda_1_2 () Int)
                 (= sls_3_lambda_1_2 0))))))
 
 smt solver: UNSATISFIABLE
-Verification time: 36932 ms
+Verification time: 36281 ms
 59 EQ
 Verifying pair 60
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -27237,7 +27237,7 @@ Verifying pair 60
 [[q1]](x) := 
 ∑{x6}(||emp(x6)
         * [$0(x) = $1(x6)]||)
-Verification time: 28 ms
+Verification time: 27 ms
 60 EQ
 Verifying pair 61
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -27247,7 +27247,7 @@ Verifying pair 61
 [[q1]](x) := 
 [$0(x) = 1]
 * ∑{x3}(||emp(x3)||)
-Verification time: 21 ms
+Verification time: 20 ms
 61 EQ
 Verifying pair 62
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -28107,10 +28107,10 @@ FOL: (declare-fun IsNull (Int) Int)
      (= 1 0)))
 
 smt solver: UNSATISFIABLE
-Verification time: 294 ms
+Verification time: 280 ms
 62 EQ
 Verifying pair 63
-Verification time: 23 ms
+Verification time: 20 ms
 63 EQ
 Verifying pair 64
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -28126,7 +28126,7 @@ Verifying pair 64
          * ∑{x20}([$2(x19) = $1(x20)]
                   * dept(x20)
                   * [$0(x19) = $0(x20)])||)
-Verification time: 44 ms
+Verification time: 40 ms
 64 EQ
 Verifying pair 65
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -28663,7 +28663,7 @@ FOL: (declare-fun IsNull (Int) Int)
      (= 1 0)))
 
 smt solver: UNSATISFIABLE
-Verification time: 607 ms
+Verification time: 573 ms
 65 EQ
 Verifying pair 66
 Term 1:
@@ -30161,7 +30161,7 @@ Set solver result (config #1): NEQ
   * [$0(x) = $0(y0)]
   * ∑{x8}(emp(x8)
           * [$0(x8) < 20])||
-Verification time: 781 ms
+Verification time: 754 ms
 66 EQ
 Verifying pair 67
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -30195,7 +30195,7 @@ not(∑{x18}(not([IsNull($3(x18))])
   * ||∑{x25}([$0(x) = $7(x25)]
              * emp(x25))||
   * [IsNull($1(x))]
-Verification time: 46 ms
+Verification time: 44 ms
 67 EQ
 Verifying pair 68
 Set solver result (config #1): UNKNOWN
@@ -35147,7 +35147,7 @@ not(∑{x139}([$0(x) = $1(x139)]
     * ∑{x168}([$7(x168) = $3(x)]
               * [$1(x168) = $0(x)]
               * emp(x168))||
-Verification time: 30167 ms
+Verification time: 30354 ms
 68 EQ
 Verifying pair 69
 Verification time: 25 ms
@@ -35218,7 +35218,7 @@ Set solver result (config #2): UNKNOWN
               * [$1(x) = $2(x149)]
               * [$0(x) = $7(x149)])||
   * [IsNull($2(x))]
-Verification time: 551 ms
+Verification time: 538 ms
 70 EQ
 Verifying pair 71
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -35230,7 +35230,7 @@ Verifying pair 71
 ||dept(y0)
   * [$0(y0) = 10]
   * [$0(x) = $1(y0)]||
-Verification time: 22 ms
+Verification time: 21 ms
 71 EQ
 Verifying pair 72
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -35252,7 +35252,7 @@ Verifying pair 72
                    * [$1(x) = $2(x31)]
                    * [$0(x36) = $1(x31)]
                    * emp(x31))||)]
-Verification time: 38 ms
+Verification time: 34 ms
 72 EQ
 Verifying pair 73
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -35494,7 +35494,7 @@ FOL: (declare-fun IsNull (Int) Int)
      (= 1 0)))
 
 smt solver: UNSATISFIABLE
-Verification time: 1993 ms
+Verification time: 1840 ms
 73 EQ
 Verifying pair 74
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -35508,7 +35508,7 @@ Verifying pair 74
         * emp(x6)||)
 + ∑{x8}(||[$0(x) = $5(x8)]
           * emp(x8)||)
-Verification time: 24 ms
+Verification time: 23 ms
 74 EQ
 Verifying pair 75
 Verification time: 20 ms
@@ -35669,7 +35669,7 @@ FOL: (declare-fun sls_6_lambda_1_0 () Int)
      (or (not (= sls_6_mu_1 0)) (= sls_6_lambda_1_0 0))))
 
 smt solver: UNSATISFIABLE
-Verification time: 111 ms
+Verification time: 115 ms
 76 EQ
 Verifying pair 77
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -35789,7 +35789,7 @@ Verifying pair 77
      * ∑{x247}(not(∑{x245}([$1(x245) = $0(x247)]
                            * emp(x245)))
                * bonus(x247))]
-Verification time: 210 ms
+Verification time: 187 ms
 77 EQ
 Verifying pair 78
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -35797,7 +35797,7 @@ Verifying pair 78
 0
 [[q1]](x) := 
 0
-Verification time: 24 ms
+Verification time: 21 ms
 78 EQ
 Verifying pair 79
 Verification time: 12 ms
@@ -35910,7 +35910,7 @@ not(∑{x41}([$0(x) = $5(x41)]
 * ||∑{x50}([$0(x) = $5(x50)]
            * [$6(x50) = $2(x)]
            * emp(x50))||
-Verification time: 1035 ms
+Verification time: 1015 ms
 80 EQ
 Verifying pair 81
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -35918,7 +35918,7 @@ Verifying pair 81
 0
 [[q1]](x) := 
 0
-Verification time: 16 ms
+Verification time: 15 ms
 81 EQ
 Verifying pair 82
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -36061,7 +36061,7 @@ FOL: (declare-fun IsNull (Int) Int)
      (= 1 0)))
 
 smt solver: UNSATISFIABLE
-Verification time: 79 ms
+Verification time: 68 ms
 82 EQ
 Verifying pair 83
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -36091,7 +36091,7 @@ Verifying pair 83
               * [$0(x) = $7(x32)]
               * [$1(x) = $2(x32)]
               * emp(x32)||)]
-Verification time: 64 ms
+Verification time: 68 ms
 83 EQ
 Verifying pair 84
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -36628,7 +36628,7 @@ FOL: (declare-fun IsNull (Int) Int)
      (= 1 0)))
 
 smt solver: UNSATISFIABLE
-Verification time: 599 ms
+Verification time: 565 ms
 84 EQ
 Verifying pair 85
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -36732,10 +36732,10 @@ Verifying pair 85
                              * bonus(x148)))
                  * [$1(x) = $5(x150)]
                  * emp(x150)||)]
-Verification time: 158 ms
+Verification time: 143 ms
 85 EQ
 Verifying pair 86
-Verification time: 29 ms
+Verification time: 26 ms
 86 EQ
 Verifying pair 87
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -36747,7 +36747,7 @@ Verifying pair 87
 [$0(x) = 1]
 * ∑{x13}(||emp(x13)
            * [$5(x13) > 100]||)
-Verification time: 30 ms
+Verification time: 29 ms
 87 EQ
 Verifying pair 88
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -36895,7 +36895,7 @@ FOL: (declare-fun IsNull (Int) Int)
      (= 1 0)))
 
 smt solver: UNSATISFIABLE
-Verification time: 86 ms
+Verification time: 83 ms
 88 EQ
 Verifying pair 89
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -37044,7 +37044,7 @@ FOL: (declare-fun sls_8_lambda_1_0 () Int)
      (or (not (= sls_8_mu_1 0)) (= sls_8_lambda_1_0 0))))
 
 smt solver: UNSATISFIABLE
-Verification time: 144 ms
+Verification time: 135 ms
 89 EQ
 Verifying pair 90
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -37148,7 +37148,7 @@ Verifying pair 90
                * [$1(x) =
                   -1
                   * $5(x150)]||)]
-Verification time: 162 ms
+Verification time: 143 ms
 90 EQ
 Verifying pair 91
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -37162,7 +37162,7 @@ Verifying pair 91
         * dept(x6)||)
 + ∑{x8}(||[$0(x) = $1(x8)]
           * dept(x8)||)
-Verification time: 31 ms
+Verification time: 29 ms
 91 EQ
 Verifying pair 92
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -37170,7 +37170,7 @@ Verifying pair 92
 0
 [[q1]](x) := 
 0
-Verification time: 16 ms
+Verification time: 15 ms
 92 EQ
 Verifying pair 93
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -37201,10 +37201,10 @@ Verifying pair 95
 [$0(x) = 2]
 [[q1]](x) := 
 [$0(x) = 2]
-Verification time: 11 ms
+Verification time: 13 ms
 95 EQ
 Verifying pair 96
-Verification time: 16 ms
+Verification time: 15 ms
 96 EQ
 Verifying pair 97
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -37334,7 +37334,7 @@ FOL formula 2:
      0)
 Set solver result (config #1): EQ
 Set solver result: EQ
-Verification time: 133 ms
+Verification time: 124 ms
 97 EQ
 Verifying pair 98
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -37392,10 +37392,10 @@ Verifying pair 98
                         * [$7(x14) = $0(x16)]))
              * dept(x16)
              * [$9(x) = $1(x16)]||)
-Verification time: 140 ms
+Verification time: 129 ms
 98 EQ
 Verifying pair 99
-Verification time: 21 ms
+Verification time: 23 ms
 99 EQ
 Verifying pair 100
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -37453,7 +37453,7 @@ Verifying pair 100
                         * [$7(x14) = $0(x16)]))
              * dept(x16)
              * [$9(x) = $1(x16)]||)
-Verification time: 133 ms
+Verification time: 123 ms
 100 EQ
 Verifying pair 101
 Verification time: 19 ms
@@ -37486,7 +37486,7 @@ Verifying pair 102
 + ||dept(y0)
     * [$0(x) = $1(y0)]
     * [$1(x) = $0(y0)]||
-Verification time: 40 ms
+Verification time: 38 ms
 102 EQ
 Verifying pair 103
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -37500,7 +37500,7 @@ dept(x)
 * ||∑{x6}([$0(x) = $7(x6)]
           * emp(x6)
           * [$5(x6) > 100])||
-Verification time: 27 ms
+Verification time: 26 ms
 103 EQ
 Verifying pair 104
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -37516,7 +37516,7 @@ Verifying pair 104
 * ||∑{x25}([$0(x) = $7(x25)]
            * [$5(x25) > 100]
            * emp(x25))||
-Verification time: 38 ms
+Verification time: 41 ms
 104 EQ
 Verifying pair 105
 Verification time: 17 ms
@@ -37567,7 +37567,7 @@ FOL formula 2:
 0
 Set solver result (config #1): EQ
 Set solver result: EQ
-Verification time: 44 ms
+Verification time: 41 ms
 106 EQ
 Verifying pair 107
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -37589,7 +37589,7 @@ Verifying pair 107
         * [$5(x2) =
            10
            * $6(x2)]||)
-Verification time: 39 ms
+Verification time: 36 ms
 107 EQ
 Verifying pair 108
 Set solver result (config #1): UNKNOWN
@@ -37819,10 +37819,10 @@ not(∑{x59}([$6(x59) < $2(x)]
 * ||∑{x69}([$7(x69) = $0(x)]
            * [$6(x69) = $2(x)]
            * emp(x69))||
-Verification time: 3033 ms
+Verification time: 2943 ms
 108 EQ
 Verifying pair 109
-Verification time: 27 ms
+Verification time: 26 ms
 109 EQ
 Verifying pair 110
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -37836,7 +37836,7 @@ dept(x)
 * [$0(x) <= 10]
 * ∑{x6}(||emp(x6)
           * [$0(x) = $7(x6)]||)
-Verification time: 27 ms
+Verification time: 26 ms
 110 EQ
 Verifying pair 111
 Set solver result (config #1): UNKNOWN
@@ -37910,7 +37910,7 @@ not(∑{x37}([$0(x37) < $1(x)]
 * ||emp(y0)
     * [$0(y0) = $1(x)]
     * [$0(x) = $1(y0)]||
-Verification time: 712 ms
+Verification time: 694 ms
 111 EQ
 Verifying pair 112
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -37940,10 +37940,10 @@ Verifying pair 112
      * ∑{x36}(||[$0(x) = $7(x36)]
                 * [$1(x) = $2(x36)]
                 * emp(x36)||)]
-Verification time: 58 ms
+Verification time: 59 ms
 112 EQ
 Verifying pair 113
-Verification time: 24 ms
+Verification time: 25 ms
 113 EQ
 Verifying pair 114
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -38009,7 +38009,7 @@ FOL formula 2:
      0)
 Set solver result (config #1): EQ
 Set solver result: EQ
-Verification time: 73 ms
+Verification time: 74 ms
 114 EQ
 Verifying pair 115
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -38364,7 +38364,7 @@ FOL: (declare-fun IsNull (Int) Int)
      (= 1 0)))
 
 smt solver: UNSATISFIABLE
-Verification time: 154 ms
+Verification time: 146 ms
 115 EQ
 Verifying pair 116
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -38884,7 +38884,7 @@ FOL: (declare-fun u3 () Int)
        (<= 0 u3)))))
 
 smt solver: UNSATISFIABLE
-Verification time: 2614 ms
+Verification time: 2607 ms
 116 EQ
 Verifying pair 117
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -38918,7 +38918,7 @@ not(∑{x18}(not([IsNull($3(x18))])
   * ||∑{x25}([$0(x) = $7(x25)]
              * emp(x25))||
   * [IsNull($1(x))]
-Verification time: 44 ms
+Verification time: 46 ms
 117 EQ
 Verifying pair 118
 Term 1:
@@ -39148,7 +39148,7 @@ FOL formula 2:
      0)
 Set solver result (config #1): EQ
 Set solver result: EQ
-Verification time: 1057 ms
+Verification time: 989 ms
 118 EQ
 Verifying pair 119
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -39178,7 +39178,7 @@ Verifying pair 119
 * ||dept(y0)
     * [$10(x) = $1(y0)]
     * [$9(x) = $0(y0)]||
-Verification time: 23 ms
+Verification time: 24 ms
 119 EQ
 Verifying pair 120
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -39327,7 +39327,7 @@ FOL: (declare-fun IsNull (Int) Int)
      (= 1 0)))
 
 smt solver: UNSATISFIABLE
-Verification time: 78 ms
+Verification time: 84 ms
 120 EQ
 Verifying pair 121
 Set solver result (config #1): UNKNOWN
@@ -39393,7 +39393,7 @@ not(∑{x51}(not([IsNull($3(x51))])
               * [$0(x) = $7(x141)]
               * [$1(x) = $2(x141)])||
   * [IsNull($2(x))]
-Verification time: 571 ms
+Verification time: 538 ms
 121 EQ
 Verifying pair 122
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -39437,7 +39437,7 @@ Verifying pair 124
              * [$7(x9) = $0(x7)]
              * emp(x9)
              * [$5(x9) > 100]||)
-Verification time: 34 ms
+Verification time: 33 ms
 124 EQ
 Verifying pair 125
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -39483,7 +39483,7 @@ Verifying pair 125
             * ||[$0(x) = $7(x31)]
                 * [$1(x) = $2(x31)]
                 * emp(x31)||)]
-Verification time: 69 ms
+Verification time: 66 ms
 125 EQ
 Verifying pair 126
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -40029,7 +40029,7 @@ smt solver: SATISFIABLE
 + [$0(x) = 2000]
   * ∑{x5}(||[2000 = $5(x5)]
             * emp(x5)||)
-Verification time: 217 ms
+Verification time: 221 ms
 126 EQ
 Verifying pair 127
 Set solver result (config #1): UNKNOWN
@@ -40225,7 +40225,7 @@ FOL: (declare-fun sls_12_lambda_1_2 () Int)
               (= sls_12_lambda_1_2 0)))))
 
 smt solver: UNSATISFIABLE
-Verification time: 309 ms
+Verification time: 311 ms
 127 EQ
 Verifying pair 128
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -40246,7 +40246,7 @@ emp(x)
 Verification time: 23 ms
 128 EQ
 Verifying pair 129
-Verification time: 40 ms
+Verification time: 35 ms
 129 EQ
 Verifying pair 130
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -40258,7 +40258,7 @@ Verifying pair 130
 [$0(x) = 1]
 * ∑{x8}(||emp(x8)
           * [$5(x8) > 100]||)
-Verification time: 27 ms
+Verification time: 26 ms
 130 EQ
 Verifying pair 131
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -40288,7 +40288,7 @@ Verifying pair 131
 + not(∑{x70}(not([IsNull($3(x70))])
              * emp(x70)))
   * [IsNull($0(x))]
-Verification time: 92 ms
+Verification time: 90 ms
 131 EQ
 Verifying pair 132
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -40313,7 +40313,7 @@ FOL formula 2:
 (ite (and (not (not (= 0 0))) (= u0 30) u0_notnull (= u1 3) u1_notnull) 1 0)
 Set solver result (config #1): EQ
 Set solver result: EQ
-Verification time: 38 ms
+Verification time: 40 ms
 132 EQ
 Verifying pair 133
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -40371,7 +40371,7 @@ FOL formula 2:
      0)
 Set solver result (config #1): EQ
 Set solver result: EQ
-Verification time: 65 ms
+Verification time: 62 ms
 133 EQ
 Verifying pair 134
 Set solver result (config #1): UNKNOWN
@@ -40403,7 +40403,7 @@ Set solver result (config #2): UNKNOWN
             + $0(y0)]
            * [$1(x11) = $1(x)]
            * dept(x11))||
-Verification time: 132 ms
+Verification time: 133 ms
 134 EQ
 Verifying pair 135
 Verification time: 25 ms
@@ -40428,7 +40428,7 @@ Verifying pair 137
 ||∑{x5}([$1(x) = $7(x5)]
         * emp(x5)
         * [$0(x) = $7(x5)])||
-Verification time: 31 ms
+Verification time: 30 ms
 137 EQ
 Verifying pair 138
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -40436,7 +40436,7 @@ Verifying pair 138
 0
 [[q1]](x) := 
 0
-Verification time: 12 ms
+Verification time: 11 ms
 138 EQ
 Verifying pair 139
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -40448,7 +40448,7 @@ Verifying pair 139
 ||∑{x171}(emp(x171)
           * [$0(x) = $1(x171)])||
 * [IsNull($1(x))]
-Verification time: 61 ms
+Verification time: 62 ms
 139 EQ
 Verifying pair 140
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -40478,7 +40478,7 @@ Verifying pair 141
     * [$7(x) = 10]
   + emp(x)
     * [$7(x) = 20]||
-Verification time: 24 ms
+Verification time: 23 ms
 141 EQ
 Verifying pair 142
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -40514,7 +40514,7 @@ Verifying pair 142
     * [$9(x) = $0(y0)]
     * [$6(x) = $4(y1)]
     * [$7(x) = $5(y1)]||
-Verification time: 52 ms
+Verification time: 50 ms
 142 EQ
 Verifying pair 143
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -40695,7 +40695,7 @@ FOL: (declare-fun sls_13_lambda_1_0 () Int)
      (or (not (= sls_13_mu_1 0)) (= sls_13_lambda_1_0 0))))
 
 smt solver: UNSATISFIABLE
-Verification time: 154 ms
+Verification time: 153 ms
 143 EQ
 Verifying pair 144
 Term 1:
@@ -41241,7 +41241,7 @@ FOL formula 2:
        0))
 Set solver result (config #1): EQ
 Set solver result: EQ
-Verification time: 331 ms
+Verification time: 318 ms
 144 EQ
 Verifying pair 145
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -41256,7 +41256,7 @@ Verifying pair 145
 Verification time: 22 ms
 145 EQ
 Verifying pair 146
-Verification time: 21 ms
+Verification time: 20 ms
 146 EQ
 Verifying pair 147
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -41597,7 +41597,7 @@ FOL: (declare-fun IsNull (Int) Int)
      (= 1 0)))
 
 smt solver: UNSATISFIABLE
-Verification time: 190 ms
+Verification time: 176 ms
 148 EQ
 Verifying pair 149
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -41615,7 +41615,7 @@ not(∑{x12}([$0(x) = $7(x12)]
 * ||∑{x14}([$0(x) = $7(x14)]
            * [$1(x) = $1(x14)]
            * emp(x14))||
-Verification time: 36 ms
+Verification time: 35 ms
 149 EQ
 Verifying pair 150
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -41623,7 +41623,7 @@ Verifying pair 150
 ||dept(x)||
 [[q1]](x) := 
 ||dept(x)||
-Verification time: 17 ms
+Verification time: 20 ms
 150 EQ
 Verifying pair 151
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -41763,7 +41763,7 @@ FOL: (declare-fun IsNull (Int) Int)
      (or (= 1 0) (= 1 0))))
 
 smt solver: UNSATISFIABLE
-Verification time: 69 ms
+Verification time: 73 ms
 151 EQ
 Verifying pair 152
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -41886,7 +41886,7 @@ Set solver result (config #2): UNKNOWN
   * ||∑{x149}(emp(x149)
               * [$0(x) = $1(x149)])||
   * [IsNull($1(x))]
-Verification time: 365 ms
+Verification time: 350 ms
 154 EQ
 Verifying pair 155
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -41894,7 +41894,7 @@ Verifying pair 155
 0
 [[q1]](x) := 
 0
-Verification time: 14 ms
+Verification time: 13 ms
 155 EQ
 Verifying pair 156
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -42037,7 +42037,7 @@ FOL: (declare-fun IsNull (Int) Int)
      (= 1 0)))
 
 smt solver: UNSATISFIABLE
-Verification time: 68 ms
+Verification time: 75 ms
 156 EQ
 Verifying pair 157
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -42081,7 +42081,7 @@ Verifying pair 159
    ∑{x66}($0(x66)
           * ||dept(x66)
               * [$0(x) = $1(x66)]||)]
-Verification time: 57 ms
+Verification time: 54 ms
 159 EQ
 Verifying pair 160
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -42099,7 +42099,7 @@ Verifying pair 160
    ∑{x31}(||∑{x27}([$0(x) = $7(x27)]
                    * [$0(x31) = $1(x27)]
                    * emp(x27))||)]
-Verification time: 29 ms
+Verification time: 31 ms
 160 EQ
 Verifying pair 161
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -42316,7 +42316,7 @@ FOL: (declare-fun IsNull (Int) Int)
      (= 1 0)))
 
 smt solver: UNSATISFIABLE
-Verification time: 1298 ms
+Verification time: 2319 ms
 161 EQ
 Verifying pair 162
 Set solver result (config #1): UNKNOWN
@@ -42553,7 +42553,7 @@ FOL: (declare-fun IsNull (Int) Int)
      (= 1 0)))
 
 smt solver: UNSATISFIABLE
-Verification time: 345 ms
+Verification time: 338 ms
 162 EQ
 Verifying pair 163
 Term 1:
@@ -43831,7 +43831,7 @@ FOL formula 2:
        0))
 Set solver result (config #1): EQ
 Set solver result: EQ
-Verification time: 713 ms
+Verification time: 743 ms
 163 EQ
 Verifying pair 164
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -43871,7 +43871,7 @@ Verifying pair 165
    + ∑{x32}(||[$0(x) = $7(x32)]
               * [$1(x) = $2(x32)]
               * emp(x32)||)]
-Verification time: 51 ms
+Verification time: 50 ms
 165 EQ
 Verifying pair 166
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -43901,10 +43901,10 @@ Verifying pair 166
    $7(y0)
    * ||emp(y0)
        * [$0(x) = $0(y0)]||]
-Verification time: 85 ms
+Verification time: 80 ms
 166 EQ
 Verifying pair 167
-Verification time: 19 ms
+Verification time: 20 ms
 167 EQ
 Verifying pair 168
 Set solver result (config #1): UNKNOWN
@@ -45308,7 +45308,7 @@ not(∑{x118}([$0(x) = $7(x118)]
            * [$0(x) = $7(x43)]
            * [$7(x43) = $3(x)]
            * [$6(x43) = $4(x)])||
-Verification time: 39013 ms
+Verification time: 38923 ms
 168 EQ
 Verifying pair 169
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -45346,7 +45346,7 @@ Verifying pair 170
 ||emp(y0)
   * [$0(x) = 10]
   * [$0(y0) = 10]||
-Verification time: 21 ms
+Verification time: 23 ms
 170 EQ
 Verifying pair 171
 Set solver result (config #1): UNKNOWN
@@ -45424,7 +45424,7 @@ not(∑{x37}([$0(x) = $7(x37)]
     * [$1(x) = $2(y0)]
     * [$0(y0) = $2(x)]
     * [$0(x) = $7(y0)]||
-Verification time: 832 ms
+Verification time: 826 ms
 171 EQ
 Verifying pair 172
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -45589,7 +45589,7 @@ FOL: (declare-fun IsNull (Int) Int)
      (= 1 0)))
 
 smt solver: UNSATISFIABLE
-Verification time: 81 ms
+Verification time: 76 ms
 172 EQ
 Verifying pair 173
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -45647,7 +45647,7 @@ Verifying pair 173
                        + 42]
                       * [$0(x) = $7(x70)]
                       * emp(x70))||)
-Verification time: 103 ms
+Verification time: 98 ms
 173 EQ
 Verifying pair 174
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -45670,7 +45670,7 @@ FOL formula 2:
 0
 Set solver result (config #1): EQ
 Set solver result: EQ
-Verification time: 34 ms
+Verification time: 35 ms
 174 EQ
 Verifying pair 175
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -45774,7 +45774,7 @@ Verifying pair 175
                * [$1(x) =
                   -1
                   * $5(x150)]||)]
-Verification time: 162 ms
+Verification time: 143 ms
 175 EQ
 Verifying pair 176
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -46142,7 +46142,7 @@ FOL: (declare-fun var32 () Int)
      (= u0 (ite (= u2 10) var32 0))))
 
 smt solver: UNSATISFIABLE
-Verification time: 143 ms
+Verification time: 138 ms
 176 EQ
 Verifying pair 177
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -46174,7 +46174,7 @@ Verifying pair 177
   * ∑{x16}(||emp(x16)
              * [$7(x16) = $1(x)]||)
   * [$1(x) < 4]
-Verification time: 45 ms
+Verification time: 44 ms
 177 EQ
 Verifying pair 178
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -46186,7 +46186,7 @@ emp(x)
 emp(x)
 * ||emp(x)
     + [$7(x) < 100]||
-Verification time: 32 ms
+Verification time: 31 ms
 178 EQ
 Verifying pair 179
 Term 1:
@@ -46663,7 +46663,7 @@ Set solver result (config #1): EQ
 0
 [[q1]](x) := 
 0
-Verification time: 352 ms
+Verification time: 309 ms
 179 EQ
 Verifying pair 180
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -46687,7 +46687,7 @@ Verifying pair 180
    + 3
      * ∑{x36}(||emp(x36)
                 * [$0(x) = $1(x36)]||)]
-Verification time: 49 ms
+Verification time: 44 ms
 180 EQ
 Verifying pair 181
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -46697,7 +46697,7 @@ Verifying pair 181
 [[q1]](x) := 
 [$0(x) = 1]
 * ∑{x3}(||emp(x3)||)
-Verification time: 21 ms
+Verification time: 20 ms
 181 EQ
 Verifying pair 182
 Term 1:
@@ -47539,7 +47539,7 @@ FOL formula 2:
        0))
 Set solver result (config #1): EQ
 Set solver result: EQ
-Verification time: 432 ms
+Verification time: 424 ms
 182 EQ
 Verifying pair 183
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -47679,7 +47679,7 @@ FOL: (declare-fun IsNull (Int) Int)
      (or (= 1 0) (= 1 0))))
 
 smt solver: UNSATISFIABLE
-Verification time: 65 ms
+Verification time: 63 ms
 183 EQ
 Verifying pair 184
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -47695,7 +47695,7 @@ Verifying pair 184
              * [$1(x6) = 'Charlie']
              * [$0(x6) = $7(x8)]
              * emp(x8)||)
-Verification time: 29 ms
+Verification time: 26 ms
 184 EQ
 Verifying pair 185
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -47912,7 +47912,7 @@ FOL: (declare-fun IsNull (Int) Int)
      (= 1 0)))
 
 smt solver: UNSATISFIABLE
-Verification time: 1481 ms
+Verification time: 1318 ms
 185 EQ
 Verifying pair 186
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -47936,7 +47936,7 @@ Verifying pair 186
             =
             $0(y0)
             + 10]||)
-Verification time: 39 ms
+Verification time: 36 ms
 186 EQ
 Verifying pair 187
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -47956,7 +47956,7 @@ Verifying pair 187
               * [$0(x5) = $7(x7)]
               * [$7(x4) = $0(x5)]
               * [$0(x) = $1(x4)]||)
-Verification time: 33 ms
+Verification time: 31 ms
 187 EQ
 Verifying pair 188
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -47982,7 +47982,7 @@ Verifying pair 188
                         * [$0(x19) = $7(x17)]))
              * dept(x19)
              * [$1(x19) = 'Charlie']||)
-Verification time: 46 ms
+Verification time: 49 ms
 188 EQ
 Verifying pair 189
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -48016,7 +48016,7 @@ not(∑{x18}(not([IsNull($3(x18))])
   * ||∑{x25}([$0(x) = $7(x25)]
              * emp(x25))||
   * [IsNull($1(x))]
-Verification time: 46 ms
+Verification time: 41 ms
 189 EQ
 Verifying pair 190
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -48236,7 +48236,7 @@ FOL: (declare-fun IsNull (Int) Int)
      (= 1 0)))
 
 smt solver: UNSATISFIABLE
-Verification time: 105 ms
+Verification time: 96 ms
 190 EQ
 Verifying pair 191
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -49022,7 +49022,7 @@ FOL: (declare-fun var107 () Int)
        (= u0 (ite (= u14 10) var107 0)))))
 
 smt solver: UNSATISFIABLE
-Verification time: 657 ms
+Verification time: 614 ms
 191 EQ
 Verifying pair 192
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -49034,7 +49034,7 @@ Verifying pair 192
 [$0(x) =
  ∑{x5}(||emp(x5)
          * [$7(x5) = 10]||)]
-Verification time: 25 ms
+Verification time: 22 ms
 192 EQ
 Verifying pair 193
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -49558,7 +49558,7 @@ smt solver: SATISFIABLE
          * [$7(x6) = 30]||)
  + ∑{x7}(||emp(x7)
            * [$7(x7) = 10]||)]
-Verification time: 204 ms
+Verification time: 183 ms
 193 EQ
 Verifying pair 194
 Set solver result (config #1): UNKNOWN
@@ -61210,7 +61210,7 @@ not([$7(y2) < $7(y1)]
               * emp(y0)
               * dept(x393)
               * [$0(x) = $0(y0)]||)
-Verification time: 7131 ms
+Verification time: 7043 ms
 194 EQ
 Verifying pair 195
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -61305,7 +61305,7 @@ FOL: (declare-fun IsNull (Int) Int)
      (= 1 0)))
 
 smt solver: UNSATISFIABLE
-Verification time: 56 ms
+Verification time: 53 ms
 195 EQ
 Verifying pair 196
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -61323,7 +61323,7 @@ Verifying pair 196
   * ∑{x15}(||not(∑{x13}(emp(x13)
                         * [$7(x13) = $0(x15)]))
              * dept(x15)||)
-Verification time: 33 ms
+Verification time: 32 ms
 196 EQ
 Verifying pair 197
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -61341,7 +61341,7 @@ Verifying pair 197
 + ∑{x12}(||emp(x12)
            * [$0(x) = $5(x12)]||)
   * ∑{x14}(||emp(x14)||)
-Verification time: 31 ms
+Verification time: 28 ms
 197 EQ
 Verifying pair 198
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -61359,10 +61359,10 @@ Verifying pair 198
     * [$7(x) = 10]
   + emp(x)
     * [$7(x) = 20]||
-Verification time: 22 ms
+Verification time: 23 ms
 198 EQ
 Verifying pair 199
-Verification time: 18 ms
+Verification time: 17 ms
 199 EQ
 Verifying pair 200
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -61491,7 +61491,7 @@ FOL formula 2:
        0))
 Set solver result (config #1): EQ
 Set solver result: EQ
-Verification time: 90 ms
+Verification time: 88 ms
 201 EQ
 Verifying pair 202
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -61613,7 +61613,7 @@ FOL: (declare-fun u4 () Int)
                     0))))))
 
 smt solver: UNSATISFIABLE
-Verification time: 87 ms
+Verification time: 86 ms
 202 EQ
 Verifying pair 203
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -61625,10 +61625,10 @@ Verifying pair 203
 [$0(x) < 10]
 * ∑{x2}(||emp(x2)
           * [$0(x) = $3(x2)]||)
-Verification time: 22 ms
+Verification time: 23 ms
 203 EQ
 Verifying pair 204
-Verification time: 30 ms
+Verification time: 29 ms
 204 EQ
 Verifying pair 205
 Term 1:
@@ -63481,7 +63481,7 @@ FOL: (declare-fun emp (Int) Int)
                     (ite a!1 (ite a!2 a!3 a!4) a!3)))))))
 
 smt solver: UNSATISFIABLE
-Verification time: 1000 ms
+Verification time: 991 ms
 205 EQ
 Verifying pair 206
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -63499,7 +63499,7 @@ Verifying pair 206
 * [$1(x) =
    ∑{x193}(||∑{x157}([$0(x193) = $2(x157)]
                      * emp(x157))||)]
-Verification time: 69 ms
+Verification time: 64 ms
 206 EQ
 Verifying pair 207
 Term 1:
@@ -64826,7 +64826,7 @@ FOL: (declare-fun sls_27_lambda_1_0 () Int)
        (or (not (= sls_27_mu_1 0)) (= sls_27_lambda_1_0 0)))))
 
 smt solver: UNSATISFIABLE
-Verification time: 766 ms
+Verification time: 803 ms
 207 EQ
 Verifying pair 208
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -64912,7 +64912,7 @@ Verifying pair 210
 0
 [[q1]](x) := 
 0
-Verification time: 32 ms
+Verification time: 31 ms
 210 EQ
 Verifying pair 211
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -65634,7 +65634,7 @@ FOL: (declare-fun var69 () Int)
      (= u0 (ite (= u13 10) var69 0))))
 
 smt solver: UNSATISFIABLE
-Verification time: 557 ms
+Verification time: 547 ms
 211 EQ
 Verifying pair 212
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -65690,7 +65690,7 @@ Verifying pair 212
                   * ||[$1(x) = $5(x43)]
                       * [$1(x43) = $0(x42)]
                       * emp(x43)||)]
-Verification time: 72 ms
+Verification time: 63 ms
 212 EQ
 Verifying pair 213
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -65762,10 +65762,10 @@ Verifying pair 213
      * ∑{x139}(not(∑{x136}([$0(x139) = $1(x136)]
                            * emp(x136)))
                * bonus(x139))]
-Verification time: 127 ms
+Verification time: 110 ms
 213 EQ
 Verifying pair 214
-Verification time: 28 ms
+Verification time: 27 ms
 214 EQ
 Verifying pair 215
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -66438,7 +66438,7 @@ FOL formula 2:
        0))
 Set solver result (config #1): EQ
 Set solver result: EQ
-Verification time: 294 ms
+Verification time: 284 ms
 216 EQ
 Verifying pair 217
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -66446,7 +66446,7 @@ Verifying pair 217
 0
 [[q1]](x) := 
 0
-Verification time: 21 ms
+Verification time: 20 ms
 217 EQ
 Verifying pair 218
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -66960,7 +66960,7 @@ FOL: (declare-fun var37 () Int)
        (= u1 (ite (= u3 1000) var37 0)))))
 
 smt solver: UNSATISFIABLE
-Verification time: 209 ms
+Verification time: 210 ms
 218 EQ
 Verifying pair 219
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -67109,7 +67109,7 @@ FOL: (declare-fun IsNull (Int) Int)
      (= 1 0)))
 
 smt solver: UNSATISFIABLE
-Verification time: 80 ms
+Verification time: 78 ms
 219 EQ
 Verifying pair 220
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -67462,7 +67462,7 @@ FOL: (declare-fun IsNull (Int) Int)
      (= 1 0)))
 
 smt solver: UNSATISFIABLE
-Verification time: 537094 ms
+Verification time: 527839 ms
 220 EQ
 Verifying pair 221
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -67490,7 +67490,7 @@ Verifying pair 221
 + [IsNull($0(x))]
   * [IsNull($1(x))]
   * [IsNull($2(x))]
-Verification time: 134 ms
+Verification time: 123 ms
 221 EQ
 Verifying pair 222
 Term 1:
@@ -72944,7 +72944,7 @@ FOL: (declare-fun var5095 () Int)
                 a!2)))))
 
 smt solver: UNSATISFIABLE
-Verification time: 3596 ms
+Verification time: 3447 ms
 222 EQ
 Verifying pair 223
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -72958,7 +72958,7 @@ Verifying pair 223
         * dept(x6)||)
 + ∑{x8}(||[$0(x) = $1(x8)]
           * dept(x8)||)
-Verification time: 32 ms
+Verification time: 31 ms
 223 EQ
 Verifying pair 224
 Verification time: 21 ms
@@ -72988,7 +72988,7 @@ Verifying pair 225
              * [$6(x5)
                 + $7(x5)
                 > divide($6(x5), 2)]||)
-Verification time: 46 ms
+Verification time: 44 ms
 225 EQ
 Verifying pair 226
 Term 1:
@@ -77103,7 +77103,7 @@ FOL formula 2:
        0)))
 Set solver result (config #1): EQ
 Set solver result: EQ
-Verification time: 3039 ms
+Verification time: 2886 ms
 226 EQ
 Verifying pair 227
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -77161,7 +77161,7 @@ not(∑{x51}(not([IsNull($3(x51))])
   * ||∑{x141}([$0(x) = $1(x141)]
               * emp(x141))||
   * [IsNull($1(x))]
-Verification time: 392 ms
+Verification time: 379 ms
 228 EQ
 Verifying pair 229
 Verification time: 20 ms
@@ -77182,7 +77182,7 @@ Verifying pair 230
 + [$0(x) = 2]
   * [$1(x) = 3]
   * ∑{x6}(||emp(x6)||)
-Verification time: 19 ms
+Verification time: 20 ms
 230 EQ
 Verifying pair 231
 ==> Rewritten UExpressions sent to Lia solver: 
@@ -77254,7 +77254,7 @@ Verifying pair 231
      * ∑{x139}(not(∑{x135}([$0(x139) = $1(x135)]
                            * emp(x135)))
                * bonus(x139))]
-Verification time: 111 ms
+Verification time: 109 ms
 231 EQ
 Verifying pair 232
 Verification time: 19 ms

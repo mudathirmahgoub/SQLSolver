@@ -156,15 +156,15 @@ public class SqlSolver
         try
         {
           Cvc5LiaStarSolver.translate(fstar);
-          final long timeStart = System.currentTimeMillis();
+          final long timeStart = System.nanoTime();
           result = LiaSolver.solveWithConfig(fstar, config);
-          final long timeEnd = System.currentTimeMillis();
-          final double timeVerifyInSeconds = (timeEnd - timeStart) / 1000.0;
+          final long timeEnd = System.nanoTime();
+          final double timeVerifyInSeconds = (timeEnd - timeStart) / 1_000_000_000.0;
+
           String filename = Cvc5LiaStarSolver.path.getFileName().toString();
           Cvc5LiaStarSolver.writer =
               new PrintWriter(new FileWriter(Cvc5LiaStarSolver.csvFile, true));
-          Cvc5LiaStarSolver.writer.println(
-              filename + "," + result + "," + timeVerifyInSeconds);
+          Cvc5LiaStarSolver.writer.println(filename + "," + result + "," + timeVerifyInSeconds);
           Cvc5LiaStarSolver.writer.close();
         }
         catch (IOException e)
