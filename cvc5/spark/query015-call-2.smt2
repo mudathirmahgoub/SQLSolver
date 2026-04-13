@@ -1,0 +1,8 @@
+(set-logic HO_ALL)
+(declare-const u0 Int)
+(declare-const u1 Int)
+(declare-const u2 Int)
+(declare-fun emp (Int ) Int)
+(declare-fun in_list_3 (Int Int Int ) Int)
+(assert (not (= (ite (= (ite (= u1 50) (ite (= u1 100) (ite (< 5 u2) (+ 1 (+ 1 1)) (+ 1 1)) (ite (< 5 u2) (+ 1 1) 1)) (ite (= u1 100) (ite (< 5 u2) (+ 1 1) 1) (ite (< 5 u2) 1 0))) 0) 0 (ite (< 0 (in_list_3 u1 100 50 )) (emp u0 ) 0)) (ite (< 0 (in_list_3 u1 100 50 )) (emp u0 ) 0))))
+(check-sat)
