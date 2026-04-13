@@ -1,6 +1,7 @@
 package sqlsolver.superopt.liastar;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,8 +13,26 @@ import java.util.Map;
 public class Cvc5LiaStarSolver
 {
   public static String fileName = "";
+  public static String lastFileName = "";
+  public static int index = 1;
+  public static Path path;
   static Map<LiaVarImpl, String> smtConstants = new HashMap<>();
   static Map<String, LiaFuncImpl> smtFunctions = new HashMap<>();
+  public static PrintWriter writer = null;
+  public static String csvFile = "sqlsolver_results.csv";
+  static
+  {
+    try
+    {
+      writer = new PrintWriter(csvFile);
+      writer.println("sqlsolver file,sqlsolver result,sql duration");
+      writer.close();
+    }
+    catch (Exception e)
+    {
+      e.printStackTrace();
+    }
+  }
 
   public static void translate(LiaStar fstar) throws IOException
   {
@@ -52,7 +71,16 @@ public class Cvc5LiaStarSolver
     visit(fstar, builder);
     builder.append(")\n");
     builder.append("(check-sat)\n");
-    Path path = Path.of("cvc5/" + fileName + ".smt2");
+    if (lastFileName.equals(fileName))
+    {
+      index++;
+    }
+    else
+    {
+      index = 0;
+    }
+    path = Path.of("cvc5/" + fileName + "-call-" + index + ".smt2");
+    lastFileName = fileName;
     Files.writeString(path, builder, StandardCharsets.UTF_8);
   }
 

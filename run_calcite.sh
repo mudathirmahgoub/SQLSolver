@@ -1,1 +1,1 @@
-java -jar build/libs/sqlsolver-v1.1.0.jar -sql1=./q1.sql -sql2=./q2.sql -schema=./calcite_schema.sql -output=./result.txt -print
+java -jar build/libs/sqlsolver-v1.1.0.jar -sql1=./cvc5/calcite/q1.sql -sql2=./cvc5/calcite/q2.sql -schema=./sqlsolver_data/schemas/calcite_test.base.schema.sql -output=./cvc5/calcite/result.txt -print

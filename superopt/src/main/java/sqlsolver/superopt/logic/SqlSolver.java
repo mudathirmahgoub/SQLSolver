@@ -1,5 +1,8 @@
 package sqlsolver.superopt.logic;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -140,14 +143,6 @@ public class SqlSolver
         Printer.output.println(currentBVM);
       }
       LiaStar fstar = translator.uexpPairToLiastar(currentBVM);
-      try
-      {
-        Cvc5LiaStarSolver.translate(fstar);
-      }
-      catch (Exception e)
-      {
-        e.printStackTrace();
-      }
 
       if (LogicSupport.dumpLiaFormulas)
       {
@@ -157,7 +152,26 @@ public class SqlSolver
       // solve LIA*
       for (Properties config : LIA_SOLVER_CONFIGS)
       {
-        final LiaSolverStatus result = LiaSolver.solveWithConfig(fstar, config);
+        LiaSolverStatus result = null;
+        try
+        {
+          Cvc5LiaStarSolver.translate(fstar);
+          final long timeStart = System.currentTimeMillis();
+          result = LiaSolver.solveWithConfig(fstar, config);
+          final long timeEnd = System.currentTimeMillis();
+          final double timeVerifyInSeconds = (timeEnd - timeStart) / 1000.0;
+          String filename = Cvc5LiaStarSolver.path.getFileName().toString();
+          Cvc5LiaStarSolver.writer =
+              new PrintWriter(new FileWriter(Cvc5LiaStarSolver.csvFile, true));
+          Cvc5LiaStarSolver.writer.println(
+              filename + "," + result + "," + timeVerifyInSeconds);
+          Cvc5LiaStarSolver.writer.close();
+        }
+        catch (IOException e)
+        {
+          e.printStackTrace();
+        }
+
         switch (result)
         {
           case UNSAT:
