@@ -1,69 +1,361 @@
 filename,result,duration
-cvc5/calcite/query001.smt2,sat,0.10376715660095215
-cvc5/calcite/query013.smt2,unsat,0.010692358016967773
-cvc5/calcite/query026.smt2,unsat,0.6218781471252441
-cvc5/calcite/query029.smt2,int.star-contains,0.13370633125305176
-cvc5/calcite/query039.smt2,unsat,0.3561673164367676
-cvc5/calcite/query040.smt2,sat,0.3056473731994629
-cvc5/calcite/query044.smt2,unsat,1.1710827350616455
-cvc5/calcite/query050.smt2,timeout,105.6237359046936
-cvc5/calcite/query051.smt2,unsat,0.3559579849243164
-cvc5/calcite/query053.smt2,int.star-contains,0.06530356407165527
-cvc5/calcite/query059.smt2,sat,3.4818506240844727
-cvc5/calcite/query062.smt2,unsat,0.025328636169433594
-cvc5/calcite/query065.smt2,int.star-contains,0.05418872833251953
-cvc5/calcite/query073.smt2,unsat,0.01098489761352539
-cvc5/calcite/query076.smt2,sat,0.3009827136993408
-cvc5/calcite/query082.smt2,unsat,0.3547062873840332
-cvc5/calcite/query084.smt2,int.star-contains,0.7875185012817383
-cvc5/calcite/query088.smt2,unsat,0.01434946060180664
-cvc5/calcite/query089.smt2,*,0.24060630798339844
-cvc5/calcite/query115.smt2,*,0.05379819869995117
-cvc5/calcite/query116.smt2,/,0.006697416305541992
-cvc5/calcite/query120.smt2,unsat,0.7561593055725098
-cvc5/calcite/query126.smt2,timeout,111.05108690261841
-cvc5/calcite/query127.smt2,sat,0.6999537944793701
-cvc5/calcite/query143.smt2,sat,0.10502934455871582
-cvc5/calcite/query148.smt2,*,0.0541684627532959
-cvc5/calcite/query151.smt2,sat,0.08985495567321777
-cvc5/calcite/query153.smt2,unsat,0.011030912399291992
-cvc5/calcite/query156.smt2,unsat,0.3558027744293213
-cvc5/calcite/query161.smt2,unsat,0.022774934768676758
-cvc5/calcite/query162.smt2,int.star-contains,0.037390708923339844
-cvc5/calcite/query172.smt2,unsat,0.017630577087402344
-cvc5/calcite/query176.smt2,sat,3.1766421794891357
-cvc5/calcite/query183.smt2,sat,0.10130548477172852
-cvc5/calcite/query185.smt2,unsat,0.009695291519165039
-cvc5/calcite/query190.smt2,*,0.04938650131225586
-cvc5/calcite/query191.smt2,timeout,134.04771447181702
-cvc5/calcite/query193.smt2,sat,0.03026127815246582
-cvc5/calcite/query195.smt2,unsat,0.010894775390625
-cvc5/calcite/query202.smt2,unsat,0.018633127212524414
-cvc5/calcite/query205.smt2,unsat,0.02656722068786621
-cvc5/calcite/query207.smt2,unsat,0.1774296760559082
-cvc5/calcite/query211.smt2,timeout,115.14436364173889
-cvc5/calcite/query215.smt2,int.star-contains,0.040572166442871094
-cvc5/calcite/query218.smt2,timeout,113.02212715148926
-cvc5/calcite/query219.smt2,unsat,0.823866605758667
-cvc5/calcite/query220.smt2,int.star-contains,0.05893898010253906
-cvc5/calcite/query222.smt2,int.star-contains,0.08420777320861816
-cvc5/spark/query003.smt2,unsat,0.023801326751708984
-cvc5/spark/query004.smt2,unsat,0.014161109924316406
-cvc5/spark/query015.smt2,sat,0.01466059684753418
-cvc5/spark/query035.smt2,timeout,128.04462146759033
-cvc5/spark/query036.smt2,timeout,128.6932761669159
-cvc5/spark/query048.smt2,timeout,105.516774892807
-cvc5/spark/query054.smt2,sat,0.011339426040649414
-cvc5/spark/query055.smt2,int.star-contains,0.19711065292358398
-cvc5/spark/query070.smt2,unsat,11.827024459838867
-cvc5/spark/query089.smt2,unsat,0.016086339950561523
-cvc5/spark/query090.smt2,sat,0.13576793670654297
-cvc5/spark/query106.smt2,unsat,0.08021020889282227
-cvc5/spark/query107.smt2,unsat,0.08797502517700195
-cvc5/tpc-h/query005.smt2,int.star-contains,0.9508605003356934
-cvc5/tpc-h/query007.smt2,int.star-contains,0.18502140045166016
-cvc5/tpc-h/query008.smt2,int.star-contains,0.06399154663085938
-cvc5/tpc-h/query009.smt2,int.star-contains,0.2217569351196289
-cvc5/tpc-h/query012.smt2,int.star-contains,0.055541276931762695
-cvc5/tpc-h/query015.smt2,int.star-contains,0.053737640380859375
-cvc5/tpc-h/query022.smt2,int.star-contains,0.7180800437927246
+cvc5/calcite/query013-call-0.smt2,unsat,0.08149480819702148
+cvc5/calcite/query026-call-0.smt2,sat,0.2702937126159668
+cvc5/calcite/query026-call-1.smt2,sat,0.22199034690856934
+cvc5/calcite/query026-call-2.smt2,sat,0.22156524658203125
+cvc5/calcite/query026-call-3.smt2,sat,0.21465682983398438
+cvc5/calcite/query026-call-4.smt2,unsat,0.5848028659820557
+cvc5/calcite/query029-call-0.smt2,,0.047136545181274414
+cvc5/calcite/query039-call-0.smt2,unsat,0.4012422561645508
+cvc5/calcite/query040-call-0.smt2,sat,0.3666839599609375
+cvc5/calcite/query044-call-0.smt2,unsat,1.277277946472168
+cvc5/calcite/query050-call-0.smt2,,106.23070669174194
+cvc5/calcite/query051-call-0.smt2,unsat,0.3773200511932373
+cvc5/calcite/query053-call-0.smt2,,0.06125235557556152
+cvc5/calcite/query059-call-0.smt2,sat,3.1684367656707764
+cvc5/calcite/query062-call-0.smt2,,0.05030655860900879
+cvc5/calcite/query062-call-1.smt2,,0.05348992347717285
+cvc5/calcite/query062-call-2.smt2,,0.090484619140625
+cvc5/calcite/query062-call-3.smt2,,0.04536771774291992
+cvc5/calcite/query062-call-4.smt2,unsat,0.024148225784301758
+cvc5/calcite/query065-call-0.smt2,,0.05437779426574707
+cvc5/calcite/query073-call-0.smt2,unsat,0.01159524917602539
+cvc5/calcite/query076-call-0.smt2,sat,0.28310132026672363
+cvc5/calcite/query082-call-0.smt2,unsat,0.39313268661499023
+cvc5/calcite/query084-call-0.smt2,,0.06145167350769043
+cvc5/calcite/query088-call-0.smt2,unsat,0.016468286514282227
+cvc5/calcite/query089-call-0.smt2,,0.03997492790222168
+cvc5/calcite/query115-call-0.smt2,,0.05814337730407715
+cvc5/calcite/query116-call-0.smt2,"(error ""Parse Error: cvc5/calcite/query116-call-0.smt2:22.313: argument type is not the type of the function's argument type:
+argument:  (/ (* u2 u2) u3)
+has type:  Real
+not type: Int
+in term : (minus u1 (/ (* u2 u2) u3))"")",0.007868051528930664
+cvc5/calcite/query120-call-0.smt2,unsat,0.7842566967010498
+cvc5/calcite/query126-call-0.smt2,,112.65953302383423
+cvc5/calcite/query126-call-1.smt2,,118.93775129318237
+cvc5/calcite/query126-call-2.smt2,,118.20766735076904
+cvc5/calcite/query126-call-3.smt2,,115.6823558807373
+cvc5/calcite/query126-call-4.smt2,,111.91016721725464
+cvc5/calcite/query126-call-5.smt2,,117.21522998809814
+cvc5/calcite/query126-call-6.smt2,,117.95620083808899
+cvc5/calcite/query126-call-7.smt2,,115.89546656608582
+cvc5/calcite/query127-call-0.smt2,sat,0.5995802879333496
+cvc5/calcite/query143-call-0.smt2,sat,0.12221574783325195
+cvc5/calcite/query148-call-0.smt2,,0.07650184631347656
+cvc5/calcite/query151-call-0.smt2,sat,0.11768364906311035
+cvc5/calcite/query153-call-0.smt2,unsat,0.013650894165039062
+cvc5/calcite/query156-call-0.smt2,unsat,0.39292287826538086
+cvc5/calcite/query161-call-0.smt2,unsat,0.012180089950561523
+cvc5/calcite/query162-call-0.smt2,,0.0429990291595459
+cvc5/calcite/query172-call-0.smt2,unsat,0.017862558364868164
+cvc5/calcite/query176-call-0.smt2,sat,4.422481298446655
+cvc5/calcite/query176-call-1.smt2,sat,3.2016046047210693
+cvc5/calcite/query183-call-0.smt2,sat,0.11427879333496094
+cvc5/calcite/query185-call-0.smt2,unsat,0.011996030807495117
+cvc5/calcite/query190-call-0.smt2,,0.3228902816772461
+cvc5/calcite/query191-call-0.smt2,,172.79876017570496
+cvc5/calcite/query191-call-1.smt2,,165.68539810180664
+cvc5/calcite/query193-call-0.smt2,sat,0.04626655578613281
+cvc5/calcite/query193-call-1.smt2,sat,0.016454219818115234
+cvc5/calcite/query193-call-2.smt2,sat,0.01705312728881836
+cvc5/calcite/query193-call-3.smt2,sat,0.015695571899414062
+cvc5/calcite/query193-call-4.smt2,sat,0.016515254974365234
+cvc5/calcite/query193-call-5.smt2,sat,0.016740083694458008
+cvc5/calcite/query193-call-6.smt2,sat,0.015977144241333008
+cvc5/calcite/query193-call-7.smt2,sat,0.015383005142211914
+cvc5/calcite/query195-call-0.smt2,unsat,0.011244535446166992
+cvc5/calcite/query202-call-0.smt2,unsat,0.017942190170288086
+cvc5/calcite/query205-call-0.smt2,unsat,0.024957656860351562
+cvc5/calcite/query207-call-0.smt2,unsat,0.1860208511352539
+cvc5/calcite/query211-call-0.smt2,,124.42692971229553
+cvc5/calcite/query211-call-1.smt2,,123.4892966747284
+cvc5/calcite/query215-call-0.smt2,,0.31905364990234375
+cvc5/calcite/query218-call-0.smt2,,226.7297327518463
+cvc5/calcite/query218-call-1.smt2,,238.5319628715515
+cvc5/calcite/query219-call-0.smt2,unsat,0.8560810089111328
+cvc5/calcite/query220-call-0.smt2,unsat,0.027239561080932617
+cvc5/calcite/query222-call-0.smt2,sat,0.019537925720214844
+cvc5/calcite/query222-call-1.smt2,sat,0.018897056579589844
+cvc5/calcite/query222-call-2.smt2,sat,0.024294376373291016
+cvc5/calcite/query222-call-3.smt2,sat,0.022492647171020508
+cvc5/calcite/query222-call-4.smt2,,0.04968428611755371
+cvc5/calcite/query222-call-5.smt2,,0.1314253807067871
+cvc5/calcite/query222-call-6.smt2,,0.2003335952758789
+cvc5/calcite/query222-call-7.smt2,,1.12034273147583
+cvc5/spark/query003-call-0.smt2,unsat,0.014472007751464844
+cvc5/spark/query004-call-0.smt2,unsat,0.014096260070800781
+cvc5/spark/query015-call-0.smt2,sat,0.015299320220947266
+cvc5/spark/query015-call-1.smt2,sat,0.016265869140625
+cvc5/spark/query015-call-2.smt2,sat,0.014769315719604492
+cvc5/spark/query015-call-3.smt2,sat,0.014753341674804688
+cvc5/spark/query015-call-4.smt2,sat,0.014332056045532227
+cvc5/spark/query015-call-5.smt2,sat,0.013392925262451172
+cvc5/spark/query015-call-6.smt2,sat,0.013385772705078125
+cvc5/spark/query015-call-7.smt2,sat,0.01385807991027832
+cvc5/spark/query035-call-0.smt2,,167.77950835227966
+cvc5/spark/query036-call-0.smt2,,159.74824452400208
+cvc5/spark/query048-call-0.smt2,,163.71174025535583
+cvc5/spark/query048-call-1.smt2,,154.5838577747345
+cvc5/spark/query054-call-0.smt2,sat,0.01387929916381836
+cvc5/spark/query054-call-1.smt2,sat,0.012239694595336914
+cvc5/spark/query054-call-10.smt2,sat,0.01201772689819336
+cvc5/spark/query054-call-11.smt2,sat,0.012188434600830078
+cvc5/spark/query054-call-12.smt2,sat,0.012053489685058594
+cvc5/spark/query054-call-13.smt2,sat,0.01228952407836914
+cvc5/spark/query054-call-14.smt2,sat,0.011691570281982422
+cvc5/spark/query054-call-15.smt2,sat,0.011959314346313477
+cvc5/spark/query054-call-16.smt2,sat,0.011676549911499023
+cvc5/spark/query054-call-17.smt2,sat,0.011499643325805664
+cvc5/spark/query054-call-2.smt2,sat,0.011206626892089844
+cvc5/spark/query054-call-3.smt2,sat,0.01220846176147461
+cvc5/spark/query054-call-4.smt2,sat,0.01294255256652832
+cvc5/spark/query054-call-5.smt2,sat,0.011415958404541016
+cvc5/spark/query054-call-6.smt2,sat,0.011159181594848633
+cvc5/spark/query054-call-7.smt2,sat,0.011975288391113281
+cvc5/spark/query054-call-8.smt2,sat,0.011876344680786133
+cvc5/spark/query054-call-9.smt2,sat,0.011564254760742188
+cvc5/spark/query055-call-0.smt2,,1.993565559387207
+cvc5/spark/query055-call-1.smt2,,1.999854326248169
+cvc5/spark/query055-call-10.smt2,,0.22822880744934082
+cvc5/spark/query055-call-11.smt2,,0.04154229164123535
+cvc5/spark/query055-call-12.smt2,,0.11101579666137695
+cvc5/spark/query055-call-13.smt2,,0.1817166805267334
+cvc5/spark/query055-call-14.smt2,,1.0872864723205566
+cvc5/spark/query055-call-15.smt2,,1.0684607028961182
+cvc5/spark/query055-call-16.smt2,,0.9296064376831055
+cvc5/spark/query055-call-17.smt2,,0.7431979179382324
+cvc5/spark/query055-call-2.smt2,,0.05835986137390137
+cvc5/spark/query055-call-3.smt2,,0.1766071319580078
+cvc5/spark/query055-call-4.smt2,,0.03764510154724121
+cvc5/spark/query055-call-5.smt2,,0.14499711990356445
+cvc5/spark/query055-call-6.smt2,,0.22329425811767578
+cvc5/spark/query055-call-7.smt2,,0.04763388633728027
+cvc5/spark/query055-call-8.smt2,,0.14635872840881348
+cvc5/spark/query055-call-9.smt2,,0.18004393577575684
+cvc5/spark/query070-call-0.smt2,unsat,11.935779094696045
+cvc5/spark/query089-call-0.smt2,unsat,0.019228219985961914
+cvc5/spark/query090-call-0.smt2,"(error ""Cannot bind u13 to symbol of type Int, maybe the symbol has already been defined?"")",0.0058972835540771484
+cvc5/spark/query090-call-1.smt2,"(error ""Cannot bind u13 to symbol of type Int, maybe the symbol has already been defined?"")",0.005556583404541016
+cvc5/spark/query090-call-2.smt2,sat,0.16852426528930664
+cvc5/spark/query106-call-0.smt2,unsat,0.09227776527404785
+cvc5/spark/query107-call-0.smt2,unsat,0.0952141284942627
+cvc5/tpc-h/query005-call-0.smt2,,0.05282258987426758
+cvc5/tpc-h/query007-call-0.smt2,,0.06400084495544434
+cvc5/tpc-h/query007-call-1.smt2,,0.0691676139831543
+cvc5/tpc-h/query007-call-10.smt2,,0.06573200225830078
+cvc5/tpc-h/query007-call-100.smt2,"(error ""Cannot bind u75 to symbol of type Int, maybe the symbol has already been defined?"")",0.0055997371673583984
+cvc5/tpc-h/query007-call-101.smt2,"(error ""Cannot bind u75 to symbol of type Int, maybe the symbol has already been defined?"")",0.006038188934326172
+cvc5/tpc-h/query007-call-102.smt2,"(error ""Cannot bind u190 to symbol of type Int, maybe the symbol has already been defined?"")",0.0061283111572265625
+cvc5/tpc-h/query007-call-103.smt2,"(error ""Cannot bind u190 to symbol of type Int, maybe the symbol has already been defined?"")",0.006265401840209961
+cvc5/tpc-h/query007-call-104.smt2,"(error ""Cannot bind u305 to symbol of type Int, maybe the symbol has already been defined?"")",0.0062634944915771484
+cvc5/tpc-h/query007-call-105.smt2,"(error ""Cannot bind u305 to symbol of type Int, maybe the symbol has already been defined?"")",0.0054056644439697266
+cvc5/tpc-h/query007-call-106.smt2,"(error ""Cannot bind u421 to symbol of type Int, maybe the symbol has already been defined?"")",0.00664520263671875
+cvc5/tpc-h/query007-call-107.smt2,"(error ""Cannot bind u421 to symbol of type Int, maybe the symbol has already been defined?"")",0.005561351776123047
+cvc5/tpc-h/query007-call-108.smt2,"(error ""Cannot bind u538 to symbol of type Int, maybe the symbol has already been defined?"")",0.005227327346801758
+cvc5/tpc-h/query007-call-109.smt2,"(error ""Cannot bind u538 to symbol of type Int, maybe the symbol has already been defined?"")",0.006593942642211914
+cvc5/tpc-h/query007-call-11.smt2,,0.06412458419799805
+cvc5/tpc-h/query007-call-110.smt2,"(error ""Cannot bind u655 to symbol of type Int, maybe the symbol has already been defined?"")",0.006582021713256836
+cvc5/tpc-h/query007-call-111.smt2,"(error ""Cannot bind u655 to symbol of type Int, maybe the symbol has already been defined?"")",0.005370378494262695
+cvc5/tpc-h/query007-call-112.smt2,"(error ""Cannot bind u772 to symbol of type Int, maybe the symbol has already been defined?"")",0.004996538162231445
+cvc5/tpc-h/query007-call-113.smt2,"(error ""Cannot bind u772 to symbol of type Int, maybe the symbol has already been defined?"")",0.005625009536743164
+cvc5/tpc-h/query007-call-114.smt2,"(error ""Cannot bind u889 to symbol of type Int, maybe the symbol has already been defined?"")",0.006139993667602539
+cvc5/tpc-h/query007-call-115.smt2,"(error ""Cannot bind u889 to symbol of type Int, maybe the symbol has already been defined?"")",0.00516200065612793
+cvc5/tpc-h/query007-call-116.smt2,"(error ""Cannot bind u1005 to symbol of type Int, maybe the symbol has already been defined?"")",0.0055620670318603516
+cvc5/tpc-h/query007-call-117.smt2,"(error ""Cannot bind u1005 to symbol of type Int, maybe the symbol has already been defined?"")",0.006078481674194336
+cvc5/tpc-h/query007-call-118.smt2,"(error ""Cannot bind u1121 to symbol of type Int, maybe the symbol has already been defined?"")",0.004895448684692383
+cvc5/tpc-h/query007-call-119.smt2,"(error ""Cannot bind u1121 to symbol of type Int, maybe the symbol has already been defined?"")",0.005778312683105469
+cvc5/tpc-h/query007-call-12.smt2,,0.07005119323730469
+cvc5/tpc-h/query007-call-120.smt2,"(error ""Cannot bind u75 to symbol of type Int, maybe the symbol has already been defined?"")",0.006715536117553711
+cvc5/tpc-h/query007-call-121.smt2,"(error ""Cannot bind u75 to symbol of type Int, maybe the symbol has already been defined?"")",0.006053924560546875
+cvc5/tpc-h/query007-call-122.smt2,"(error ""Cannot bind u190 to symbol of type Int, maybe the symbol has already been defined?"")",0.005652189254760742
+cvc5/tpc-h/query007-call-123.smt2,"(error ""Cannot bind u190 to symbol of type Int, maybe the symbol has already been defined?"")",0.00584101676940918
+cvc5/tpc-h/query007-call-124.smt2,"(error ""Cannot bind u305 to symbol of type Int, maybe the symbol has already been defined?"")",0.005703449249267578
+cvc5/tpc-h/query007-call-125.smt2,"(error ""Cannot bind u305 to symbol of type Int, maybe the symbol has already been defined?"")",0.004993438720703125
+cvc5/tpc-h/query007-call-126.smt2,"(error ""Cannot bind u420 to symbol of type Int, maybe the symbol has already been defined?"")",0.006688117980957031
+cvc5/tpc-h/query007-call-127.smt2,"(error ""Cannot bind u420 to symbol of type Int, maybe the symbol has already been defined?"")",0.005125761032104492
+cvc5/tpc-h/query007-call-128.smt2,"(error ""Cannot bind u535 to symbol of type Int, maybe the symbol has already been defined?"")",0.005070686340332031
+cvc5/tpc-h/query007-call-129.smt2,"(error ""Cannot bind u535 to symbol of type Int, maybe the symbol has already been defined?"")",0.006819248199462891
+cvc5/tpc-h/query007-call-13.smt2,,0.09567594528198242
+cvc5/tpc-h/query007-call-130.smt2,"(error ""Cannot bind u650 to symbol of type Int, maybe the symbol has already been defined?"")",0.006364345550537109
+cvc5/tpc-h/query007-call-131.smt2,"(error ""Cannot bind u650 to symbol of type Int, maybe the symbol has already been defined?"")",0.006231784820556641
+cvc5/tpc-h/query007-call-132.smt2,"(error ""Cannot bind u765 to symbol of type Int, maybe the symbol has already been defined?"")",0.005693197250366211
+cvc5/tpc-h/query007-call-133.smt2,"(error ""Cannot bind u765 to symbol of type Int, maybe the symbol has already been defined?"")",0.005507707595825195
+cvc5/tpc-h/query007-call-134.smt2,"(error ""Cannot bind u880 to symbol of type Int, maybe the symbol has already been defined?"")",0.006313800811767578
+cvc5/tpc-h/query007-call-135.smt2,"(error ""Cannot bind u880 to symbol of type Int, maybe the symbol has already been defined?"")",0.005160331726074219
+cvc5/tpc-h/query007-call-136.smt2,"(error ""Cannot bind u995 to symbol of type Int, maybe the symbol has already been defined?"")",0.00567936897277832
+cvc5/tpc-h/query007-call-137.smt2,"(error ""Cannot bind u995 to symbol of type Int, maybe the symbol has already been defined?"")",0.0056836605072021484
+cvc5/tpc-h/query007-call-138.smt2,"(error ""Cannot bind u1110 to symbol of type Int, maybe the symbol has already been defined?"")",0.004897356033325195
+cvc5/tpc-h/query007-call-139.smt2,"(error ""Cannot bind u1110 to symbol of type Int, maybe the symbol has already been defined?"")",0.006112575531005859
+cvc5/tpc-h/query007-call-14.smt2,,0.07165813446044922
+cvc5/tpc-h/query007-call-140.smt2,,0.09353232383728027
+cvc5/tpc-h/query007-call-141.smt2,,0.3647029399871826
+cvc5/tpc-h/query007-call-142.smt2,,0.10119962692260742
+cvc5/tpc-h/query007-call-143.smt2,,0.06246542930603027
+cvc5/tpc-h/query007-call-144.smt2,,0.07017350196838379
+cvc5/tpc-h/query007-call-145.smt2,,0.06105208396911621
+cvc5/tpc-h/query007-call-146.smt2,,0.06517744064331055
+cvc5/tpc-h/query007-call-147.smt2,,0.060585737228393555
+cvc5/tpc-h/query007-call-148.smt2,,0.06337404251098633
+cvc5/tpc-h/query007-call-149.smt2,,0.06295275688171387
+cvc5/tpc-h/query007-call-15.smt2,,1.8156161308288574
+cvc5/tpc-h/query007-call-150.smt2,,0.06210899353027344
+cvc5/tpc-h/query007-call-151.smt2,,0.06296110153198242
+cvc5/tpc-h/query007-call-152.smt2,,0.06118130683898926
+cvc5/tpc-h/query007-call-153.smt2,,0.06496477127075195
+cvc5/tpc-h/query007-call-154.smt2,,0.06338977813720703
+cvc5/tpc-h/query007-call-155.smt2,,0.3236372470855713
+cvc5/tpc-h/query007-call-156.smt2,,0.13729310035705566
+cvc5/tpc-h/query007-call-157.smt2,,0.06299018859863281
+cvc5/tpc-h/query007-call-158.smt2,,0.06160902976989746
+cvc5/tpc-h/query007-call-159.smt2,,0.0638279914855957
+cvc5/tpc-h/query007-call-16.smt2,,0.06604933738708496
+cvc5/tpc-h/query007-call-160.smt2,"(error ""Cannot bind u76 to symbol of type Int, maybe the symbol has already been defined?"")",0.005906581878662109
+cvc5/tpc-h/query007-call-161.smt2,"(error ""Cannot bind u76 to symbol of type Int, maybe the symbol has already been defined?"")",0.005660533905029297
+cvc5/tpc-h/query007-call-162.smt2,"(error ""Cannot bind u191 to symbol of type Int, maybe the symbol has already been defined?"")",0.006895303726196289
+cvc5/tpc-h/query007-call-163.smt2,"(error ""Cannot bind u191 to symbol of type Int, maybe the symbol has already been defined?"")",0.0058062076568603516
+cvc5/tpc-h/query007-call-164.smt2,"(error ""Cannot bind u306 to symbol of type Int, maybe the symbol has already been defined?"")",0.006650686264038086
+cvc5/tpc-h/query007-call-165.smt2,"(error ""Cannot bind u306 to symbol of type Int, maybe the symbol has already been defined?"")",0.006589174270629883
+cvc5/tpc-h/query007-call-166.smt2,"(error ""Cannot bind u422 to symbol of type Int, maybe the symbol has already been defined?"")",0.00577998161315918
+cvc5/tpc-h/query007-call-167.smt2,"(error ""Cannot bind u422 to symbol of type Int, maybe the symbol has already been defined?"")",0.0070226192474365234
+cvc5/tpc-h/query007-call-168.smt2,"(error ""Cannot bind u539 to symbol of type Int, maybe the symbol has already been defined?"")",0.005609989166259766
+cvc5/tpc-h/query007-call-169.smt2,"(error ""Cannot bind u539 to symbol of type Int, maybe the symbol has already been defined?"")",0.007266044616699219
+cvc5/tpc-h/query007-call-17.smt2,,0.06702494621276855
+cvc5/tpc-h/query007-call-170.smt2,"(error ""Cannot bind u656 to symbol of type Int, maybe the symbol has already been defined?"")",0.005555152893066406
+cvc5/tpc-h/query007-call-171.smt2,"(error ""Cannot bind u656 to symbol of type Int, maybe the symbol has already been defined?"")",0.005563020706176758
+cvc5/tpc-h/query007-call-172.smt2,"(error ""Cannot bind u773 to symbol of type Int, maybe the symbol has already been defined?"")",0.006618499755859375
+cvc5/tpc-h/query007-call-173.smt2,"(error ""Cannot bind u773 to symbol of type Int, maybe the symbol has already been defined?"")",0.0054779052734375
+cvc5/tpc-h/query007-call-174.smt2,"(error ""Cannot bind u890 to symbol of type Int, maybe the symbol has already been defined?"")",0.0065765380859375
+cvc5/tpc-h/query007-call-175.smt2,"(error ""Cannot bind u890 to symbol of type Int, maybe the symbol has already been defined?"")",0.005326509475708008
+cvc5/tpc-h/query007-call-176.smt2,"(error ""Cannot bind u1005 to symbol of type Int, maybe the symbol has already been defined?"")",0.006384134292602539
+cvc5/tpc-h/query007-call-177.smt2,"(error ""Cannot bind u1005 to symbol of type Int, maybe the symbol has already been defined?"")",0.005821943283081055
+cvc5/tpc-h/query007-call-178.smt2,"(error ""Cannot bind u1121 to symbol of type Int, maybe the symbol has already been defined?"")",0.005333900451660156
+cvc5/tpc-h/query007-call-179.smt2,"(error ""Cannot bind u1121 to symbol of type Int, maybe the symbol has already been defined?"")",0.006798744201660156
+cvc5/tpc-h/query007-call-18.smt2,,0.06917119026184082
+cvc5/tpc-h/query007-call-180.smt2,,0.3781776428222656
+cvc5/tpc-h/query007-call-181.smt2,,0.07224583625793457
+cvc5/tpc-h/query007-call-182.smt2,,0.06131386756896973
+cvc5/tpc-h/query007-call-183.smt2,,0.06547379493713379
+cvc5/tpc-h/query007-call-184.smt2,,0.06425333023071289
+cvc5/tpc-h/query007-call-185.smt2,,0.06521034240722656
+cvc5/tpc-h/query007-call-186.smt2,,0.0751035213470459
+cvc5/tpc-h/query007-call-187.smt2,,0.06846785545349121
+cvc5/tpc-h/query007-call-188.smt2,,0.07118010520935059
+cvc5/tpc-h/query007-call-189.smt2,,0.06908488273620605
+cvc5/tpc-h/query007-call-19.smt2,,0.06689047813415527
+cvc5/tpc-h/query007-call-190.smt2,,0.06242513656616211
+cvc5/tpc-h/query007-call-191.smt2,,0.0685567855834961
+cvc5/tpc-h/query007-call-192.smt2,,0.06456613540649414
+cvc5/tpc-h/query007-call-193.smt2,,0.06267571449279785
+cvc5/tpc-h/query007-call-194.smt2,,0.06337285041809082
+cvc5/tpc-h/query007-call-195.smt2,,0.06521105766296387
+cvc5/tpc-h/query007-call-196.smt2,,0.06014537811279297
+cvc5/tpc-h/query007-call-197.smt2,,0.0655219554901123
+cvc5/tpc-h/query007-call-198.smt2,,0.06360030174255371
+cvc5/tpc-h/query007-call-199.smt2,,0.06544804573059082
+cvc5/tpc-h/query007-call-2.smt2,,0.07573723793029785
+cvc5/tpc-h/query007-call-20.smt2,,0.060500383377075195
+cvc5/tpc-h/query007-call-200.smt2,,0.06887054443359375
+cvc5/tpc-h/query007-call-201.smt2,,0.13252019882202148
+cvc5/tpc-h/query007-call-202.smt2,,0.19357991218566895
+cvc5/tpc-h/query007-call-21.smt2,,0.07709956169128418
+cvc5/tpc-h/query007-call-22.smt2,,0.06885862350463867
+cvc5/tpc-h/query007-call-23.smt2,,0.06318163871765137
+cvc5/tpc-h/query007-call-24.smt2,,0.4563562870025635
+cvc5/tpc-h/query007-call-25.smt2,,0.08886361122131348
+cvc5/tpc-h/query007-call-26.smt2,,0.06257057189941406
+cvc5/tpc-h/query007-call-27.smt2,,0.06189417839050293
+cvc5/tpc-h/query007-call-28.smt2,,0.061458587646484375
+cvc5/tpc-h/query007-call-29.smt2,,0.061788320541381836
+cvc5/tpc-h/query007-call-3.smt2,,0.09955334663391113
+cvc5/tpc-h/query007-call-30.smt2,,0.06254982948303223
+cvc5/tpc-h/query007-call-31.smt2,,0.06144309043884277
+cvc5/tpc-h/query007-call-32.smt2,,0.06081962585449219
+cvc5/tpc-h/query007-call-33.smt2,,0.06978726387023926
+cvc5/tpc-h/query007-call-34.smt2,,0.060799598693847656
+cvc5/tpc-h/query007-call-35.smt2,,0.061185359954833984
+cvc5/tpc-h/query007-call-36.smt2,,0.06271624565124512
+cvc5/tpc-h/query007-call-37.smt2,,0.28528690338134766
+cvc5/tpc-h/query007-call-38.smt2,,0.07158756256103516
+cvc5/tpc-h/query007-call-39.smt2,,0.06098604202270508
+cvc5/tpc-h/query007-call-4.smt2,,0.06687736511230469
+cvc5/tpc-h/query007-call-40.smt2,,0.05756092071533203
+cvc5/tpc-h/query007-call-41.smt2,,0.05855274200439453
+cvc5/tpc-h/query007-call-42.smt2,,0.057337045669555664
+cvc5/tpc-h/query007-call-43.smt2,,0.05684471130371094
+cvc5/tpc-h/query007-call-44.smt2,,0.057342529296875
+cvc5/tpc-h/query007-call-45.smt2,,0.08542919158935547
+cvc5/tpc-h/query007-call-46.smt2,,0.057642459869384766
+cvc5/tpc-h/query007-call-47.smt2,,0.20334386825561523
+cvc5/tpc-h/query007-call-48.smt2,,0.06043434143066406
+cvc5/tpc-h/query007-call-49.smt2,,0.06213831901550293
+cvc5/tpc-h/query007-call-5.smt2,,0.06558108329772949
+cvc5/tpc-h/query007-call-50.smt2,,0.19151043891906738
+cvc5/tpc-h/query007-call-51.smt2,,0.23177790641784668
+cvc5/tpc-h/query007-call-52.smt2,,0.05885767936706543
+cvc5/tpc-h/query007-call-53.smt2,,0.05636286735534668
+cvc5/tpc-h/query007-call-54.smt2,,0.05779004096984863
+cvc5/tpc-h/query007-call-55.smt2,,0.05794525146484375
+cvc5/tpc-h/query007-call-56.smt2,,0.05800986289978027
+cvc5/tpc-h/query007-call-57.smt2,,0.05910205841064453
+cvc5/tpc-h/query007-call-58.smt2,,0.05920147895812988
+cvc5/tpc-h/query007-call-59.smt2,,0.05945444107055664
+cvc5/tpc-h/query007-call-6.smt2,,0.06567859649658203
+cvc5/tpc-h/query007-call-60.smt2,"(error ""Cannot bind u62 to symbol of type Int, maybe the symbol has already been defined?"")",0.005623340606689453
+cvc5/tpc-h/query007-call-61.smt2,"(error ""Cannot bind u62 to symbol of type Int, maybe the symbol has already been defined?"")",0.005205631256103516
+cvc5/tpc-h/query007-call-62.smt2,"(error ""Cannot bind u175 to symbol of type Int, maybe the symbol has already been defined?"")",0.006480693817138672
+cvc5/tpc-h/query007-call-63.smt2,"(error ""Cannot bind u175 to symbol of type Int, maybe the symbol has already been defined?"")",0.005411386489868164
+cvc5/tpc-h/query007-call-64.smt2,"(error ""Cannot bind u288 to symbol of type Int, maybe the symbol has already been defined?"")",0.005021810531616211
+cvc5/tpc-h/query007-call-65.smt2,"(error ""Cannot bind u288 to symbol of type Int, maybe the symbol has already been defined?"")",0.006425142288208008
+cvc5/tpc-h/query007-call-66.smt2,"(error ""Cannot bind u401 to symbol of type Int, maybe the symbol has already been defined?"")",0.005213499069213867
+cvc5/tpc-h/query007-call-67.smt2,"(error ""Cannot bind u401 to symbol of type Int, maybe the symbol has already been defined?"")",0.004704475402832031
+cvc5/tpc-h/query007-call-68.smt2,"(error ""Cannot bind u514 to symbol of type Int, maybe the symbol has already been defined?"")",0.006573915481567383
+cvc5/tpc-h/query007-call-69.smt2,"(error ""Cannot bind u514 to symbol of type Int, maybe the symbol has already been defined?"")",0.005402326583862305
+cvc5/tpc-h/query007-call-7.smt2,,0.06612014770507812
+cvc5/tpc-h/query007-call-70.smt2,"(error ""Cannot bind u627 to symbol of type Int, maybe the symbol has already been defined?"")",0.005397796630859375
+cvc5/tpc-h/query007-call-71.smt2,"(error ""Cannot bind u627 to symbol of type Int, maybe the symbol has already been defined?"")",0.0048410892486572266
+cvc5/tpc-h/query007-call-72.smt2,"(error ""Cannot bind u740 to symbol of type Int, maybe the symbol has already been defined?"")",0.00485992431640625
+cvc5/tpc-h/query007-call-73.smt2,"(error ""Cannot bind u740 to symbol of type Int, maybe the symbol has already been defined?"")",0.005910158157348633
+cvc5/tpc-h/query007-call-74.smt2,"(error ""Cannot bind u853 to symbol of type Int, maybe the symbol has already been defined?"")",0.0049152374267578125
+cvc5/tpc-h/query007-call-75.smt2,"(error ""Cannot bind u853 to symbol of type Int, maybe the symbol has already been defined?"")",0.004692554473876953
+cvc5/tpc-h/query007-call-76.smt2,"(error ""Cannot bind u966 to symbol of type Int, maybe the symbol has already been defined?"")",0.00628209114074707
+cvc5/tpc-h/query007-call-77.smt2,"(error ""Cannot bind u966 to symbol of type Int, maybe the symbol has already been defined?"")",0.005014896392822266
+cvc5/tpc-h/query007-call-78.smt2,"(error ""Cannot bind u1079 to symbol of type Int, maybe the symbol has already been defined?"")",0.0047948360443115234
+cvc5/tpc-h/query007-call-79.smt2,"(error ""Cannot bind u1079 to symbol of type Int, maybe the symbol has already been defined?"")",0.00607752799987793
+cvc5/tpc-h/query007-call-8.smt2,,0.06459999084472656
+cvc5/tpc-h/query007-call-80.smt2,,0.05728030204772949
+cvc5/tpc-h/query007-call-81.smt2,,0.06237363815307617
+cvc5/tpc-h/query007-call-82.smt2,,0.10106706619262695
+cvc5/tpc-h/query007-call-83.smt2,,0.05990123748779297
+cvc5/tpc-h/query007-call-84.smt2,,0.059876203536987305
+cvc5/tpc-h/query007-call-85.smt2,,0.057044029235839844
+cvc5/tpc-h/query007-call-86.smt2,,0.17928051948547363
+cvc5/tpc-h/query007-call-87.smt2,,0.059237003326416016
+cvc5/tpc-h/query007-call-88.smt2,,0.1980457305908203
+cvc5/tpc-h/query007-call-89.smt2,,0.06273484230041504
+cvc5/tpc-h/query007-call-9.smt2,,0.2844529151916504
+cvc5/tpc-h/query007-call-90.smt2,,0.06089377403259277
+cvc5/tpc-h/query007-call-91.smt2,,0.06137275695800781
+cvc5/tpc-h/query007-call-92.smt2,,0.05788826942443848
+cvc5/tpc-h/query007-call-93.smt2,,0.17744827270507812
+cvc5/tpc-h/query007-call-94.smt2,,0.397843599319458
+cvc5/tpc-h/query007-call-95.smt2,,0.06026959419250488
+cvc5/tpc-h/query007-call-96.smt2,,0.06020355224609375
+cvc5/tpc-h/query007-call-97.smt2,,0.28122520446777344
+cvc5/tpc-h/query007-call-98.smt2,,0.06722855567932129
+cvc5/tpc-h/query007-call-99.smt2,,0.06091928482055664
+cvc5/tpc-h/query008-call-0.smt2,,0.0719289779663086
+cvc5/tpc-h/query008-call-1.smt2,,0.0728459358215332
+cvc5/tpc-h/query008-call-2.smt2,,0.0727541446685791
+cvc5/tpc-h/query008-call-3.smt2,,0.07315683364868164
+cvc5/tpc-h/query008-call-4.smt2,,0.06875014305114746
+cvc5/tpc-h/query008-call-5.smt2,,0.07590150833129883
+cvc5/tpc-h/query008-call-6.smt2,,0.07161450386047363
+cvc5/tpc-h/query008-call-7.smt2,,0.06938648223876953
+cvc5/tpc-h/query008-call-8.smt2,,0.06378459930419922
+cvc5/tpc-h/query009-call-0.smt2,,0.16120076179504395
+cvc5/tpc-h/query012-call-0.smt2,,0.058359622955322266
+cvc5/tpc-h/query013-call-0.smt2,,0.1659390926361084
+cvc5/tpc-h/query015-call-0.smt2,,0.04973602294921875
+cvc5/tpc-h/query022-call-0.smt2,,0.18047189712524414
+cvc5/tpc-h/query022-call-1.smt2,,0.05553174018859863

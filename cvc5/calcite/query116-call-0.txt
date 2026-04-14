@@ -1,0 +1,5 @@
+(error "Parse Error: cvc5/calcite/query116-call-0.smt2:22.313: argument type is not the type of the function's argument type:
+argument:  (/ (* u2 u2) u3)
+has type:  Real
+not type: Int
+in term : (minus u1 (/ (* u2 u2) u3))")
