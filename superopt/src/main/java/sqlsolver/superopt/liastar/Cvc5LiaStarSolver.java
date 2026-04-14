@@ -7,8 +7,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Cvc5LiaStarSolver
 {
@@ -16,7 +18,7 @@ public class Cvc5LiaStarSolver
   public static String lastFileName = "";
   public static int index = 1;
   public static Path path;
-  static Map<LiaVarImpl, String> smtConstants = new HashMap<>();
+  static Set<String> smtConstants = new HashSet<>();
   static Map<String, LiaFuncImpl> smtFunctions = new HashMap<>();
   public static PrintWriter writer = null;
   public static String csvFile = "sqlsolver_results.csv";
@@ -36,12 +38,12 @@ public class Cvc5LiaStarSolver
 
   public static void translate(LiaStar fstar) throws IOException
   {
-    smtConstants = new HashMap<>();
+    smtConstants = new HashSet<>();
     smtFunctions = new HashMap<>();
     fstar.transformPostOrder(lia -> {
       if (lia instanceof LiaVarImpl var)
       {
-        smtConstants.put(var, var.toString());
+        smtConstants.add(var.toString());
       }
       if (lia instanceof LiaFuncImpl f)
       {
@@ -53,9 +55,9 @@ public class Cvc5LiaStarSolver
     StringBuilder builder = new StringBuilder();
     builder.append("(set-logic HO_ALL)\n");
 
-    for (Map.Entry<LiaVarImpl, String> entry : smtConstants.entrySet())
+    for (String smtConstant : smtConstants)
     {
-      builder.append("(declare-const ").append(entry.getValue()).append(" Int)\n");
+      builder.append("(declare-const ").append(smtConstant).append(" Int)\n");
     }
     for (Map.Entry<String, LiaFuncImpl> entry : smtFunctions.entrySet())
     {
