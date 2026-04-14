@@ -9,7 +9,6 @@
 (declare-const u174 Int)
 (declare-const u176 Int)
 (declare-const u175 Int)
-(declare-const u175 Int)
 (declare-const u209 Int)
 (declare-const u126 Int)
 (declare-const u123 Int)

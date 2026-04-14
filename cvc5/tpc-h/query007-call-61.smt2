@@ -46,7 +46,6 @@
 (declare-const u103 Int)
 (declare-const u102 Int)
 (declare-const u62 Int)
-(declare-const u62 Int)
 (declare-const u61 Int)
 (declare-const u64 Int)
 (declare-const u63 Int)

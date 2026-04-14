@@ -17,7 +17,6 @@
 (declare-const u1112 Int)
 (declare-const u1111 Int)
 (declare-const u1110 Int)
-(declare-const u1110 Int)
 (declare-const u1119 Int)
 (declare-const u1118 Int)
 (declare-const u1117 Int)

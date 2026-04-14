@@ -30,7 +30,6 @@
 (declare-const u117 Int)
 (declare-const u192 Int)
 (declare-const u191 Int)
-(declare-const u191 Int)
 (declare-const u194 Int)
 (declare-const u193 Int)
 (declare-const u190 Int)

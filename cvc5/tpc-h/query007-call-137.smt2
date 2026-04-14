@@ -25,7 +25,6 @@
 (declare-const u1031 Int)
 (declare-const u995 Int)
 (declare-const u1030 Int)
-(declare-const u995 Int)
 (declare-const u996 Int)
 (declare-const u994 Int)
 (declare-const u1003 Int)

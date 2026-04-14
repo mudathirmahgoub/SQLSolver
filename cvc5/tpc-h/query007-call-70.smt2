@@ -40,7 +40,6 @@
 (declare-const u670 Int)
 (declare-const u671 Int)
 (declare-const u627 Int)
-(declare-const u627 Int)
 (declare-const u628 Int)
 (declare-const u626 Int)
 (declare-const u667 Int)

@@ -42,7 +42,6 @@
 (declare-const u787 Int)
 (declare-const u740 Int)
 (declare-const u784 Int)
-(declare-const u740 Int)
 (declare-const u741 Int)
 (declare-const u785 Int)
 (declare-const u783 Int)

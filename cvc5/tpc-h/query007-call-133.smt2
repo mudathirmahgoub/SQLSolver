@@ -23,7 +23,6 @@
 (declare-const u800 Int)
 (declare-const u764 Int)
 (declare-const u765 Int)
-(declare-const u765 Int)
 (declare-const u759 Int)
 (declare-const u799 Int)
 (declare-const u797 Int)

@@ -21,7 +21,6 @@
 (declare-const u282 Int)
 (declare-const u281 Int)
 (declare-const u288 Int)
-(declare-const u288 Int)
 (declare-const u287 Int)
 (declare-const u323 Int)
 (declare-const u289 Int)

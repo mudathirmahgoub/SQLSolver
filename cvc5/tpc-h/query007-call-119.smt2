@@ -24,7 +24,6 @@
 (declare-const u1123 Int)
 (declare-const u1122 Int)
 (declare-const u1121 Int)
-(declare-const u1121 Int)
 (declare-const u1120 Int)
 (declare-const u1161 Int)
 (declare-const u1129 Int)

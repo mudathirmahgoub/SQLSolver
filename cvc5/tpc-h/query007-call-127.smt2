@@ -43,7 +43,6 @@
 (declare-const u348 Int)
 (declare-const u425 Int)
 (declare-const u420 Int)
-(declare-const u420 Int)
 (declare-const u345 Int)
 (declare-const u422 Int)
 (declare-const u421 Int)

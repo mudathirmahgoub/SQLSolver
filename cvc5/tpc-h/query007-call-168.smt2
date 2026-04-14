@@ -51,7 +51,6 @@
 (declare-const u462 Int)
 (declare-const u538 Int)
 (declare-const u539 Int)
-(declare-const u539 Int)
 (declare-const u578 Int)
 (declare-const u533 Int)
 (declare-const u577 Int)

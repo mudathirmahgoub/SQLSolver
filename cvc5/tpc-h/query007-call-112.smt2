@@ -5,7 +5,6 @@
 (declare-const u774 Int)
 (declare-const u771 Int)
 (declare-const u772 Int)
-(declare-const u772 Int)
 (declare-const u803 Int)
 (declare-const u804 Int)
 (declare-const u768 Int)

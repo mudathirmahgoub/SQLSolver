@@ -32,7 +32,6 @@
 (declare-const u1007 Int)
 (declare-const u1006 Int)
 (declare-const u1005 Int)
-(declare-const u1005 Int)
 (declare-const u1004 Int)
 (declare-const u935 Int)
 (declare-const u1014 Int)

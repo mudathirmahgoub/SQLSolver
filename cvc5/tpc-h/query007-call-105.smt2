@@ -41,7 +41,6 @@
 (declare-const u309 Int)
 (declare-const u308 Int)
 (declare-const u305 Int)
-(declare-const u305 Int)
 (declare-const u304 Int)
 (declare-const u343 Int)
 (declare-const u342 Int)

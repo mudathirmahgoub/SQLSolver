@@ -1,1 +1,0 @@
-(error "Cannot bind u422 to symbol of type Int, maybe the symbol has already been defined?")

@@ -5,7 +5,6 @@
 (declare-const u968 Int)
 (declare-const u969 Int)
 (declare-const u966 Int)
-(declare-const u966 Int)
 (declare-const u967 Int)
 (declare-const u965 Int)
 (declare-const u960 Int)

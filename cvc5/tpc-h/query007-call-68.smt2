@@ -29,7 +29,6 @@
 (declare-const u555 Int)
 (declare-const u514 Int)
 (declare-const u558 Int)
-(declare-const u514 Int)
 (declare-const u513 Int)
 (declare-const u557 Int)
 (declare-const u519 Int)

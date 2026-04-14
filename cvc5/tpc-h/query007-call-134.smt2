@@ -20,7 +20,6 @@
 (declare-const u881 Int)
 (declare-const u882 Int)
 (declare-const u880 Int)
-(declare-const u880 Int)
 (declare-const u913 Int)
 (declare-const u914 Int)
 (declare-const u911 Int)

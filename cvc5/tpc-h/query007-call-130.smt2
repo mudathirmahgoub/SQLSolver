@@ -3,7 +3,6 @@
 (declare-const u653 Int)
 (declare-const u576 Int)
 (declare-const u650 Int)
-(declare-const u650 Int)
 (declare-const u575 Int)
 (declare-const u651 Int)
 (declare-const u649 Int)

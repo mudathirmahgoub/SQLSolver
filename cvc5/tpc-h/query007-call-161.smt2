@@ -3,7 +3,6 @@
 (declare-const u75 Int)
 (declare-const u77 Int)
 (declare-const u76 Int)
-(declare-const u76 Int)
 (declare-const u79 Int)
 (declare-const u78 Int)
 (declare-const u80 Int)

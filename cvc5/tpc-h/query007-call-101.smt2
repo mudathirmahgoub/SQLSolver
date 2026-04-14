@@ -1,6 +1,5 @@
 (set-logic HO_ALL)
 (declare-const u75 Int)
-(declare-const u75 Int)
 (declare-const u74 Int)
 (declare-const u77 Int)
 (declare-const u76 Int)

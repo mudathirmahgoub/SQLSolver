@@ -9,7 +9,6 @@
 (declare-const u925 Int)
 (declare-const u889 Int)
 (declare-const u922 Int)
-(declare-const u889 Int)
 (declare-const u923 Int)
 (declare-const u920 Int)
 (declare-const u888 Int)

@@ -46,7 +46,6 @@
 (declare-const u420 Int)
 (declare-const u422 Int)
 (declare-const u421 Int)
-(declare-const u421 Int)
 (declare-const u460 Int)
 (declare-const u461 Int)
 (declare-const u457 Int)
