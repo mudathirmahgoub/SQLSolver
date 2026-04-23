@@ -10,7 +10,7 @@ Internal error detected Unexpected kind. Node (int.star-contains (lambda ((BOUND
 cvc5/calcite/query039-call-0.smt2,unsat,0.3745152950286865
 cvc5/calcite/query040-call-0.smt2,sat,0.3433396816253662
 cvc5/calcite/query044-call-0.smt2,unsat,3.067568302154541
-cvc5/calcite/query050-call-0.smt2,cvc5 interrupted by timeout.,106.58612084388733
+cvc5/calcite/query050-call-0.smt2,timeout,106.58612084388733
 cvc5/calcite/query051-call-0.smt2,unsat,0.3754236698150635
 cvc5/calcite/query053-call-0.smt2,"Fatal failure within static cvc5::internal::Node cvc5::internal::theory::arith::liastar::LiaStarUtils::removeItes(cvc5::internal::Node, cvc5::internal::Env *) at /home/mudathir/all/cvc5/liastar/src/theory/arith/liastar/liastar_utils.cpp:348
 Internal error detected Unexpected kind. Node (int.star-contains (lambda ((BOUND_VARIABLE_754 Int) (BOUND_VARIABLE_756 Int) (BOUND_VARIABLE_758 Int) (BOUND_VARIABLE_761 Int) (BOUND_VARIABLE_764 Int) (BOUND_VARIABLE_767 Int) (BOUND_VARIABLE_770 Int) (BOUND_VARIABLE_772 Int) (BOUND_VARIABLE_775 Int) (BOUND_VARIABLE_778 Int) (BOUND_VARIABLE_781 Int) (BOUND_VARIABLE_783 Int) (BOUND_VARIABLE_786 Int) (BOUND_VARIABLE_789 Int) (BOUND_VARIABLE_792 Int) (BOUND_VARIABLE_795 Int) (BOUND_VARIABLE_798 Int)) (let ((_let_1 (* BOUND_VARIABLE_781 BOUND_VARIABLE_798))) (let ((_let_2 (= BOUND_VARIABLE_786 BOUND_VARIABLE_789))) (let ((_let_3 (= BOUND_VARIABLE_783 BOUND_VARIABLE_795))) (let ((_let_4 (= BOUND_VARIABLE_783 (* (- 1) BOUND_VARIABLE_795)))) (let ((_let_5 (>= BOUND_VARIABLE_783 11))) (let ((_let_6 (not _let_5))) (let ((_let_7 (not (= BOUND_VARIABLE_781 0)))) (and (= BOUND_VARIABLE_772 (ite (and (= (ite _let_5 0 1) 0) _let_2) BOUND_VARIABLE_781 0)) (= BOUND_VARIABLE_770 (ite _let_2 BOUND_VARIABLE_781 0)) (= BOUND_VARIABLE_767 (ite (and _let_2 _let_6) BOUND_VARIABLE_781 0)) (= BOUND_VARIABLE_764 (ite (and _let_7 _let_4 _let_2 _let_6) BOUND_VARIABLE_798 0)) (= BOUND_VARIABLE_761 (ite (and _let_7 _let_3 _let_2) BOUND_VARIABLE_798 0)) (= BOUND_VARIABLE_758 (ite (and _let_2 _let_6 _let_4) _let_1 0)) (= BOUND_VARIABLE_754 (ite (= BOUND_VARIABLE_775 BOUND_VARIABLE_778) BOUND_VARIABLE_792 0)) (= BOUND_VARIABLE_756 (ite (and _let_3 _let_2) _let_1 0))))))))))) u15 u28 u29 u30 u31 u21 u16 u22 u40 u41 u44 u43 u46 u45 u39 u10 u27) has kind: int.star-contains",0.06279850006103516
@@ -42,14 +42,14 @@ has type:  Real
 not type: Int
 in term : (minus u1 (/ (* u2 u2) u3))"")",0.006916046142578125
 cvc5/calcite/query120-call-0.smt2,unsat,0.7727944850921631
-cvc5/calcite/query126-call-0.smt2,cvc5 interrupted by timeout.,114.1970145702362
-cvc5/calcite/query126-call-1.smt2,cvc5 interrupted by timeout.,111.43309807777405
-cvc5/calcite/query126-call-2.smt2,cvc5 interrupted by timeout.,113.32726860046387
-cvc5/calcite/query126-call-3.smt2,cvc5 interrupted by timeout.,112.59151887893677
-cvc5/calcite/query126-call-4.smt2,cvc5 interrupted by timeout.,109.89438438415527
-cvc5/calcite/query126-call-5.smt2,cvc5 interrupted by timeout.,113.58031630516052
-cvc5/calcite/query126-call-6.smt2,cvc5 interrupted by timeout.,111.62240409851074
-cvc5/calcite/query126-call-7.smt2,cvc5 interrupted by timeout.,111.02175974845886
+cvc5/calcite/query126-call-0.smt2,timeout,114.1970145702362
+cvc5/calcite/query126-call-1.smt2,timeout,111.43309807777405
+cvc5/calcite/query126-call-2.smt2,timeout,113.32726860046387
+cvc5/calcite/query126-call-3.smt2,timeout,112.59151887893677
+cvc5/calcite/query126-call-4.smt2,timeout,109.89438438415527
+cvc5/calcite/query126-call-5.smt2,timeout,113.58031630516052
+cvc5/calcite/query126-call-6.smt2,timeout,111.62240409851074
+cvc5/calcite/query126-call-7.smt2,timeout,111.02175974845886
 cvc5/calcite/query127-call-0.smt2,sat,0.5658283233642578
 cvc5/calcite/query143-call-0.smt2,sat,0.11222624778747559
 cvc5/calcite/query148-call-0.smt2,"Fatal failure within static std::vector<std::pair<Node, Node>> cvc5::internal::theory::arith::liastar::LiaStarUtils::removeIntegerItes(cvc5::internal::Node, cvc5::internal::Env *) at /home/mudathir/all/cvc5/liastar/src/theory/arith/liastar/liastar_utils.cpp:520
@@ -67,8 +67,8 @@ cvc5/calcite/query183-call-0.smt2,sat,0.10201025009155273
 cvc5/calcite/query185-call-0.smt2,unsat,0.010639667510986328
 cvc5/calcite/query190-call-0.smt2,"Fatal failure within static std::vector<std::pair<Node, Node>> cvc5::internal::theory::arith::liastar::LiaStarUtils::removeIntegerItes(cvc5::internal::Node, cvc5::internal::Env *) at /home/mudathir/all/cvc5/liastar/src/theory/arith/liastar/liastar_utils.cpp:520
 Internal error detected Unexpected kind. Node (* u19 u18) has kind: *",0.1379377841949463
-cvc5/calcite/query191-call-0.smt2,cvc5 interrupted by timeout.,141.05722188949585
-cvc5/calcite/query191-call-1.smt2,cvc5 interrupted by timeout.,141.79898357391357
+cvc5/calcite/query191-call-0.smt2,timeout,141.05722188949585
+cvc5/calcite/query191-call-1.smt2,timeout,141.79898357391357
 cvc5/calcite/query193-call-0.smt2,sat,0.015712976455688477
 cvc5/calcite/query193-call-1.smt2,sat,0.015418529510498047
 cvc5/calcite/query193-call-2.smt2,sat,0.019254207611083984
@@ -81,12 +81,12 @@ cvc5/calcite/query195-call-0.smt2,unsat,0.011113882064819336
 cvc5/calcite/query202-call-0.smt2,unsat,0.018327713012695312
 cvc5/calcite/query205-call-0.smt2,unsat,0.0243682861328125
 cvc5/calcite/query207-call-0.smt2,unsat,0.1787714958190918
-cvc5/calcite/query211-call-0.smt2,cvc5 interrupted by timeout.,112.00438284873962
-cvc5/calcite/query211-call-1.smt2,cvc5 interrupted by timeout.,113.08032298088074
+cvc5/calcite/query211-call-0.smt2,timeout,112.00438284873962
+cvc5/calcite/query211-call-1.smt2,timeout,113.08032298088074
 cvc5/calcite/query215-call-0.smt2,"Fatal failure within static cvc5::internal::Node cvc5::internal::theory::arith::liastar::LiaStarUtils::removeItes(cvc5::internal::Node, cvc5::internal::Env *) at /home/mudathir/all/cvc5/liastar/src/theory/arith/liastar/liastar_utils.cpp:348
 Internal error detected Unexpected kind. Node (int.star-contains (lambda ((BOUND_VARIABLE_500 Int) (BOUND_VARIABLE_502 Int) (BOUND_VARIABLE_504 Int) (BOUND_VARIABLE_507 Int) (BOUND_VARIABLE_510 Int)) (= BOUND_VARIABLE_500 (ite (and (= BOUND_VARIABLE_502 BOUND_VARIABLE_507) (>= BOUND_VARIABLE_510 101)) BOUND_VARIABLE_504 0))) u5 u13 u15 u14 u16) has kind: int.star-contains",0.1571972370147705
-cvc5/calcite/query218-call-0.smt2,cvc5 interrupted by timeout.,163.07329201698303
-cvc5/calcite/query218-call-1.smt2,cvc5 interrupted by timeout.,157.24851369857788
+cvc5/calcite/query218-call-0.smt2,timeout,163.07329201698303
+cvc5/calcite/query218-call-1.smt2,timeout,157.24851369857788
 cvc5/calcite/query219-call-0.smt2,unsat,2.885051965713501
 cvc5/calcite/query220-call-0.smt2,unsat,0.03852558135986328
 cvc5/calcite/query222-call-0.smt2,sat,0.02215886116027832
@@ -111,10 +111,10 @@ cvc5/spark/query015-call-4.smt2,sat,0.014202356338500977
 cvc5/spark/query015-call-5.smt2,sat,0.014496803283691406
 cvc5/spark/query015-call-6.smt2,sat,0.01406717300415039
 cvc5/spark/query015-call-7.smt2,sat,0.014280557632446289
-cvc5/spark/query035-call-0.smt2,cvc5 interrupted by timeout.,140.7414059638977
-cvc5/spark/query036-call-0.smt2,cvc5 interrupted by timeout.,128.2209939956665
-cvc5/spark/query048-call-0.smt2,cvc5 interrupted by timeout.,129.482435464859
-cvc5/spark/query048-call-1.smt2,cvc5 interrupted by timeout.,125.89920926094055
+cvc5/spark/query035-call-0.smt2,timeout,140.7414059638977
+cvc5/spark/query036-call-0.smt2,timeout,128.2209939956665
+cvc5/spark/query048-call-0.smt2,timeout,129.482435464859
+cvc5/spark/query048-call-1.smt2,timeout,125.89920926094055
 cvc5/spark/query054-call-0.smt2,sat,0.013379096984863281
 cvc5/spark/query054-call-1.smt2,sat,0.010752677917480469
 cvc5/spark/query054-call-10.smt2,sat,0.009932518005371094
