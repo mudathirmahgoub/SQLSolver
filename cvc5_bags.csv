@@ -29,7 +29,6 @@ cvc5/calcite/query127-call-0.smt2,sat,0.5658283233642578
 cvc5/calcite/query143-call-0.smt2,sat,0.11222624778747559
 cvc5/calcite/query148-call-0.smt2,nested star,0.0539240837097168
 cvc5/calcite/query151-call-0.smt2,sat,0.10030984878540039
-cvc5/calcite/query153-call-0.smt2,unsat,0.010482311248779297
 cvc5/calcite/query156-call-0.smt2,unsat,0.3668510913848877
 cvc5/calcite/query161-call-0.smt2,unsat,0.01052093505859375
 cvc5/calcite/query162-call-0.smt2,nested star,0.03962564468383789
@@ -40,8 +39,6 @@ cvc5/calcite/query190-call-0.smt2,nested star,0.1379377841949463
 cvc5/calcite/query191-call-0.smt2,timeout,141.05722188949585
 cvc5/calcite/query193-call-0.smt2,sat,0.015712976455688477
 cvc5/calcite/query193-call-4.smt2,sat,0.016048431396484375
-cvc5/calcite/query202-call-0.smt2,unsat,0.018327713012695312
-cvc5/calcite/query205-call-0.smt2,unsat,0.0243682861328125
 cvc5/calcite/query207-call-0.smt2,unsat,0.1787714958190918
 cvc5/calcite/query211-call-0.smt2,timeout,112.00438284873962
 cvc5/calcite/query215-call-0.smt2,nested star,0.1571972370147705
@@ -52,9 +49,6 @@ cvc5/calcite/query222-call-0.smt2,sat,0.02215886116027832
 cvc5/calcite/query222-call-2.smt2,sat,0.024951696395874023
 cvc5/calcite/query222-call-4.smt2,nested star,0.05188488960266113
 cvc5/calcite/query222-call-6.smt2,nested star,0.04568362236022949
-cvc5/spark/query003-call-0.smt2,unsat,0.016757965087890625
-cvc5/spark/query004-call-0.smt2,unsat,0.014194250106811523
-cvc5/spark/query015-call-0.smt2,sat,0.014900684356689453
 cvc5/spark/query035-call-0.smt2,timeout,140.7414059638977
 cvc5/spark/query048-call-0.smt2,timeout,129.482435464859
 cvc5/spark/query054-call-0.smt2,sat,0.013379096984863281
@@ -63,7 +57,6 @@ cvc5/spark/query055-call-10.smt2,nested star,0.06670856475830078
 cvc5/spark/query055-call-16.smt2,nested star,0.6366355419158936
 cvc5/spark/query070-call-0.smt2,unsat,11.522721529006958
 cvc5/spark/query089-call-0.smt2,unsat,0.04834342002868652
-cvc5/spark/query090-call-0.smt2,unsat,0.055554866790771484
 cvc5/spark/query090-call-2.smt2,sat,0.1571357250213623
 cvc5/spark/query106-call-0.smt2,unsat,0.12161016464233398
 cvc5/spark/query107-call-0.smt2,unsat,0.09381723403930664
