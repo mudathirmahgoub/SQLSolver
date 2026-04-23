@@ -5,57 +5,53 @@ cvc5/calcite/query026-call-1.smt2,sat,0.2264573574066162
 cvc5/calcite/query026-call-2.smt2,sat,0.2136673927307129
 cvc5/calcite/query026-call-3.smt2,sat,0.21356630325317383
 cvc5/calcite/query026-call-4.smt2,unsat,0.5509243011474609
-cvc5/calcite/query029-call-0.smt2,,0.03864240646362305
+cvc5/calcite/query029-call-0.smt2,nested star,0.03864240646362305
 cvc5/calcite/query039-call-0.smt2,unsat,0.3745152950286865
 cvc5/calcite/query040-call-0.smt2,sat,0.3433396816253662
 cvc5/calcite/query044-call-0.smt2,unsat,3.067568302154541
-cvc5/calcite/query050-call-0.smt2,,106.58612084388733
+cvc5/calcite/query050-call-0.smt2,timeout,106.58612084388733
 cvc5/calcite/query051-call-0.smt2,unsat,0.3754236698150635
-cvc5/calcite/query053-call-0.smt2,,0.06279850006103516
+cvc5/calcite/query053-call-0.smt2,nested star,0.06279850006103516
 cvc5/calcite/query059-call-0.smt2,sat,3.034742593765259
-cvc5/calcite/query062-call-0.smt2,,0.04740786552429199
-cvc5/calcite/query062-call-1.smt2,,0.05489158630371094
-cvc5/calcite/query062-call-2.smt2,,0.044548749923706055
-cvc5/calcite/query062-call-3.smt2,,0.04550313949584961
+cvc5/calcite/query062-call-0.smt2,nested star,0.04740786552429199
+cvc5/calcite/query062-call-1.smt2,nested star,0.05489158630371094
+cvc5/calcite/query062-call-2.smt2,nested star,0.044548749923706055
+cvc5/calcite/query062-call-3.smt2,nested star,0.04550313949584961
 cvc5/calcite/query062-call-4.smt2,unsat,0.02331829071044922
-cvc5/calcite/query065-call-0.smt2,,0.05174994468688965
+cvc5/calcite/query065-call-0.smt2,nested star,0.05174994468688965
 cvc5/calcite/query073-call-0.smt2,unsat,0.010278940200805664
 cvc5/calcite/query076-call-0.smt2,sat,0.2683393955230713
 cvc5/calcite/query082-call-0.smt2,unsat,0.37040281295776367
-cvc5/calcite/query084-call-0.smt2,,0.05391383171081543
+cvc5/calcite/query084-call-0.smt2,nested star,0.05391383171081543
 cvc5/calcite/query088-call-0.smt2,unsat,0.014728784561157227
-cvc5/calcite/query089-call-0.smt2,,0.03623080253601074
-cvc5/calcite/query115-call-0.smt2,,0.0542750358581543
-cvc5/calcite/query116-call-0.smt2,"(error ""Parse Error: cvc5/calcite/query116-call-0.smt2:22.313: argument type is not the type of the function's argument type:
-argument:  (/ (* u2 u2) u3)
-has type:  Real
-not type: Int
-in term : (minus u1 (/ (* u2 u2) u3))"")",0.006916046142578125
+cvc5/calcite/query089-call-0.smt2,nested star,0.03623080253601074
+cvc5/calcite/query115-call-0.smt2,nested star,0.0542750358581543
+cvc5/calcite/query116-call-0.smt2,/,0.006916046142578125
 cvc5/calcite/query120-call-0.smt2,unsat,0.7727944850921631
-cvc5/calcite/query126-call-0.smt2,,114.1970145702362
-cvc5/calcite/query126-call-1.smt2,,111.43309807777405
-cvc5/calcite/query126-call-2.smt2,,113.32726860046387
-cvc5/calcite/query126-call-3.smt2,,112.59151887893677
-cvc5/calcite/query126-call-4.smt2,,109.89438438415527
-cvc5/calcite/query126-call-5.smt2,,113.58031630516052
-cvc5/calcite/query126-call-6.smt2,,111.62240409851074
-cvc5/calcite/query126-call-7.smt2,,111.02175974845886
+cvc5/calcite/query126-call-0.smt2,timeout,114.1970145702362
+cvc5/calcite/query126-call-1.smt2,timeout,111.43309807777405
+cvc5/calcite/query126-call-2.smt2,timeout,113.32726860046387
+cvc5/calcite/query126-call-3.smt2,timeout,112.59151887893677
+cvc5/calcite/query126-call-4.smt2,timeout,109.89438438415527
+cvc5/calcite/query126-call-5.smt2,timeout,113.58031630516052
+cvc5/calcite/query126-call-6.smt2,timeout,111.62240409851074
+cvc5/calcite/query126-call-7.smt2,timeout,111.02175974845886
 cvc5/calcite/query127-call-0.smt2,sat,0.5658283233642578
 cvc5/calcite/query143-call-0.smt2,sat,0.11222624778747559
-cvc5/calcite/query148-call-0.smt2,,0.0539240837097168
+cvc5/calcite/query148-call-0.smt2,nested star,0.0539240837097168
 cvc5/calcite/query151-call-0.smt2,sat,0.10030984878540039
 cvc5/calcite/query153-call-0.smt2,unsat,0.010482311248779297
 cvc5/calcite/query156-call-0.smt2,unsat,0.3668510913848877
 cvc5/calcite/query161-call-0.smt2,unsat,0.01052093505859375
-cvc5/calcite/query162-call-0.smt2,,0.03962564468383789
+cvc5/calcite/query162-call-0.smt2,nested star,0.03962564468383789
 cvc5/calcite/query172-call-0.smt2,unsat,0.015880107879638672
 cvc5/calcite/query176-call-0.smt2,sat,3.0372154712677
 cvc5/calcite/query176-call-1.smt2,sat,3.101209878921509
 cvc5/calcite/query183-call-0.smt2,sat,0.10201025009155273
 cvc5/calcite/query185-call-0.smt2,unsat,0.010639667510986328
-cvc5/calcite/query190-call-0.smt2,,0.1379377841949463
-cvc5/calcite/query191-call-0.smt2,,141.05722188949585
-cvc5/calcite/query191-call-1.smt2,,141.79898357391357
+cvc5/calcite/query190-call-0.smt2,nested star,0.1379377841949463
+cvc5/calcite/query191-call-0.smt2,timeout,141.05722188949585
+cvc5/calcite/query191-call-1.smt2,timeout,141.79898357391357
 cvc5/calcite/query193-call-0.smt2,sat,0.015712976455688477
 cvc5/calcite/query193-call-1.smt2,sat,0.015418529510498047
 cvc5/calcite/query193-call-2.smt2,sat,0.019254207611083984
@@ -68,21 +64,21 @@ cvc5/calcite/query195-call-0.smt2,unsat,0.011113882064819336
 cvc5/calcite/query202-call-0.smt2,unsat,0.018327713012695312
 cvc5/calcite/query205-call-0.smt2,unsat,0.0243682861328125
 cvc5/calcite/query207-call-0.smt2,unsat,0.1787714958190918
-cvc5/calcite/query211-call-0.smt2,,112.00438284873962
-cvc5/calcite/query211-call-1.smt2,,113.08032298088074
-cvc5/calcite/query215-call-0.smt2,,0.1571972370147705
-cvc5/calcite/query218-call-0.smt2,,163.07329201698303
-cvc5/calcite/query218-call-1.smt2,,157.24851369857788
+cvc5/calcite/query211-call-0.smt2,timeout,112.00438284873962
+cvc5/calcite/query211-call-1.smt2,timeout,113.08032298088074
+cvc5/calcite/query215-call-0.smt2,nested star,0.1571972370147705
+cvc5/calcite/query218-call-0.smt2,timeout,163.07329201698303
+cvc5/calcite/query218-call-1.smt2,timeout,157.24851369857788
 cvc5/calcite/query219-call-0.smt2,unsat,2.885051965713501
 cvc5/calcite/query220-call-0.smt2,unsat,0.03852558135986328
 cvc5/calcite/query222-call-0.smt2,sat,0.02215886116027832
 cvc5/calcite/query222-call-1.smt2,sat,0.0211334228515625
 cvc5/calcite/query222-call-2.smt2,sat,0.024951696395874023
 cvc5/calcite/query222-call-3.smt2,sat,0.024385690689086914
-cvc5/calcite/query222-call-4.smt2,,0.05188488960266113
-cvc5/calcite/query222-call-5.smt2,,0.05270552635192871
-cvc5/calcite/query222-call-6.smt2,,0.04568362236022949
-cvc5/calcite/query222-call-7.smt2,,1.1377274990081787
+cvc5/calcite/query222-call-4.smt2,nested star,0.05188488960266113
+cvc5/calcite/query222-call-5.smt2,nested star,0.05270552635192871
+cvc5/calcite/query222-call-6.smt2,nested star,0.04568362236022949
+cvc5/calcite/query222-call-7.smt2,nested star,1.1377274990081787
 cvc5/spark/query003-call-0.smt2,unsat,0.016757965087890625
 cvc5/spark/query004-call-0.smt2,unsat,0.014194250106811523
 cvc5/spark/query015-call-0.smt2,sat,0.014900684356689453
@@ -93,10 +89,10 @@ cvc5/spark/query015-call-4.smt2,sat,0.014202356338500977
 cvc5/spark/query015-call-5.smt2,sat,0.014496803283691406
 cvc5/spark/query015-call-6.smt2,sat,0.01406717300415039
 cvc5/spark/query015-call-7.smt2,sat,0.014280557632446289
-cvc5/spark/query035-call-0.smt2,,140.7414059638977
-cvc5/spark/query036-call-0.smt2,,128.2209939956665
-cvc5/spark/query048-call-0.smt2,,129.482435464859
-cvc5/spark/query048-call-1.smt2,,125.89920926094055
+cvc5/spark/query035-call-0.smt2,timeout,140.7414059638977
+cvc5/spark/query036-call-0.smt2,timeout,128.2209939956665
+cvc5/spark/query048-call-0.smt2,timeout,129.482435464859
+cvc5/spark/query048-call-1.smt2,timeout,125.89920926094055
 cvc5/spark/query054-call-0.smt2,sat,0.013379096984863281
 cvc5/spark/query054-call-1.smt2,sat,0.010752677917480469
 cvc5/spark/query054-call-10.smt2,sat,0.009932518005371094
@@ -115,24 +111,24 @@ cvc5/spark/query054-call-6.smt2,sat,0.01073002815246582
 cvc5/spark/query054-call-7.smt2,sat,0.010747909545898438
 cvc5/spark/query054-call-8.smt2,sat,0.011528968811035156
 cvc5/spark/query054-call-9.smt2,sat,0.010812759399414062
-cvc5/spark/query055-call-0.smt2,,2.1603503227233887
-cvc5/spark/query055-call-1.smt2,,1.9129633903503418
-cvc5/spark/query055-call-10.smt2,,0.06670856475830078
-cvc5/spark/query055-call-11.smt2,,0.04932451248168945
-cvc5/spark/query055-call-12.smt2,,0.04060864448547363
-cvc5/spark/query055-call-13.smt2,,0.03455233573913574
-cvc5/spark/query055-call-14.smt2,,0.6855204105377197
-cvc5/spark/query055-call-15.smt2,,0.7362842559814453
-cvc5/spark/query055-call-16.smt2,,0.6366355419158936
-cvc5/spark/query055-call-17.smt2,,0.8808996677398682
-cvc5/spark/query055-call-2.smt2,,0.038202762603759766
-cvc5/spark/query055-call-3.smt2,,0.039350032806396484
-cvc5/spark/query055-call-4.smt2,,0.08339786529541016
-cvc5/spark/query055-call-5.smt2,,0.04045820236206055
-cvc5/spark/query055-call-6.smt2,,0.04902529716491699
-cvc5/spark/query055-call-7.smt2,,0.13942360877990723
-cvc5/spark/query055-call-8.smt2,,0.07105159759521484
-cvc5/spark/query055-call-9.smt2,,0.05027604103088379
+cvc5/spark/query055-call-0.smt2,nested star,2.1603503227233887
+cvc5/spark/query055-call-1.smt2,nested star,1.9129633903503418
+cvc5/spark/query055-call-10.smt2,nested star,0.06670856475830078
+cvc5/spark/query055-call-11.smt2,nested star,0.04932451248168945
+cvc5/spark/query055-call-12.smt2,nested star,0.04060864448547363
+cvc5/spark/query055-call-13.smt2,nested star,0.03455233573913574
+cvc5/spark/query055-call-14.smt2,nested star,0.6855204105377197
+cvc5/spark/query055-call-15.smt2,nested star,0.7362842559814453
+cvc5/spark/query055-call-16.smt2,nested star,0.6366355419158936
+cvc5/spark/query055-call-17.smt2,nested star,0.8808996677398682
+cvc5/spark/query055-call-2.smt2,nested star,0.038202762603759766
+cvc5/spark/query055-call-3.smt2,nested star,0.039350032806396484
+cvc5/spark/query055-call-4.smt2,nested star,0.08339786529541016
+cvc5/spark/query055-call-5.smt2,nested star,0.04045820236206055
+cvc5/spark/query055-call-6.smt2,nested star,0.04902529716491699
+cvc5/spark/query055-call-7.smt2,nested star,0.13942360877990723
+cvc5/spark/query055-call-8.smt2,nested star,0.07105159759521484
+cvc5/spark/query055-call-9.smt2,nested star,0.05027604103088379
 cvc5/spark/query070-call-0.smt2,unsat,11.522721529006958
 cvc5/spark/query089-call-0.smt2,unsat,0.04834342002868652
 cvc5/spark/query090-call-0.smt2,unsat,0.055554866790771484
@@ -140,222 +136,222 @@ cvc5/spark/query090-call-1.smt2,unsat,0.05291461944580078
 cvc5/spark/query090-call-2.smt2,sat,0.1571357250213623
 cvc5/spark/query106-call-0.smt2,unsat,0.12161016464233398
 cvc5/spark/query107-call-0.smt2,unsat,0.09381723403930664
-cvc5/tpc-h/query005-call-0.smt2,,0.05258893966674805
-cvc5/tpc-h/query007-call-0.smt2,,0.06036257743835449
-cvc5/tpc-h/query007-call-1.smt2,,0.06118464469909668
-cvc5/tpc-h/query007-call-10.smt2,,0.061455726623535156
-cvc5/tpc-h/query007-call-100.smt2,,0.05989241600036621
-cvc5/tpc-h/query007-call-101.smt2,,0.07861781120300293
-cvc5/tpc-h/query007-call-102.smt2,,0.0602114200592041
-cvc5/tpc-h/query007-call-103.smt2,,2.0364742279052734
-cvc5/tpc-h/query007-call-104.smt2,,0.06128692626953125
-cvc5/tpc-h/query007-call-105.smt2,,0.05867195129394531
-cvc5/tpc-h/query007-call-106.smt2,,0.05946063995361328
-cvc5/tpc-h/query007-call-107.smt2,,0.17505955696105957
-cvc5/tpc-h/query007-call-108.smt2,,0.06456279754638672
-cvc5/tpc-h/query007-call-109.smt2,,0.06439876556396484
-cvc5/tpc-h/query007-call-11.smt2,,0.06274676322937012
-cvc5/tpc-h/query007-call-110.smt2,,0.06253266334533691
-cvc5/tpc-h/query007-call-111.smt2,,0.05946159362792969
-cvc5/tpc-h/query007-call-112.smt2,,0.05857491493225098
-cvc5/tpc-h/query007-call-113.smt2,,0.06706380844116211
-cvc5/tpc-h/query007-call-114.smt2,,0.05733752250671387
-cvc5/tpc-h/query007-call-115.smt2,,0.056534767150878906
-cvc5/tpc-h/query007-call-116.smt2,,0.057479143142700195
-cvc5/tpc-h/query007-call-117.smt2,,0.06363105773925781
-cvc5/tpc-h/query007-call-118.smt2,,0.059191226959228516
-cvc5/tpc-h/query007-call-119.smt2,,0.060736656188964844
-cvc5/tpc-h/query007-call-12.smt2,,0.05961132049560547
-cvc5/tpc-h/query007-call-120.smt2,,0.05611920356750488
-cvc5/tpc-h/query007-call-121.smt2,,0.05679512023925781
-cvc5/tpc-h/query007-call-122.smt2,,0.05678081512451172
-cvc5/tpc-h/query007-call-123.smt2,,0.05747222900390625
-cvc5/tpc-h/query007-call-124.smt2,,0.05727124214172363
-cvc5/tpc-h/query007-call-125.smt2,,0.05621457099914551
-cvc5/tpc-h/query007-call-126.smt2,,0.0558774471282959
-cvc5/tpc-h/query007-call-127.smt2,,0.05750632286071777
-cvc5/tpc-h/query007-call-128.smt2,,0.0781257152557373
-cvc5/tpc-h/query007-call-129.smt2,,0.05883169174194336
-cvc5/tpc-h/query007-call-13.smt2,,0.06612157821655273
-cvc5/tpc-h/query007-call-130.smt2,,0.05917024612426758
-cvc5/tpc-h/query007-call-131.smt2,,0.05761384963989258
-cvc5/tpc-h/query007-call-132.smt2,,0.05929923057556152
-cvc5/tpc-h/query007-call-133.smt2,,0.06014227867126465
-cvc5/tpc-h/query007-call-134.smt2,,0.05670642852783203
-cvc5/tpc-h/query007-call-135.smt2,,0.05659675598144531
-cvc5/tpc-h/query007-call-136.smt2,,0.05791330337524414
-cvc5/tpc-h/query007-call-137.smt2,,0.05668997764587402
-cvc5/tpc-h/query007-call-138.smt2,,0.05642199516296387
-cvc5/tpc-h/query007-call-139.smt2,,0.05930376052856445
-cvc5/tpc-h/query007-call-14.smt2,,0.06228804588317871
-cvc5/tpc-h/query007-call-140.smt2,,0.0547332763671875
-cvc5/tpc-h/query007-call-141.smt2,,0.056976318359375
-cvc5/tpc-h/query007-call-142.smt2,,0.05981802940368652
-cvc5/tpc-h/query007-call-143.smt2,,0.05965781211853027
-cvc5/tpc-h/query007-call-144.smt2,,0.0586397647857666
-cvc5/tpc-h/query007-call-145.smt2,,0.05597424507141113
-cvc5/tpc-h/query007-call-146.smt2,,0.05739545822143555
-cvc5/tpc-h/query007-call-147.smt2,,0.05547976493835449
-cvc5/tpc-h/query007-call-148.smt2,,0.0556337833404541
-cvc5/tpc-h/query007-call-149.smt2,,0.057204484939575195
-cvc5/tpc-h/query007-call-15.smt2,,0.05953812599182129
-cvc5/tpc-h/query007-call-150.smt2,,0.06853294372558594
-cvc5/tpc-h/query007-call-151.smt2,,0.05593276023864746
-cvc5/tpc-h/query007-call-152.smt2,,0.0682685375213623
-cvc5/tpc-h/query007-call-153.smt2,,0.05404806137084961
-cvc5/tpc-h/query007-call-154.smt2,,0.05581784248352051
-cvc5/tpc-h/query007-call-155.smt2,,0.05741310119628906
-cvc5/tpc-h/query007-call-156.smt2,,0.07650351524353027
-cvc5/tpc-h/query007-call-157.smt2,,0.1249547004699707
-cvc5/tpc-h/query007-call-158.smt2,,0.05857706069946289
-cvc5/tpc-h/query007-call-159.smt2,,0.05812859535217285
-cvc5/tpc-h/query007-call-16.smt2,,0.0629873275756836
-cvc5/tpc-h/query007-call-160.smt2,,0.057950496673583984
-cvc5/tpc-h/query007-call-161.smt2,,0.07088088989257812
-cvc5/tpc-h/query007-call-162.smt2,,0.05496382713317871
-cvc5/tpc-h/query007-call-163.smt2,,0.05897116661071777
-cvc5/tpc-h/query007-call-164.smt2,,0.06011390686035156
-cvc5/tpc-h/query007-call-165.smt2,,0.05991554260253906
-cvc5/tpc-h/query007-call-166.smt2,,0.06348228454589844
-cvc5/tpc-h/query007-call-167.smt2,,0.058914899826049805
-cvc5/tpc-h/query007-call-168.smt2,,0.06039881706237793
-cvc5/tpc-h/query007-call-169.smt2,,0.06494426727294922
-cvc5/tpc-h/query007-call-17.smt2,,0.059313297271728516
-cvc5/tpc-h/query007-call-170.smt2,,0.06330609321594238
-cvc5/tpc-h/query007-call-171.smt2,,0.05821728706359863
-cvc5/tpc-h/query007-call-172.smt2,,0.0586702823638916
-cvc5/tpc-h/query007-call-173.smt2,,0.06187582015991211
-cvc5/tpc-h/query007-call-174.smt2,,0.05648207664489746
-cvc5/tpc-h/query007-call-175.smt2,,0.08520984649658203
-cvc5/tpc-h/query007-call-176.smt2,,0.05974221229553223
-cvc5/tpc-h/query007-call-177.smt2,,0.05994892120361328
-cvc5/tpc-h/query007-call-178.smt2,,0.05916953086853027
-cvc5/tpc-h/query007-call-179.smt2,,0.08392906188964844
-cvc5/tpc-h/query007-call-18.smt2,,0.060022830963134766
-cvc5/tpc-h/query007-call-180.smt2,,0.053940534591674805
-cvc5/tpc-h/query007-call-181.smt2,,0.0563201904296875
-cvc5/tpc-h/query007-call-182.smt2,,0.0549471378326416
-cvc5/tpc-h/query007-call-183.smt2,,0.08865785598754883
-cvc5/tpc-h/query007-call-184.smt2,,0.061869144439697266
-cvc5/tpc-h/query007-call-185.smt2,,0.0549616813659668
-cvc5/tpc-h/query007-call-186.smt2,,0.06571531295776367
-cvc5/tpc-h/query007-call-187.smt2,,0.05674004554748535
-cvc5/tpc-h/query007-call-188.smt2,,0.05522775650024414
-cvc5/tpc-h/query007-call-189.smt2,,0.06037473678588867
-cvc5/tpc-h/query007-call-19.smt2,,0.06248736381530762
-cvc5/tpc-h/query007-call-190.smt2,,0.058413028717041016
-cvc5/tpc-h/query007-call-191.smt2,,0.0594942569732666
-cvc5/tpc-h/query007-call-192.smt2,,0.05711245536804199
-cvc5/tpc-h/query007-call-193.smt2,,0.057305335998535156
-cvc5/tpc-h/query007-call-194.smt2,,0.05891251564025879
-cvc5/tpc-h/query007-call-195.smt2,,0.05934023857116699
-cvc5/tpc-h/query007-call-196.smt2,,0.059296369552612305
-cvc5/tpc-h/query007-call-197.smt2,,0.05582547187805176
-cvc5/tpc-h/query007-call-198.smt2,,0.07078909873962402
-cvc5/tpc-h/query007-call-199.smt2,,0.062114715576171875
-cvc5/tpc-h/query007-call-2.smt2,,0.06226968765258789
-cvc5/tpc-h/query007-call-20.smt2,,0.05593109130859375
-cvc5/tpc-h/query007-call-200.smt2,,0.06044459342956543
-cvc5/tpc-h/query007-call-201.smt2,,0.06166958808898926
-cvc5/tpc-h/query007-call-202.smt2,,0.060007572174072266
-cvc5/tpc-h/query007-call-21.smt2,,0.05387377738952637
-cvc5/tpc-h/query007-call-22.smt2,,0.057381629943847656
-cvc5/tpc-h/query007-call-23.smt2,,0.059387922286987305
-cvc5/tpc-h/query007-call-24.smt2,,0.05750608444213867
-cvc5/tpc-h/query007-call-25.smt2,,0.057029008865356445
-cvc5/tpc-h/query007-call-26.smt2,,0.05563545227050781
-cvc5/tpc-h/query007-call-27.smt2,,0.055962324142456055
-cvc5/tpc-h/query007-call-28.smt2,,0.05579876899719238
-cvc5/tpc-h/query007-call-29.smt2,,0.0588383674621582
-cvc5/tpc-h/query007-call-3.smt2,,0.06255769729614258
-cvc5/tpc-h/query007-call-30.smt2,,0.054201364517211914
-cvc5/tpc-h/query007-call-31.smt2,,0.05756115913391113
-cvc5/tpc-h/query007-call-32.smt2,,0.05817580223083496
-cvc5/tpc-h/query007-call-33.smt2,,0.059110403060913086
-cvc5/tpc-h/query007-call-34.smt2,,0.05398893356323242
-cvc5/tpc-h/query007-call-35.smt2,,0.07795310020446777
-cvc5/tpc-h/query007-call-36.smt2,,0.08561420440673828
-cvc5/tpc-h/query007-call-37.smt2,,0.06065940856933594
-cvc5/tpc-h/query007-call-38.smt2,,0.060808420181274414
-cvc5/tpc-h/query007-call-39.smt2,,0.05767965316772461
-cvc5/tpc-h/query007-call-4.smt2,,0.06232023239135742
-cvc5/tpc-h/query007-call-40.smt2,,0.05611681938171387
-cvc5/tpc-h/query007-call-41.smt2,,0.054969072341918945
-cvc5/tpc-h/query007-call-42.smt2,,0.053966522216796875
-cvc5/tpc-h/query007-call-43.smt2,,0.053109169006347656
-cvc5/tpc-h/query007-call-44.smt2,,0.05423116683959961
-cvc5/tpc-h/query007-call-45.smt2,,0.0533137321472168
-cvc5/tpc-h/query007-call-46.smt2,,0.054654598236083984
-cvc5/tpc-h/query007-call-47.smt2,,0.0551295280456543
-cvc5/tpc-h/query007-call-48.smt2,,0.05332207679748535
-cvc5/tpc-h/query007-call-49.smt2,,0.052822113037109375
-cvc5/tpc-h/query007-call-5.smt2,,0.06013679504394531
-cvc5/tpc-h/query007-call-50.smt2,,0.0550999641418457
-cvc5/tpc-h/query007-call-51.smt2,,0.05333828926086426
-cvc5/tpc-h/query007-call-52.smt2,,0.05553174018859863
-cvc5/tpc-h/query007-call-53.smt2,,0.05601954460144043
-cvc5/tpc-h/query007-call-54.smt2,,0.053765058517456055
-cvc5/tpc-h/query007-call-55.smt2,,0.05280780792236328
-cvc5/tpc-h/query007-call-56.smt2,,0.05349588394165039
-cvc5/tpc-h/query007-call-57.smt2,,0.052776336669921875
-cvc5/tpc-h/query007-call-58.smt2,,0.06490135192871094
-cvc5/tpc-h/query007-call-59.smt2,,0.05260181427001953
-cvc5/tpc-h/query007-call-6.smt2,,0.06342744827270508
-cvc5/tpc-h/query007-call-60.smt2,,0.06649088859558105
-cvc5/tpc-h/query007-call-61.smt2,,0.06518793106079102
-cvc5/tpc-h/query007-call-62.smt2,,0.06560373306274414
-cvc5/tpc-h/query007-call-63.smt2,,0.06480932235717773
-cvc5/tpc-h/query007-call-64.smt2,,0.06516838073730469
-cvc5/tpc-h/query007-call-65.smt2,,0.06675028800964355
-cvc5/tpc-h/query007-call-66.smt2,,0.06345200538635254
-cvc5/tpc-h/query007-call-67.smt2,,0.06476020812988281
-cvc5/tpc-h/query007-call-68.smt2,,0.06322956085205078
-cvc5/tpc-h/query007-call-69.smt2,,0.07208395004272461
-cvc5/tpc-h/query007-call-7.smt2,,0.06330299377441406
-cvc5/tpc-h/query007-call-70.smt2,,0.06612396240234375
-cvc5/tpc-h/query007-call-71.smt2,,0.06348419189453125
-cvc5/tpc-h/query007-call-72.smt2,,0.06309986114501953
-cvc5/tpc-h/query007-call-73.smt2,,0.06431007385253906
-cvc5/tpc-h/query007-call-74.smt2,,0.0736384391784668
-cvc5/tpc-h/query007-call-75.smt2,,0.06506037712097168
-cvc5/tpc-h/query007-call-76.smt2,,0.06354117393493652
-cvc5/tpc-h/query007-call-77.smt2,,0.08231687545776367
-cvc5/tpc-h/query007-call-78.smt2,,0.0667414665222168
-cvc5/tpc-h/query007-call-79.smt2,,0.06299424171447754
-cvc5/tpc-h/query007-call-8.smt2,,0.06081438064575195
-cvc5/tpc-h/query007-call-80.smt2,,0.055113792419433594
-cvc5/tpc-h/query007-call-81.smt2,,0.08628392219543457
-cvc5/tpc-h/query007-call-82.smt2,,0.05784201622009277
-cvc5/tpc-h/query007-call-83.smt2,,0.05852627754211426
-cvc5/tpc-h/query007-call-84.smt2,,0.057617902755737305
-cvc5/tpc-h/query007-call-85.smt2,,0.05612325668334961
-cvc5/tpc-h/query007-call-86.smt2,,0.06173849105834961
-cvc5/tpc-h/query007-call-87.smt2,,0.056440114974975586
-cvc5/tpc-h/query007-call-88.smt2,,0.061835527420043945
-cvc5/tpc-h/query007-call-89.smt2,,0.05421304702758789
-cvc5/tpc-h/query007-call-9.smt2,,0.06064438819885254
-cvc5/tpc-h/query007-call-90.smt2,,0.05630779266357422
-cvc5/tpc-h/query007-call-91.smt2,,0.05603361129760742
-cvc5/tpc-h/query007-call-92.smt2,,0.07478094100952148
-cvc5/tpc-h/query007-call-93.smt2,,0.0562748908996582
-cvc5/tpc-h/query007-call-94.smt2,,0.05702543258666992
-cvc5/tpc-h/query007-call-95.smt2,,0.07244443893432617
-cvc5/tpc-h/query007-call-96.smt2,,0.05796551704406738
-cvc5/tpc-h/query007-call-97.smt2,,0.05843520164489746
-cvc5/tpc-h/query007-call-98.smt2,,0.06676769256591797
-cvc5/tpc-h/query007-call-99.smt2,,0.0581052303314209
-cvc5/tpc-h/query008-call-0.smt2,,0.0723726749420166
-cvc5/tpc-h/query008-call-1.smt2,,0.06850051879882812
-cvc5/tpc-h/query008-call-2.smt2,,0.07459640502929688
-cvc5/tpc-h/query008-call-3.smt2,,0.06732702255249023
-cvc5/tpc-h/query008-call-4.smt2,,0.0705575942993164
-cvc5/tpc-h/query008-call-5.smt2,,0.06650662422180176
-cvc5/tpc-h/query008-call-6.smt2,,0.06643915176391602
-cvc5/tpc-h/query008-call-7.smt2,,0.06615042686462402
-cvc5/tpc-h/query008-call-8.smt2,,0.0639638900756836
-cvc5/tpc-h/query009-call-0.smt2,,0.14806723594665527
-cvc5/tpc-h/query012-call-0.smt2,,0.056180477142333984
-cvc5/tpc-h/query013-call-0.smt2,,0.06757426261901855
-cvc5/tpc-h/query015-call-0.smt2,,0.04671144485473633
-cvc5/tpc-h/query022-call-0.smt2,,0.05272483825683594
-cvc5/tpc-h/query022-call-1.smt2,,0.05477476119995117
+cvc5/tpc-h/query005-call-0.smt2,nested star,0.05258893966674805
+cvc5/tpc-h/query007-call-0.smt2,nested star,0.06036257743835449
+cvc5/tpc-h/query007-call-1.smt2,nested star,0.06118464469909668
+cvc5/tpc-h/query007-call-10.smt2,nested star,0.061455726623535156
+cvc5/tpc-h/query007-call-100.smt2,nested star,0.05989241600036621
+cvc5/tpc-h/query007-call-101.smt2,nested star,0.07861781120300293
+cvc5/tpc-h/query007-call-102.smt2,nested star,0.0602114200592041
+cvc5/tpc-h/query007-call-103.smt2,nested star,2.0364742279052734
+cvc5/tpc-h/query007-call-104.smt2,nested star,0.06128692626953125
+cvc5/tpc-h/query007-call-105.smt2,nested star,0.05867195129394531
+cvc5/tpc-h/query007-call-106.smt2,nested star,0.05946063995361328
+cvc5/tpc-h/query007-call-107.smt2,nested star,0.17505955696105957
+cvc5/tpc-h/query007-call-108.smt2,nested star,0.06456279754638672
+cvc5/tpc-h/query007-call-109.smt2,nested star,0.06439876556396484
+cvc5/tpc-h/query007-call-11.smt2,nested star,0.06274676322937012
+cvc5/tpc-h/query007-call-110.smt2,nested star,0.06253266334533691
+cvc5/tpc-h/query007-call-111.smt2,nested star,0.05946159362792969
+cvc5/tpc-h/query007-call-112.smt2,nested star,0.05857491493225098
+cvc5/tpc-h/query007-call-113.smt2,nested star,0.06706380844116211
+cvc5/tpc-h/query007-call-114.smt2,nested star,0.05733752250671387
+cvc5/tpc-h/query007-call-115.smt2,nested star,0.056534767150878906
+cvc5/tpc-h/query007-call-116.smt2,nested star,0.057479143142700195
+cvc5/tpc-h/query007-call-117.smt2,nested star,0.06363105773925781
+cvc5/tpc-h/query007-call-118.smt2,nested star,0.059191226959228516
+cvc5/tpc-h/query007-call-119.smt2,nested star,0.060736656188964844
+cvc5/tpc-h/query007-call-12.smt2,nested star,0.05961132049560547
+cvc5/tpc-h/query007-call-120.smt2,nested star,0.05611920356750488
+cvc5/tpc-h/query007-call-121.smt2,nested star,0.05679512023925781
+cvc5/tpc-h/query007-call-122.smt2,nested star,0.05678081512451172
+cvc5/tpc-h/query007-call-123.smt2,nested star,0.05747222900390625
+cvc5/tpc-h/query007-call-124.smt2,nested star,0.05727124214172363
+cvc5/tpc-h/query007-call-125.smt2,nested star,0.05621457099914551
+cvc5/tpc-h/query007-call-126.smt2,nested star,0.0558774471282959
+cvc5/tpc-h/query007-call-127.smt2,nested star,0.05750632286071777
+cvc5/tpc-h/query007-call-128.smt2,nested star,0.0781257152557373
+cvc5/tpc-h/query007-call-129.smt2,nested star,0.05883169174194336
+cvc5/tpc-h/query007-call-13.smt2,nested star,0.06612157821655273
+cvc5/tpc-h/query007-call-130.smt2,nested star,0.05917024612426758
+cvc5/tpc-h/query007-call-131.smt2,nested star,0.05761384963989258
+cvc5/tpc-h/query007-call-132.smt2,nested star,0.05929923057556152
+cvc5/tpc-h/query007-call-133.smt2,nested star,0.06014227867126465
+cvc5/tpc-h/query007-call-134.smt2,nested star,0.05670642852783203
+cvc5/tpc-h/query007-call-135.smt2,nested star,0.05659675598144531
+cvc5/tpc-h/query007-call-136.smt2,nested star,0.05791330337524414
+cvc5/tpc-h/query007-call-137.smt2,nested star,0.05668997764587402
+cvc5/tpc-h/query007-call-138.smt2,nested star,0.05642199516296387
+cvc5/tpc-h/query007-call-139.smt2,nested star,0.05930376052856445
+cvc5/tpc-h/query007-call-14.smt2,nested star,0.06228804588317871
+cvc5/tpc-h/query007-call-140.smt2,nested star,0.0547332763671875
+cvc5/tpc-h/query007-call-141.smt2,nested star,0.056976318359375
+cvc5/tpc-h/query007-call-142.smt2,nested star,0.05981802940368652
+cvc5/tpc-h/query007-call-143.smt2,nested star,0.05965781211853027
+cvc5/tpc-h/query007-call-144.smt2,nested star,0.0586397647857666
+cvc5/tpc-h/query007-call-145.smt2,nested star,0.05597424507141113
+cvc5/tpc-h/query007-call-146.smt2,nested star,0.05739545822143555
+cvc5/tpc-h/query007-call-147.smt2,nested star,0.05547976493835449
+cvc5/tpc-h/query007-call-148.smt2,nested star,0.0556337833404541
+cvc5/tpc-h/query007-call-149.smt2,nested star,0.057204484939575195
+cvc5/tpc-h/query007-call-15.smt2,nested star,0.05953812599182129
+cvc5/tpc-h/query007-call-150.smt2,nested star,0.06853294372558594
+cvc5/tpc-h/query007-call-151.smt2,nested star,0.05593276023864746
+cvc5/tpc-h/query007-call-152.smt2,nested star,0.0682685375213623
+cvc5/tpc-h/query007-call-153.smt2,nested star,0.05404806137084961
+cvc5/tpc-h/query007-call-154.smt2,nested star,0.05581784248352051
+cvc5/tpc-h/query007-call-155.smt2,nested star,0.05741310119628906
+cvc5/tpc-h/query007-call-156.smt2,nested star,0.07650351524353027
+cvc5/tpc-h/query007-call-157.smt2,nested star,0.1249547004699707
+cvc5/tpc-h/query007-call-158.smt2,nested star,0.05857706069946289
+cvc5/tpc-h/query007-call-159.smt2,nested star,0.05812859535217285
+cvc5/tpc-h/query007-call-16.smt2,nested star,0.0629873275756836
+cvc5/tpc-h/query007-call-160.smt2,nested star,0.057950496673583984
+cvc5/tpc-h/query007-call-161.smt2,nested star,0.07088088989257812
+cvc5/tpc-h/query007-call-162.smt2,nested star,0.05496382713317871
+cvc5/tpc-h/query007-call-163.smt2,nested star,0.05897116661071777
+cvc5/tpc-h/query007-call-164.smt2,nested star,0.06011390686035156
+cvc5/tpc-h/query007-call-165.smt2,nested star,0.05991554260253906
+cvc5/tpc-h/query007-call-166.smt2,nested star,0.06348228454589844
+cvc5/tpc-h/query007-call-167.smt2,nested star,0.058914899826049805
+cvc5/tpc-h/query007-call-168.smt2,nested star,0.06039881706237793
+cvc5/tpc-h/query007-call-169.smt2,nested star,0.06494426727294922
+cvc5/tpc-h/query007-call-17.smt2,nested star,0.059313297271728516
+cvc5/tpc-h/query007-call-170.smt2,nested star,0.06330609321594238
+cvc5/tpc-h/query007-call-171.smt2,nested star,0.05821728706359863
+cvc5/tpc-h/query007-call-172.smt2,nested star,0.0586702823638916
+cvc5/tpc-h/query007-call-173.smt2,nested star,0.06187582015991211
+cvc5/tpc-h/query007-call-174.smt2,nested star,0.05648207664489746
+cvc5/tpc-h/query007-call-175.smt2,nested star,0.08520984649658203
+cvc5/tpc-h/query007-call-176.smt2,nested star,0.05974221229553223
+cvc5/tpc-h/query007-call-177.smt2,nested star,0.05994892120361328
+cvc5/tpc-h/query007-call-178.smt2,nested star,0.05916953086853027
+cvc5/tpc-h/query007-call-179.smt2,nested star,0.08392906188964844
+cvc5/tpc-h/query007-call-18.smt2,nested star,0.060022830963134766
+cvc5/tpc-h/query007-call-180.smt2,nested star,0.053940534591674805
+cvc5/tpc-h/query007-call-181.smt2,nested star,0.0563201904296875
+cvc5/tpc-h/query007-call-182.smt2,nested star,0.0549471378326416
+cvc5/tpc-h/query007-call-183.smt2,nested star,0.08865785598754883
+cvc5/tpc-h/query007-call-184.smt2,nested star,0.061869144439697266
+cvc5/tpc-h/query007-call-185.smt2,nested star,0.0549616813659668
+cvc5/tpc-h/query007-call-186.smt2,nested star,0.06571531295776367
+cvc5/tpc-h/query007-call-187.smt2,nested star,0.05674004554748535
+cvc5/tpc-h/query007-call-188.smt2,nested star,0.05522775650024414
+cvc5/tpc-h/query007-call-189.smt2,nested star,0.06037473678588867
+cvc5/tpc-h/query007-call-19.smt2,nested star,0.06248736381530762
+cvc5/tpc-h/query007-call-190.smt2,nested star,0.058413028717041016
+cvc5/tpc-h/query007-call-191.smt2,nested star,0.0594942569732666
+cvc5/tpc-h/query007-call-192.smt2,nested star,0.05711245536804199
+cvc5/tpc-h/query007-call-193.smt2,nested star,0.057305335998535156
+cvc5/tpc-h/query007-call-194.smt2,nested star,0.05891251564025879
+cvc5/tpc-h/query007-call-195.smt2,nested star,0.05934023857116699
+cvc5/tpc-h/query007-call-196.smt2,nested star,0.059296369552612305
+cvc5/tpc-h/query007-call-197.smt2,nested star,0.05582547187805176
+cvc5/tpc-h/query007-call-198.smt2,nested star,0.07078909873962402
+cvc5/tpc-h/query007-call-199.smt2,nested star,0.062114715576171875
+cvc5/tpc-h/query007-call-2.smt2,nested star,0.06226968765258789
+cvc5/tpc-h/query007-call-20.smt2,nested star,0.05593109130859375
+cvc5/tpc-h/query007-call-200.smt2,nested star,0.06044459342956543
+cvc5/tpc-h/query007-call-201.smt2,nested star,0.06166958808898926
+cvc5/tpc-h/query007-call-202.smt2,nested star,0.060007572174072266
+cvc5/tpc-h/query007-call-21.smt2,nested star,0.05387377738952637
+cvc5/tpc-h/query007-call-22.smt2,nested star,0.057381629943847656
+cvc5/tpc-h/query007-call-23.smt2,nested star,0.059387922286987305
+cvc5/tpc-h/query007-call-24.smt2,nested star,0.05750608444213867
+cvc5/tpc-h/query007-call-25.smt2,nested star,0.057029008865356445
+cvc5/tpc-h/query007-call-26.smt2,nested star,0.05563545227050781
+cvc5/tpc-h/query007-call-27.smt2,nested star,0.055962324142456055
+cvc5/tpc-h/query007-call-28.smt2,nested star,0.05579876899719238
+cvc5/tpc-h/query007-call-29.smt2,nested star,0.0588383674621582
+cvc5/tpc-h/query007-call-3.smt2,nested star,0.06255769729614258
+cvc5/tpc-h/query007-call-30.smt2,nested star,0.054201364517211914
+cvc5/tpc-h/query007-call-31.smt2,nested star,0.05756115913391113
+cvc5/tpc-h/query007-call-32.smt2,nested star,0.05817580223083496
+cvc5/tpc-h/query007-call-33.smt2,nested star,0.059110403060913086
+cvc5/tpc-h/query007-call-34.smt2,nested star,0.05398893356323242
+cvc5/tpc-h/query007-call-35.smt2,nested star,0.07795310020446777
+cvc5/tpc-h/query007-call-36.smt2,nested star,0.08561420440673828
+cvc5/tpc-h/query007-call-37.smt2,nested star,0.06065940856933594
+cvc5/tpc-h/query007-call-38.smt2,nested star,0.060808420181274414
+cvc5/tpc-h/query007-call-39.smt2,nested star,0.05767965316772461
+cvc5/tpc-h/query007-call-4.smt2,nested star,0.06232023239135742
+cvc5/tpc-h/query007-call-40.smt2,nested star,0.05611681938171387
+cvc5/tpc-h/query007-call-41.smt2,nested star,0.054969072341918945
+cvc5/tpc-h/query007-call-42.smt2,nested star,0.053966522216796875
+cvc5/tpc-h/query007-call-43.smt2,nested star,0.053109169006347656
+cvc5/tpc-h/query007-call-44.smt2,nested star,0.05423116683959961
+cvc5/tpc-h/query007-call-45.smt2,nested star,0.0533137321472168
+cvc5/tpc-h/query007-call-46.smt2,nested star,0.054654598236083984
+cvc5/tpc-h/query007-call-47.smt2,nested star,0.0551295280456543
+cvc5/tpc-h/query007-call-48.smt2,nested star,0.05332207679748535
+cvc5/tpc-h/query007-call-49.smt2,nested star,0.052822113037109375
+cvc5/tpc-h/query007-call-5.smt2,nested star,0.06013679504394531
+cvc5/tpc-h/query007-call-50.smt2,nested star,0.0550999641418457
+cvc5/tpc-h/query007-call-51.smt2,nested star,0.05333828926086426
+cvc5/tpc-h/query007-call-52.smt2,nested star,0.05553174018859863
+cvc5/tpc-h/query007-call-53.smt2,nested star,0.05601954460144043
+cvc5/tpc-h/query007-call-54.smt2,nested star,0.053765058517456055
+cvc5/tpc-h/query007-call-55.smt2,nested star,0.05280780792236328
+cvc5/tpc-h/query007-call-56.smt2,nested star,0.05349588394165039
+cvc5/tpc-h/query007-call-57.smt2,nested star,0.052776336669921875
+cvc5/tpc-h/query007-call-58.smt2,nested star,0.06490135192871094
+cvc5/tpc-h/query007-call-59.smt2,nested star,0.05260181427001953
+cvc5/tpc-h/query007-call-6.smt2,nested star,0.06342744827270508
+cvc5/tpc-h/query007-call-60.smt2,nested star,0.06649088859558105
+cvc5/tpc-h/query007-call-61.smt2,nested star,0.06518793106079102
+cvc5/tpc-h/query007-call-62.smt2,nested star,0.06560373306274414
+cvc5/tpc-h/query007-call-63.smt2,nested star,0.06480932235717773
+cvc5/tpc-h/query007-call-64.smt2,nested star,0.06516838073730469
+cvc5/tpc-h/query007-call-65.smt2,nested star,0.06675028800964355
+cvc5/tpc-h/query007-call-66.smt2,nested star,0.06345200538635254
+cvc5/tpc-h/query007-call-67.smt2,nested star,0.06476020812988281
+cvc5/tpc-h/query007-call-68.smt2,nested star,0.06322956085205078
+cvc5/tpc-h/query007-call-69.smt2,nested star,0.07208395004272461
+cvc5/tpc-h/query007-call-7.smt2,nested star,0.06330299377441406
+cvc5/tpc-h/query007-call-70.smt2,nested star,0.06612396240234375
+cvc5/tpc-h/query007-call-71.smt2,nested star,0.06348419189453125
+cvc5/tpc-h/query007-call-72.smt2,nested star,0.06309986114501953
+cvc5/tpc-h/query007-call-73.smt2,nested star,0.06431007385253906
+cvc5/tpc-h/query007-call-74.smt2,nested star,0.0736384391784668
+cvc5/tpc-h/query007-call-75.smt2,nested star,0.06506037712097168
+cvc5/tpc-h/query007-call-76.smt2,nested star,0.06354117393493652
+cvc5/tpc-h/query007-call-77.smt2,nested star,0.08231687545776367
+cvc5/tpc-h/query007-call-78.smt2,nested star,0.0667414665222168
+cvc5/tpc-h/query007-call-79.smt2,nested star,0.06299424171447754
+cvc5/tpc-h/query007-call-8.smt2,nested star,0.06081438064575195
+cvc5/tpc-h/query007-call-80.smt2,nested star,0.055113792419433594
+cvc5/tpc-h/query007-call-81.smt2,nested star,0.08628392219543457
+cvc5/tpc-h/query007-call-82.smt2,nested star,0.05784201622009277
+cvc5/tpc-h/query007-call-83.smt2,nested star,0.05852627754211426
+cvc5/tpc-h/query007-call-84.smt2,nested star,0.057617902755737305
+cvc5/tpc-h/query007-call-85.smt2,nested star,0.05612325668334961
+cvc5/tpc-h/query007-call-86.smt2,nested star,0.06173849105834961
+cvc5/tpc-h/query007-call-87.smt2,nested star,0.056440114974975586
+cvc5/tpc-h/query007-call-88.smt2,nested star,0.061835527420043945
+cvc5/tpc-h/query007-call-89.smt2,nested star,0.05421304702758789
+cvc5/tpc-h/query007-call-9.smt2,nested star,0.06064438819885254
+cvc5/tpc-h/query007-call-90.smt2,nested star,0.05630779266357422
+cvc5/tpc-h/query007-call-91.smt2,nested star,0.05603361129760742
+cvc5/tpc-h/query007-call-92.smt2,nested star,0.07478094100952148
+cvc5/tpc-h/query007-call-93.smt2,nested star,0.0562748908996582
+cvc5/tpc-h/query007-call-94.smt2,nested star,0.05702543258666992
+cvc5/tpc-h/query007-call-95.smt2,nested star,0.07244443893432617
+cvc5/tpc-h/query007-call-96.smt2,nested star,0.05796551704406738
+cvc5/tpc-h/query007-call-97.smt2,nested star,0.05843520164489746
+cvc5/tpc-h/query007-call-98.smt2,nested star,0.06676769256591797
+cvc5/tpc-h/query007-call-99.smt2,nested star,0.0581052303314209
+cvc5/tpc-h/query008-call-0.smt2,nested star,0.0723726749420166
+cvc5/tpc-h/query008-call-1.smt2,nested star,0.06850051879882812
+cvc5/tpc-h/query008-call-2.smt2,nested star,0.07459640502929688
+cvc5/tpc-h/query008-call-3.smt2,nested star,0.06732702255249023
+cvc5/tpc-h/query008-call-4.smt2,nested star,0.0705575942993164
+cvc5/tpc-h/query008-call-5.smt2,nested star,0.06650662422180176
+cvc5/tpc-h/query008-call-6.smt2,nested star,0.06643915176391602
+cvc5/tpc-h/query008-call-7.smt2,nested star,0.06615042686462402
+cvc5/tpc-h/query008-call-8.smt2,nested star,0.0639638900756836
+cvc5/tpc-h/query009-call-0.smt2,nested star,0.14806723594665527
+cvc5/tpc-h/query012-call-0.smt2,nested star,0.056180477142333984
+cvc5/tpc-h/query013-call-0.smt2,nested star,0.06757426261901855
+cvc5/tpc-h/query015-call-0.smt2,nested star,0.04671144485473633
+cvc5/tpc-h/query022-call-0.smt2,nested star,0.05272483825683594
+cvc5/tpc-h/query022-call-1.smt2,nested star,0.05477476119995117
