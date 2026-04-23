@@ -1,9 +1,19 @@
 package sqlsolver.superopt.liastar;
 
-import com.microsoft.z3.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+
+import com.microsoft.z3.ArithExpr;
+import com.microsoft.z3.Context;
+import com.microsoft.z3.Expr;
+import com.microsoft.z3.FuncDecl;
+import com.microsoft.z3.Solver;
+
 import sqlsolver.common.utils.IterableSupport;
 import sqlsolver.sql.plan.Value;
 import sqlsolver.superopt.util.Bag;
@@ -31,7 +41,7 @@ public class LiaMulImpl extends LiaStar
   {
     boolean needsParen1 = (operand1 instanceof LiaPlusImpl);
     boolean needsParen2 = (operand1 instanceof LiaPlusImpl);
-    prettyPrintBinaryOp(builder, operand1, operand2, needsParen1, needsParen2, " x ");
+    prettyPrintBinaryOp(builder, operand1, operand2, needsParen1, needsParen2, " * ");
   }
 
   @Override

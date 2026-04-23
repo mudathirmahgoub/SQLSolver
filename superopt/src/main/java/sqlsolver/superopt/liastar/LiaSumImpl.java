@@ -1,15 +1,31 @@
 package sqlsolver.superopt.liastar;
 
-import static sqlsolver.superopt.util.VectorSupport.*;
-
-import com.microsoft.z3.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+
+import com.microsoft.z3.ArithExpr;
+import com.microsoft.z3.BoolExpr;
+import com.microsoft.z3.Context;
+import com.microsoft.z3.Expr;
+import com.microsoft.z3.FuncDecl;
+import com.microsoft.z3.Solver;
+
 import sqlsolver.common.utils.SetSupport;
 import sqlsolver.superopt.liastar.destructor.Destructor;
 import sqlsolver.superopt.liastar.transformer.LiaTransformer;
 import sqlsolver.superopt.util.PrettyBuilder;
+import static sqlsolver.superopt.util.VectorSupport.eq;
+import static sqlsolver.superopt.util.VectorSupport.liaZero;
+import static sqlsolver.superopt.util.VectorSupport.nameToLia;
+import static sqlsolver.superopt.util.VectorSupport.plus;
 
 public class LiaSumImpl extends LiaStar
 {
@@ -104,7 +120,7 @@ public class LiaSumImpl extends LiaStar
     builder.indent(4).println();
     constraints.prettyPrint(builder);
     builder.indent(-4).println();
-    builder.print("}*");
+    builder.print("}⋆");
   }
 
   @Override
