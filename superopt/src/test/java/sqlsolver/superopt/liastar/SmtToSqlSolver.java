@@ -1,7 +1,14 @@
 package sqlsolver.superopt.liastar;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import io.github.cvc5.Command;
 import io.github.cvc5.InputParser;
+import io.github.cvc5.Kind;
 import io.github.cvc5.Solver;
 import io.github.cvc5.SymbolManager;
 import io.github.cvc5.Term;
@@ -10,6 +17,9 @@ import io.github.cvc5.modes.InputLanguage;
 
 public class SmtToSqlSolver
 {
+  public Map<String, LiaStar> symbols = new HashMap<>();
+  public LiaStar minusOne = LiaStar.mkConst(false, -1);
+  private static int index = 0;
   LiaStar translateFile(String filename)
   {
     TermManager tm = new TermManager();
@@ -35,6 +45,13 @@ public class SmtToSqlSolver
 
     System.out.println("Finished parsing commands");
 
+    // declare all variables
+    for (Term t : sm.getDeclaredTerms())
+    {
+      String name = t.toString();
+      symbols.put(name, LiaStar.mkVar(false, name));
+    }
+
     LiaStar formula = LiaStar.mkTrue(false);
     for (Term assertion : slv.getAssertions())
     {
@@ -44,8 +61,151 @@ public class SmtToSqlSolver
     return formula;
   }
 
-  private LiaStar translateTerm(Term assertion)
+  private LiaStar translateTerm(Term t)
   {
-    return LiaStar.mkTrue(false);
+    // base cases
+    if (t.isBooleanValue())
+    {
+      boolean value = t.getBooleanValue();
+      return value ? LiaStar.mkTrue(false) : LiaStar.mkFalse(false);
+    }
+    if (t.isIntegerValue())
+    {
+      BigInteger value = t.getIntegerValue();
+      return LiaStar.mkConst(false, value.longValue());
+    }
+    Kind k = t.getKind();
+    if (k == Kind.CONSTANT || k == Kind.VARIABLE)
+    {
+      return symbols.get(t.toString());
+    }
+    if (k == Kind.STAR_CONTAINS)
+    {
+      Term lambdaTerm = t.getChild(0);
+      Term cvc5BoundVariables = lambdaTerm.getChild(0);
+      Term cvc5Body = lambdaTerm.getChild(1);
+      LiaStar body = translateTerm(cvc5Body);
+      List<String> outerVector = new ArrayList();
+      LiaStar formula = null;
+      for (int i = 1; i < t.getNumChildren(); i++)
+      {
+        Term child = t.getChild(i);
+        if (child.isIntegerValue())
+        {
+          String varName = "const_" + index;
+          LiaStar newVar = LiaStar.mkVar(false, varName);
+          BigInteger value = child.getIntegerValue();
+          LiaStar liaStarConst = LiaStar.mkConst(false, value.longValue());
+          LiaStar equality = LiaStar.mkEq(false, newVar, liaStarConst);
+          if (formula == null)
+          {
+            formula = equality;
+          }
+          else
+          {
+            formula = LiaStar.mkAnd(false, formula, equality);
+          }
+          outerVector.add(varName);
+        }
+        else if (child.getKind() == Kind.CONSTANT)
+        {
+          outerVector.add(child.toString());
+        }
+        else
+        {
+          String message = "Unsupported Kind: " + child.getKind() + " in term: " + child;
+          throw new UnsupportedOperationException(message);
+        }
+      }
+      List<String> innerVector = new ArrayList();
+      for (int i = 0; i < cvc5BoundVariables.getNumChildren(); i++)
+      {
+        innerVector.add(cvc5BoundVariables.getChild(i).toString());
+      }
+      LiaStar star = LiaStar.mkSum(false, outerVector, innerVector, body);
+      if (formula == null)
+      {
+        return star;
+      }
+      else
+      {
+        return LiaStar.mkAnd(false, formula, star);
+      }
+    }
+    List<LiaStar> children = new ArrayList<>();
+    for (int i = 0; i < t.getNumChildren(); i++)
+    {
+      LiaStar sqlTerm = translateTerm(t.getChild(i));
+      children.add(sqlTerm);
+    }
+    switch (k)
+    {
+      case EQUAL:
+      {
+        return LiaStar.mkEq(false, children.get(0), children.get(1));
+      }
+      case NOT:
+      {
+        return LiaStar.mkNot(false, children.get(0));
+      }
+      case AND:
+      {
+        return LiaStar.mkConjunction(false, children);
+      }
+      case OR:
+      {
+        return LiaStar.mkDisjunction(false, children);
+      }
+      case IMPLIES:
+      {
+        assert (children.size() == 2);
+        return LiaStar.mkImplies(false, children.get(0), children.get(1));
+      }
+      case ITE:
+      {
+        assert (children.size() == 3);
+        return LiaStar.mkIte(false, children.get(0), children.get(1), children.get(2));
+      }
+      case ADD:
+      {
+        assert (children.size() == 2);
+        return LiaStar.mkPlus(false, children.get(0), children.get(1));
+      }
+      case SUB:
+      {
+        assert (children.size() == 2);
+        LiaStar a = children.get(0);
+        LiaStar b = LiaStar.mkMul(false, minusOne, children.get(1));
+        return LiaStar.mkPlus(false, a, b);
+      }
+      case MULT:
+      {
+        assert (children.size() == 2);
+        return LiaStar.mkMul(false, children.get(0), children.get(1));
+      }
+      case LT:
+      {
+        assert (children.size() == 2);
+        return LiaStar.mkLt(false, children.get(0), children.get(1));
+      }
+      case LEQ:
+      {
+        assert (children.size() == 2);
+        return LiaStar.mkLe(false, children.get(0), children.get(1));
+      }
+      case GT:
+      {
+        assert (children.size() == 2);
+        return LiaStar.mkLe(false, children.get(1), children.get(0));
+      }
+      case GEQ:
+      {
+        assert (children.size() == 2);
+        return LiaStar.mkLt(false, children.get(1), children.get(0));
+      }
+      default: break;
+    }
+    String message = "Unsupported Kind: " + k + " in term: " + t;
+    throw new UnsupportedOperationException(message);
   }
 }
