@@ -1,9 +1,19 @@
 package sqlsolver.superopt.liastar;
 
-import com.microsoft.z3.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+
+import com.microsoft.z3.BoolExpr;
+import com.microsoft.z3.Context;
+import com.microsoft.z3.Expr;
+import com.microsoft.z3.FuncDecl;
+import com.microsoft.z3.Solver;
+
 import sqlsolver.superopt.util.PrettyBuilder;
 
 public class LiaAndImpl extends LiaStar
@@ -163,7 +173,8 @@ public class LiaAndImpl extends LiaStar
     LiaStar result = g;
     for (LiaSumImpl sum : stars)
     {
-      result = mkAnd(innerStar, result, sum.expandStarWithExtraConstraint(g));
+      LiaStar starExpanded = sum.expandStarWithExtraConstraint(g);
+      result = mkAnd(innerStar, result, starExpanded);
     }
     return result;
   }

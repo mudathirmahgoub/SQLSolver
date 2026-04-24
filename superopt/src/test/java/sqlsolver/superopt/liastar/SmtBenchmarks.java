@@ -176,8 +176,8 @@ public class SmtBenchmarks
           duration = (System.nanoTime() - startNs) / 1e9;
         }
 
-        System.out.printf("%s,%s,%.3f%n", filename, result, duration);
-        writer.printf("%s,%s,%.3f%n", filename, result, duration);
+        System.out.printf("%s,%s,%.3f%n", file, result, duration);
+        writer.printf("%s,%s,%.3f%n", file, result, duration);
         writer.flush();
       }
     }

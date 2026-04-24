@@ -1,7 +1,19 @@
 package sqlsolver.superopt.liastar;
 
-import com.microsoft.z3.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
+
+import com.microsoft.z3.BoolExpr;
+import com.microsoft.z3.Context;
+import com.microsoft.z3.Expr;
+import com.microsoft.z3.FuncDecl;
+import com.microsoft.z3.IntExpr;
+import com.microsoft.z3.Solver;
+import com.microsoft.z3.Sort;
+import com.microsoft.z3.Status;
 
 import sqlsolver.common.utils.Printer;
 import sqlsolver.superopt.liastar.parameter.InwardParamRemover;
