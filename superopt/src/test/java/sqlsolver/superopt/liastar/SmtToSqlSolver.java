@@ -176,8 +176,12 @@ public class SmtToSqlSolver
       }
       case ADD ->
       {
-        assert (children.size() == 2);
-        return LiaStar.mkPlus(false, children.get(0), children.get(1));
+        var addition = LiaStar.mkPlus(false, children.get(0), children.get(1));
+        for (int i = 2; i < t.getNumChildren(); i++)
+        {
+          addition = LiaStar.mkPlus(false, addition, children.get(i));
+        }
+        return addition;
       }
       case SUB ->
       {
