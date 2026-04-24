@@ -1,5 +1,7 @@
 package sqlsolver.superopt.liastar;
 
+import java.util.Properties;
+
 import org.junit.jupiter.api.Test;
 
 import io.github.cvc5.Context;
@@ -11,6 +13,19 @@ import io.github.cvc5.TermManager;
 
 public class SmtBenchmarks
 {
+  private static final Properties[] LIA_SOLVER_CONFIGS;
+
+  static
+  {
+    LIA_SOLVER_CONFIGS = new Properties[2];
+    LIA_SOLVER_CONFIGS[0] = new Properties();
+    LIA_SOLVER_CONFIGS[0].setProperty(
+        LiaSolver.CONFIG_KEY_PARAM_REMOVAL_MODE, LiaSolver.CONFIG_VALUE_PARAM_REMOVAL_MODE_INWARD);
+    LIA_SOLVER_CONFIGS[1] = new Properties();
+    LIA_SOLVER_CONFIGS[1].setProperty(
+        LiaSolver.CONFIG_KEY_PARAM_REMOVAL_MODE, LiaSolver.CONFIG_VALUE_PARAM_REMOVAL_MODE_OUTWARD);
+  }
+
   @Test
   public void cvc5Works()
   {
@@ -71,5 +86,21 @@ public class SmtBenchmarks
       System.out.println("Thus the maximum value of (y - x) is 2/3.");
     }
     Context.deletePointers();
-  }  
+  }
+
+  @Test
+  public void runSingleBenchmark()
+  {
+    String filename =
+        "/home/mudathir/all/sls-reachability/benchmarks/bapa/arith/cvc5_bapa/fol_0000001.smt2";
+    SmtToSqlSolver smtToSqlSolver = new SmtToSqlSolver();
+    LiaStar formula = smtToSqlSolver.translateFile(filename);
+    System.out.println("formula:\n" + formula);
+    for (var properties : LIA_SOLVER_CONFIGS)
+    {
+      var result = LiaSolver.solveWithConfig(formula, properties);
+      System.out.println("result: " + result);
+      // assertEquals(LiaSolverStatus.UNSAT, result);
+    }
+  }
 }
