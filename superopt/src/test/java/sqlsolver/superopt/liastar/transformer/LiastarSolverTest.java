@@ -11,7 +11,7 @@ import sqlsolver.superopt.liastar.LiaSolver;
 import sqlsolver.superopt.liastar.LiaSolverStatus;
 import sqlsolver.superopt.liastar.LiaStar;
 
-public class SlsAugmenterTest
+public class LiastarSolverTest
 {
   private static final Properties[] LIA_SOLVER_CONFIGS;
 

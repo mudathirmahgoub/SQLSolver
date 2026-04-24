@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import sqlsolver.api.entry.Verification;
 import sqlsolver.superopt.logic.VerificationResult;
 
-public class LiaSolverTest
+public class SqlSolverTest
 {
   @Test
   void simpleUnion() throws IOException
