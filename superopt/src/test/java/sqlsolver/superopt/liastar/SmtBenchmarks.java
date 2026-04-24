@@ -92,7 +92,7 @@ public class SmtBenchmarks
   public void runSingleBenchmark()
   {
     String filename =
-        "/home/mudathir/all/sls-reachability/benchmarks/bapa/arith/cvc5_bapa/fol_0000001.smt2";
+        "/home/mudathir/all/sls-reachability/benchmarks/bapa/arith/cvc5_mapa/fol_0000001.smt2";
     SmtToSqlSolver smtToSqlSolver = new SmtToSqlSolver();
     LiaStar formula = smtToSqlSolver.translateFile(filename);
     System.out.println("formula:\n" + formula);

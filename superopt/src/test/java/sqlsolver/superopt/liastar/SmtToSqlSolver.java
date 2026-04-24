@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 import io.github.cvc5.Command;
 import io.github.cvc5.InputParser;
@@ -17,7 +18,7 @@ import io.github.cvc5.modes.InputLanguage;
 
 public class SmtToSqlSolver
 {
-  public Map<String, LiaStar> symbols = new HashMap<>();
+  public Stack<Map<String, LiaStar>> symbolTable = new Stack<>();
   public LiaStar minusOne = LiaStar.mkConst(false, -1);
   private static int index = 0;
   LiaStar translateFile(String filename)
@@ -44,14 +45,14 @@ public class SmtToSqlSolver
     }
 
     System.out.println("Finished parsing commands");
-
+    Map<String, LiaStar> symbols = new HashMap<>();
     // declare all variables
     for (Term t : sm.getDeclaredTerms())
     {
       String name = t.toString();
       symbols.put(name, LiaStar.mkVar(false, name));
     }
-
+    symbolTable.push(symbols);
     LiaStar formula = LiaStar.mkTrue(false);
     for (Term assertion : slv.getAssertions())
     {
@@ -77,14 +78,13 @@ public class SmtToSqlSolver
     Kind k = t.getKind();
     if (k == Kind.CONSTANT || k == Kind.VARIABLE)
     {
-      return symbols.get(t.toString());
+      return symbolTable.peek().get(t.toString());
     }
     if (k == Kind.STAR_CONTAINS)
     {
       Term lambdaTerm = t.getChild(0);
       Term cvc5BoundVariables = lambdaTerm.getChild(0);
       Term cvc5Body = lambdaTerm.getChild(1);
-      LiaStar body = translateTerm(cvc5Body);
       List<String> outerVector = new ArrayList();
       LiaStar formula = null;
       for (int i = 1; i < t.getNumChildren(); i++)
@@ -93,6 +93,7 @@ public class SmtToSqlSolver
         if (child.isIntegerValue())
         {
           String varName = "const_" + index;
+          index++;
           LiaStar newVar = LiaStar.mkVar(false, varName);
           BigInteger value = child.getIntegerValue();
           LiaStar liaStarConst = LiaStar.mkConst(false, value.longValue());
@@ -118,10 +119,17 @@ public class SmtToSqlSolver
         }
       }
       List<String> innerVector = new ArrayList();
+      Map<String, LiaStar> symbols = new HashMap<>();
       for (int i = 0; i < cvc5BoundVariables.getNumChildren(); i++)
       {
-        innerVector.add(cvc5BoundVariables.getChild(i).toString());
+        String varName = cvc5BoundVariables.getChild(i).toString();
+        innerVector.add(varName);
+        symbols.put(varName, LiaStar.mkVar(false, varName));
       }
+      symbolTable.push(symbols);
+      LiaStar body = translateTerm(cvc5Body);
+      symbolTable.pop();
+
       LiaStar star = LiaStar.mkSum(false, outerVector, innerVector, body);
       if (formula == null)
       {
@@ -140,70 +148,73 @@ public class SmtToSqlSolver
     }
     switch (k)
     {
-      case EQUAL:
+      case EQUAL ->
       {
         return LiaStar.mkEq(false, children.get(0), children.get(1));
       }
-      case NOT:
+      case NOT ->
       {
         return LiaStar.mkNot(false, children.get(0));
       }
-      case AND:
+      case AND ->
       {
         return LiaStar.mkConjunction(false, children);
       }
-      case OR:
+      case OR ->
       {
         return LiaStar.mkDisjunction(false, children);
       }
-      case IMPLIES:
+      case IMPLIES ->
       {
         assert (children.size() == 2);
         return LiaStar.mkImplies(false, children.get(0), children.get(1));
       }
-      case ITE:
+      case ITE ->
       {
         assert (children.size() == 3);
         return LiaStar.mkIte(false, children.get(0), children.get(1), children.get(2));
       }
-      case ADD:
+      case ADD ->
       {
         assert (children.size() == 2);
         return LiaStar.mkPlus(false, children.get(0), children.get(1));
       }
-      case SUB:
+      case SUB ->
       {
         assert (children.size() == 2);
         LiaStar a = children.get(0);
         LiaStar b = LiaStar.mkMul(false, minusOne, children.get(1));
         return LiaStar.mkPlus(false, a, b);
       }
-      case MULT:
+      case MULT ->
       {
         assert (children.size() == 2);
         return LiaStar.mkMul(false, children.get(0), children.get(1));
       }
-      case LT:
+      case LT ->
       {
         assert (children.size() == 2);
         return LiaStar.mkLt(false, children.get(0), children.get(1));
       }
-      case LEQ:
+      case LEQ ->
       {
         assert (children.size() == 2);
         return LiaStar.mkLe(false, children.get(0), children.get(1));
       }
-      case GT:
+      case GT ->
       {
         assert (children.size() == 2);
         return LiaStar.mkLe(false, children.get(1), children.get(0));
       }
-      case GEQ:
+      case GEQ ->
       {
         assert (children.size() == 2);
         return LiaStar.mkLt(false, children.get(1), children.get(0));
       }
-      default: break;
+      default ->
+      {
+        break;
+      }
     }
     String message = "Unsupported Kind: " + k + " in term: " + t;
     throw new UnsupportedOperationException(message);
