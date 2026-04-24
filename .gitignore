@@ -30,3 +30,4 @@ target/
 *.lua
 *.properties
 *.tokens
+output.txt
