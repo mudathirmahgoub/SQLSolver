@@ -117,10 +117,24 @@ public class SmtBenchmarks
   }
 
   @Test
-  public void runBenchmarkFol0000110()
+  public void runBenchmarkMapaFol0000110()
   {
     String filename =
         "/home/mudathir/all/sls-reachability/benchmarks/bapa/arith/cvc5_mapa/fol_0000110.smt2";
+    SmtToSqlSolver smtToSqlSolver = new SmtToSqlSolver();
+    LiaStar formula = smtToSqlSolver.translateFile(filename);
+    System.out.println("formula:\n" + formula);
+
+    var result = LiaSolver.solveWithConfig(formula, LIA_SOLVER_CONFIGS[1]);
+    System.out.println("result: " + result);
+    assertEquals(LiaSolverStatus.UNSAT, result);
+  }
+
+  @Test
+  public void runBenchmarkBapaFol0000120()
+  {
+    String filename =
+        "/home/mudathir/all/sls-reachability/benchmarks/bapa/card/cvc5_bapa/fol_0000120.smt2";
     SmtToSqlSolver smtToSqlSolver = new SmtToSqlSolver();
     LiaStar formula = smtToSqlSolver.translateFile(filename);
     System.out.println("formula:\n" + formula);
