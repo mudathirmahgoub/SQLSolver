@@ -26,10 +26,10 @@ subprojects {
 
     tasks.withType(JavaCompile) {
         doFirst {
-            options.compilerArgs += [
-                    '--module-path', classpath.asPath,
-                    '-encoding', 'UTF-8'
-            ]
+            options.compilerArgs += ['-encoding', 'UTF-8']
+            if (!name.startsWith('compileTest')) {
+                options.compilerArgs += ['--module-path', classpath.asPath]
+            }
         }
     }
 

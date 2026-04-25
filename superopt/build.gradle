@@ -7,14 +7,25 @@ dependencies {
     implementation('com.google.guava:guava:31.0.1-jre')
     implementation('org.apache.commons:commons-lang3:3.12.0')
     implementation('net.sf.trove4j:trove4j:3.0.3')
-    implementation(name: 'cvc5-1.3.4')    
-    implementation(name: 'z3-4.13.0')    
+    implementation(name: 'cvc5-1.3.4')
+    implementation(name: 'z3-4.13.0')
     implementation('com.zaxxer:HikariCP:5.0.0')
     implementation('mysql:mysql-connector-java:8.0.25')
     implementation('org.postgresql:postgresql:42.3.1')
     implementation('com.microsoft.sqlserver:mssql-jdbc:9.4.0.jre16')
     implementation('org.apache.calcite:calcite-core:1.36.0')
     testImplementation('org.junit.jupiter:junit-jupiter-api:5.6.2')
+    testImplementation(name: 'cvc5-1.3.4')
+}
+
+compileTestJava {
+    modularity.inferModulePath = false
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+test {
+    modularity.inferModulePath = false
 }
 
 task run(type: JavaExec) {

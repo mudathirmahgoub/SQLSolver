@@ -123,8 +123,10 @@ public class SmtToSqlSolver
       for (int i = 0; i < cvc5BoundVariables.getNumChildren(); i++)
       {
         String varName = cvc5BoundVariables.getChild(i).toString();
-        innerVector.add(varName);
-        symbols.put(varName, LiaStar.mkVar(false, varName));
+        String freshName = "inner_" + index + "_" + varName;
+        index++;
+        innerVector.add(freshName);
+        symbols.put(varName, LiaStar.mkVar(false, freshName));
       }
       symbolTable.push(symbols);
       LiaStar body = translateTerm(cvc5Body);
@@ -208,12 +210,12 @@ public class SmtToSqlSolver
       case GT ->
       {
         assert (children.size() == 2);
-        return LiaStar.mkLe(false, children.get(1), children.get(0));
+        return LiaStar.mkLt(false, children.get(1), children.get(0));
       }
       case GEQ ->
       {
         assert (children.size() == 2);
-        return LiaStar.mkLt(false, children.get(1), children.get(0));
+        return LiaStar.mkLe(false, children.get(1), children.get(0));
       }
       default ->
       {
