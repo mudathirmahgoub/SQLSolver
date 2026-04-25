@@ -203,4 +203,78 @@ public class SmtBenchmarks
       executor.shutdownNow();
     }
   }
+
+  @Test
+  public void runAllBapaBenchmarks()
+  {
+    String[] directories = {"/home/mudathir/all/sls-reachability/benchmarks/bapa/arith/cvc5_bapa",
+        "/home/mudathir/all/sls-reachability/benchmarks/bapa/card/cvc5_bapa"};
+    long timeoutSeconds = 100;
+    String outputCsv = "sql_bapa.csv";
+
+    List<Path> files = new ArrayList<>();
+    for (String dir : directories)
+    {
+      try (Stream<Path> stream = Files.list(Paths.get(dir)))
+      {
+        stream.filter(p -> p.toString().endsWith(".smt2"))
+            .sorted(Comparator.naturalOrder())
+            .forEach(files::add);
+      }
+      catch (IOException e)
+      {
+        throw new RuntimeException("Failed to list directory: " + dir, e);
+      }
+    }
+
+    ExecutorService executor = Executors.newSingleThreadExecutor();
+    try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(Paths.get(outputCsv))))
+    {
+      writer.println("filename,result,duration");
+      writer.flush();
+
+      for (Path file : files)
+      {
+        String filename = file.getFileName().toString();
+        String result;
+        double duration;
+        long startNs = System.nanoTime();
+        Future<LiaSolverStatus> future = executor.submit(() -> {
+          SmtToSqlSolver smtToSqlSolver = new SmtToSqlSolver();
+          LiaStar formula = smtToSqlSolver.translateFile(file.toString());
+          return LiaSolver.solveWithConfig(formula, LIA_SOLVER_CONFIGS[1]);
+        });
+        try
+        {
+          LiaSolverStatus status = future.get(timeoutSeconds, TimeUnit.SECONDS);
+          result = status.toString();
+          duration = (System.nanoTime() - startNs) / 1e9;
+        }
+        catch (TimeoutException e)
+        {
+          future.cancel(true);
+          result = "timeout";
+          duration = timeoutSeconds;
+        }
+        catch (Exception e)
+        {
+          System.out.println(e);
+          result = "error";
+          duration = (System.nanoTime() - startNs) / 1e9;
+        }
+
+        System.out.printf("%s,%s,%.3f%n", file, result, duration);
+        writer.printf("%s,%s,%.3f%n", file, result, duration);
+        writer.flush();
+      }
+    }
+    catch (IOException e)
+    {
+      throw new RuntimeException("Failed to write CSV: " + outputCsv, e);
+    }
+    finally
+    {
+      executor.shutdownNow();
+    }
+  }
 }
