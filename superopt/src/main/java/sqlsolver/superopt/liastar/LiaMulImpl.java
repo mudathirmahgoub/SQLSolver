@@ -1,5 +1,10 @@
 package sqlsolver.superopt.liastar;
 
+import com.microsoft.z3.ArithExpr;
+import com.microsoft.z3.Context;
+import com.microsoft.z3.Expr;
+import com.microsoft.z3.FuncDecl;
+import com.microsoft.z3.Solver;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -7,13 +12,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Function;
-
-import com.microsoft.z3.ArithExpr;
-import com.microsoft.z3.Context;
-import com.microsoft.z3.Expr;
-import com.microsoft.z3.FuncDecl;
-import com.microsoft.z3.Solver;
-
 import sqlsolver.common.utils.IterableSupport;
 import sqlsolver.sql.plan.Value;
 import sqlsolver.superopt.util.Bag;
@@ -110,6 +108,12 @@ public class LiaMulImpl extends LiaStar
   {
     if (!innerStar)
       return this;
+    // if one operand is a constant, leave it in LIA
+    // Multiplication by constant is linear; Z3 handles it fine
+    if (operand1 instanceof LiaConstImpl || operand2 instanceof LiaConstImpl)
+    {
+      return this; // Don't abstract; let Z3 handle the multiplication
+    }
     final LiaVarImpl var = multToVar.get(this);
     if (var != null)
     {
@@ -253,7 +257,7 @@ public class LiaMulImpl extends LiaStar
   public EstimateResult estimate()
   {
     throw new RuntimeException("Can not estimate for multiplication. Please expand all the "
-                               + "multiplication inside stars before calling `expandStarWithK`");
+        + "multiplication inside stars before calling `expandStarWithK`");
   }
 
   @Override
