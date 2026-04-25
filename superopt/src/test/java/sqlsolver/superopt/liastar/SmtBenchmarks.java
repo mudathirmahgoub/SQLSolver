@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Stream;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 import io.github.cvc5.Context;
@@ -116,12 +117,24 @@ public class SmtBenchmarks
   }
 
   @Test
+  public void runBenchmarkFol0000110()
+  {
+    String filename =
+        "/home/mudathir/all/sls-reachability/benchmarks/bapa/arith/cvc5_mapa/fol_0000110.smt2";
+    SmtToSqlSolver smtToSqlSolver = new SmtToSqlSolver();
+    LiaStar formula = smtToSqlSolver.translateFile(filename);
+    System.out.println("formula:\n" + formula);
+
+    var result = LiaSolver.solveWithConfig(formula, LIA_SOLVER_CONFIGS[1]);
+    System.out.println("result: " + result);
+    assertEquals(LiaSolverStatus.UNSAT, result);
+  }
+
+  @Test
   public void runAllMapaBenchmarks()
   {
-    String[] directories = {
-        "/home/mudathir/all/sls-reachability/benchmarks/bapa/arith/cvc5_mapa",
-        "/home/mudathir/all/sls-reachability/benchmarks/bapa/card/cvc5_mapa"
-    };
+    String[] directories = {"/home/mudathir/all/sls-reachability/benchmarks/bapa/arith/cvc5_mapa",
+        "/home/mudathir/all/sls-reachability/benchmarks/bapa/card/cvc5_mapa"};
     long timeoutSeconds = 100;
     String outputCsv = "sql_mapa.csv";
 
