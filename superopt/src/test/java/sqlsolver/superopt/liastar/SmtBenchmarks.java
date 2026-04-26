@@ -103,16 +103,29 @@ public class SmtBenchmarks
     Context.deletePointers();
   }
 
-  @Test
-  public void runSingleBenchmark()
+  private LiaSolverStatus runSingleBenchmark(String filename)
   {
-    String filename =
-        "/home/mudathir/all/sls-reachability/benchmarks/bapa/arith/cvc5_mapa/fol_0000001.smt2";
     SmtToSqlSolver smtToSqlSolver = new SmtToSqlSolver();
     LiaStar formula = smtToSqlSolver.translateFile(filename);
     System.out.println("formula:\n" + formula);
-
     var result = LiaSolver.solveWithConfig(formula, LIA_SOLVER_CONFIGS[1]);
+    return result;
+  }
+
+  @Test
+  public void runSingleBenchmarkQuery151Call0()
+  {
+    String filename = "cvc5/calcite/query151-call-0.smt2";
+    LiaSolverStatus result = runSingleBenchmark(filename);
+    System.out.println("result: " + result);
+  }
+
+  @Test
+  public void runSingleBenchmarkMapaFol0000001()
+  {
+    String filename =
+        "/home/mudathir/all/sls-reachability/benchmarks/bapa/arith/cvc5_mapa/fol_0000001.smt2";
+    LiaSolverStatus result = runSingleBenchmark(filename);
     System.out.println("result: " + result);
   }
 
@@ -121,11 +134,7 @@ public class SmtBenchmarks
   {
     String filename =
         "/home/mudathir/all/sls-reachability/benchmarks/bapa/arith/cvc5_mapa/fol_0000110.smt2";
-    SmtToSqlSolver smtToSqlSolver = new SmtToSqlSolver();
-    LiaStar formula = smtToSqlSolver.translateFile(filename);
-    System.out.println("formula:\n" + formula);
-
-    var result = LiaSolver.solveWithConfig(formula, LIA_SOLVER_CONFIGS[1]);
+    LiaSolverStatus result = runSingleBenchmark(filename);
     System.out.println("result: " + result);
     assertEquals(LiaSolverStatus.UNSAT, result);
   }
@@ -135,11 +144,7 @@ public class SmtBenchmarks
   {
     String filename =
         "/home/mudathir/all/sls-reachability/benchmarks/bapa/card/cvc5_bapa/fol_0000120.smt2";
-    SmtToSqlSolver smtToSqlSolver = new SmtToSqlSolver();
-    LiaStar formula = smtToSqlSolver.translateFile(filename);
-    System.out.println("formula:\n" + formula);
-
-    var result = LiaSolver.solveWithConfig(formula, LIA_SOLVER_CONFIGS[1]);
+    LiaSolverStatus result = runSingleBenchmark(filename);
     System.out.println("result: " + result);
     assertEquals(LiaSolverStatus.UNSAT, result);
   }
@@ -152,6 +157,12 @@ public class SmtBenchmarks
     long timeoutSeconds = 100;
     String outputCsv = "sql_mapa.csv";
 
+    runMultipleBenchmarks(directories, outputCsv, timeoutSeconds);
+  }
+
+  private void runMultipleBenchmarks(String[] directories, String outputCsv, long timeoutSeconds)
+      throws RuntimeException
+  {
     List<Path> files = new ArrayList<>();
     for (String dir : directories)
     {
@@ -226,69 +237,16 @@ public class SmtBenchmarks
     long timeoutSeconds = 100;
     String outputCsv = "sql_bapa.csv";
 
-    List<Path> files = new ArrayList<>();
-    for (String dir : directories)
-    {
-      try (Stream<Path> stream = Files.list(Paths.get(dir)))
-      {
-        stream.filter(p -> p.toString().endsWith(".smt2"))
-            .sorted(Comparator.naturalOrder())
-            .forEach(files::add);
-      }
-      catch (IOException e)
-      {
-        throw new RuntimeException("Failed to list directory: " + dir, e);
-      }
-    }
+    runMultipleBenchmarks(directories, outputCsv, timeoutSeconds);
+  }
 
-    ExecutorService executor = Executors.newSingleThreadExecutor();
-    try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(Paths.get(outputCsv))))
-    {
-      writer.println("filename,result,duration");
-      writer.flush();
+  @Test
+  public void runSqlBenchmarks()
+  {
+    String[] directories = {""};
+    long timeoutSeconds = 100;
+    String outputCsv = "sql.csv";
 
-      for (Path file : files)
-      {
-        String filename = file.getFileName().toString();
-        String result;
-        double duration;
-        long startNs = System.nanoTime();
-        Future<LiaSolverStatus> future = executor.submit(() -> {
-          SmtToSqlSolver smtToSqlSolver = new SmtToSqlSolver();
-          LiaStar formula = smtToSqlSolver.translateFile(file.toString());
-          return LiaSolver.solveWithConfig(formula, LIA_SOLVER_CONFIGS[1]);
-        });
-        try
-        {
-          LiaSolverStatus status = future.get(timeoutSeconds, TimeUnit.SECONDS);
-          result = status.toString();
-          duration = (System.nanoTime() - startNs) / 1e9;
-        }
-        catch (TimeoutException e)
-        {
-          future.cancel(true);
-          result = "timeout";
-          duration = timeoutSeconds;
-        }
-        catch (Exception e)
-        {
-          System.out.println(e);
-          result = "error";
-          duration = (System.nanoTime() - startNs) / 1e9;
-        }
-
-        System.out.printf("%s,%s,%.3f%n", file, result, duration);
-        writer.printf("%s,%s,%.3f%n", file, result, duration);
-        writer.flush();
-      }
-    }
-    catch (IOException e)
-    {
-      throw new RuntimeException("Failed to write CSV: " + outputCsv, e);
-    }
-    finally
-    {
-      executor.shutdownNow();
-    }
+    runMultipleBenchmarks(directories, outputCsv, timeoutSeconds);
   }
 }
