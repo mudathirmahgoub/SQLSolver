@@ -68,8 +68,8 @@ public class LiaSolver
       String result = checkOverapp();
       if (result.equals("UNSAT"))
         return LiaSolverStatus.UNSAT;
-      if (result.equals("SAT"))
-        return LiaSolverStatus.SAT;
+      // if (result.equals("SAT"))
+      //   return LiaSolverStatus.SAT;
       return LiaSolverStatus.UNKNOWN;
     }
     catch (Exception e)
@@ -234,11 +234,14 @@ public class LiaSolver
     }
   }
 
-  String solveNestedLiastar(LiaStar f) throws Exception {
-    if (LogicSupport.dumpLiaFormulas) Printer.output.println("liastar: " + f.toString());
+  String solveNestedLiastar(LiaStar f) throws Exception
+  {
+    if (LogicSupport.dumpLiaFormulas)
+      Printer.output.println("liastar: " + f.toString());
     f = f.expandStar();
 
-    if (LogicSupport.dumpLiaFormulas) {
+    if (LogicSupport.dumpLiaFormulas)
+    {
       Printer.output.println("lia: " + f.toString());
       Printer.output.println("#variables in LIA without *: " + f.getVars().size());
     }
