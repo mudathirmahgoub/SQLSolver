@@ -123,8 +123,7 @@ public class SmtBenchmarks
   @Test
   public void runSingleBenchmarkMapaFol0000001()
   {
-    String filename =
-        "/home/mudathir/all/sls-reachability/benchmarks/bapa/arith/cvc5_mapa/fol_0000001.smt2";
+    String filename = "cvc5/sls-reachability/arith/cvc5_mapa/fol_0000001.smt2";
     LiaSolverStatus result = runSingleBenchmark(filename);
     System.out.println("result: " + result);
   }
@@ -132,8 +131,61 @@ public class SmtBenchmarks
   @Test
   public void runBenchmarkMapaFol0000110()
   {
-    String filename =
-        "/home/mudathir/all/sls-reachability/benchmarks/bapa/arith/cvc5_mapa/fol_0000110.smt2";
+    String filename = "cvc5/sls-reachability/arith/cvc5_mapa/fol_0000110.smt2";
+    LiaSolverStatus result = runSingleBenchmark(filename);
+    System.out.println("result: " + result);
+    assertEquals(LiaSolverStatus.UNSAT, result);
+  }
+
+  @Test
+  public void runBenchmarkBapaFol0000055()
+  {
+    String filename = "cvc5/sls-reachability/card/cvc5_bapa/fol_0000055.smt2";
+    LiaSolverStatus result = runSingleBenchmark(filename);
+    System.out.println("result: " + result);
+    assertEquals(LiaSolverStatus.UNSAT, result);
+  }
+
+  @Test
+  public void runBenchmarkBapaFol0000055WithModel()
+  {
+    String filename = "cvc5/sls-reachability/soundness/fol_0000055.smt2";
+    LiaSolverStatus result = runSingleBenchmark(filename);
+    System.out.println("result: " + result);
+    assertEquals(LiaSolverStatus.UNSAT, result);
+  }
+
+  @Test
+  public void runBenchmarkBapaFol0000078()
+  {
+    String filename = "cvc5/sls-reachability/card/cvc5_bapa/fol_0000078.smt2";
+    LiaSolverStatus result = runSingleBenchmark(filename);
+    System.out.println("result: " + result);
+    assertEquals(LiaSolverStatus.UNSAT, result);
+  }
+
+  @Test
+  public void runBenchmarkBapaFol0000078WithModel()
+  {
+    String filename = "cvc5/sls-reachability/soundness/fol_0000078.smt2";
+    LiaSolverStatus result = runSingleBenchmark(filename);
+    System.out.println("result: " + result);
+    assertEquals(LiaSolverStatus.UNSAT, result);
+  }
+
+  @Test
+  public void runBenchmarkBapaFol0000116()
+  {
+    String filename = "cvc5/sls-reachability/card/cvc5_bapa/fol_0000116.smt2";
+    LiaSolverStatus result = runSingleBenchmark(filename);
+    System.out.println("result: " + result);
+    assertEquals(LiaSolverStatus.UNSAT, result);
+  }
+
+  @Test
+  public void runBenchmarkBapaFol0000116WithModel()
+  {
+    String filename = "cvc5/sls-reachability/soundness/fol_0000116.smt2";
     LiaSolverStatus result = runSingleBenchmark(filename);
     System.out.println("result: " + result);
     assertEquals(LiaSolverStatus.UNSAT, result);
@@ -142,8 +194,16 @@ public class SmtBenchmarks
   @Test
   public void runBenchmarkBapaFol0000120()
   {
-    String filename =
-        "/home/mudathir/all/sls-reachability/benchmarks/bapa/card/cvc5_bapa/fol_0000120.smt2";
+    String filename = "cvc5/sls-reachability/card/cvc5_bapa/fol_0000120.smt2";
+    LiaSolverStatus result = runSingleBenchmark(filename);
+    System.out.println("result: " + result);
+    assertEquals(LiaSolverStatus.UNSAT, result);
+  }
+
+  @Test
+  public void runBenchmarkBapaFol0000120WithModel()
+  {
+    String filename = "/home/mudathir/all/SQLSolver/cvc5/sls-reachability/fol_0000120.smt2";
     LiaSolverStatus result = runSingleBenchmark(filename);
     System.out.println("result: " + result);
     assertEquals(LiaSolverStatus.UNSAT, result);
@@ -152,8 +212,8 @@ public class SmtBenchmarks
   @Test
   public void runAllMapaBenchmarks()
   {
-    String[] directories = {"/home/mudathir/all/sls-reachability/benchmarks/bapa/arith/cvc5_mapa",
-        "/home/mudathir/all/sls-reachability/benchmarks/bapa/card/cvc5_mapa"};
+    String[] directories = {
+        "cvc5/sls-reachability/arith/cvc5_mapa", "cvc5/sls-reachability/card/cvc5_mapa"};
     long timeoutSeconds = 100;
     String outputCsv = "sql_mapa.csv";
 
@@ -232,8 +292,8 @@ public class SmtBenchmarks
   @Test
   public void runAllBapaBenchmarks()
   {
-    String[] directories = {"/home/mudathir/all/sls-reachability/benchmarks/bapa/arith/cvc5_bapa",
-        "/home/mudathir/all/sls-reachability/benchmarks/bapa/card/cvc5_bapa"};
+    String[] directories = {
+        "cvc5/sls-reachability/arith/cvc5_bapa", "cvc5/sls-reachability/card/cvc5_bapa"};
     long timeoutSeconds = 100;
     String outputCsv = "sql_bapa.csv";
 
