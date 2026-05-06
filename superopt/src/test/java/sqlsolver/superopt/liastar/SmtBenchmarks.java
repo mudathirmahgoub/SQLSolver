@@ -210,6 +210,15 @@ public class SmtBenchmarks
   }
 
   @Test
+  public void runBenchmarkBapaFol0000113WithModel()
+  {
+    String filename = "cvc5/sls-reachability/card/cvc5_bapa/fol_0000113.smt2";
+    LiaSolverStatus result = runSingleBenchmark(filename);
+    System.out.println("result: " + result);
+    assertEquals(LiaSolverStatus.UNSAT, result);
+  }
+
+  @Test
   public void runAllMapaBenchmarks()
   {
     String[] directories = {
