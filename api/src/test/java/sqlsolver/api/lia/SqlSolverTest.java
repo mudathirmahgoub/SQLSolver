@@ -46,6 +46,7 @@ public class SqlSolverTest
   private final LiaStar c47 = LiaStar.mkConst(false, 47);
   private final LiaStar cMinus1 = LiaStar.mkConst(false, -1);
   private final LiaStar cMinus3 = LiaStar.mkConst(false, -3);
+  private final LiaStar cMinus4 = LiaStar.mkConst(false, -4);
   private final LiaStar cMinus5 = LiaStar.mkConst(false, -5);
 
   @Test
@@ -57,33 +58,33 @@ public class SqlSolverTest
     var ineq2 = LiaStar.mkLe(false, LiaStar.mkPlus(false, c3, minusX), y);
     var body = LiaStar.mkConjunction(false, Arrays.asList(new LiaStar[] {ineq1, ineq2}));
 
-    // (a,b) = (4,1)
-    var aEquals = LiaStar.mkEq(false, a, c2);
-    var bEquals = LiaStar.mkEq(false, b, c0);
+    // (a,b) = (1,1)
+    var aEquals = LiaStar.mkEq(false, a, c1);
+    var bEquals = LiaStar.mkEq(false, b, c1);
 
     var sum = LiaStar.mkSum(
         false, Arrays.asList(new String[] {"a","b"}), Arrays.asList(new String[] {"x", "y"}), body);
     var f = LiaStar.mkConjunction(false, Arrays.asList(new LiaStar[] {aEquals, bEquals, sum}));
     var result = LiaSolver.solveWithConfig(f, LIA_SOLVER_CONFIGS[1]);
     System.out.print(result);
-    assertEquals(LiaSolverStatus.SAT, result);
+    assertEquals(LiaSolverStatus.UNSAT, result);
   }
 
    @Test
-  public void example1With5()
+  public void example1With4()
   {
-    // y >= x - 5 and y >= 5 - x    
-    var ineq1 = LiaStar.mkLe(false, LiaStar.mkPlus(false, x, cMinus5), y);
+    // y >= x - 4 and y >= 4 - x    
+    var ineq1 = LiaStar.mkLe(false, LiaStar.mkPlus(false, x, cMinus4), y);
     var minusX = LiaStar.mkMul(false, cMinus1, x);
-    var ineq2 = LiaStar.mkLe(false, LiaStar.mkPlus(false, c5, minusX), y);
+    var ineq2 = LiaStar.mkLe(false, LiaStar.mkPlus(false, c4, minusX), y);
     var body = LiaStar.mkConjunction(false, Arrays.asList(new LiaStar[] {ineq1, ineq2}));
 
-    // z = 1
-    var zEquals = LiaStar.mkEq(false, a, c1);
+    // a = 1
+    var aEquals = LiaStar.mkEq(false, a, c1);
 
     var sum = LiaStar.mkSum(
         false, Arrays.asList(new String[] {"a","a"}), Arrays.asList(new String[] {"x", "y"}), body);
-    var f = LiaStar.mkConjunction(false, Arrays.asList(new LiaStar[] {zEquals, sum}));
+    var f = LiaStar.mkConjunction(false, Arrays.asList(new LiaStar[] {aEquals, sum}));
     var result = LiaSolver.solveWithConfig(f, LIA_SOLVER_CONFIGS[1]);
     System.out.print(result);
     assertEquals(LiaSolverStatus.UNSAT, result);
