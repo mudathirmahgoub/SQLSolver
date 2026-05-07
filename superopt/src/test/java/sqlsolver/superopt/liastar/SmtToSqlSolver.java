@@ -154,6 +154,11 @@ public class SmtToSqlSolver
       {
         return LiaStar.mkEq(false, children.get(0), children.get(1));
       }
+      case DISTINCT ->
+      {
+        var equal = LiaStar.mkEq(false, children.get(0), children.get(1));
+        return LiaStar.mkNot(false, equal);
+      }
       case NOT ->
       {
         return LiaStar.mkNot(false, children.get(0));

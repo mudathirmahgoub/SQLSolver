@@ -318,4 +318,13 @@ public class SmtBenchmarks
 
     runMultipleBenchmarks(directories, outputCsv, timeoutSeconds);
   }
+
+  @Test
+  public void runBenchmarPaper2008()
+  {
+    String filename = "cvc5/paper2008.smt2";
+    LiaSolverStatus result = runSingleBenchmark(filename);
+    System.out.println("result: " + result);
+    assertEquals(LiaSolverStatus.UNSAT, result);
+  }
 }
