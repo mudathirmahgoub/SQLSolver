@@ -71,7 +71,7 @@ public class LiaSolver
         return LiaSolverStatus.UNSAT;
       if (result.equals("SAT"))
       {
-        return LiaSolverStatus.UNKNOWN;
+        return LiaSolverStatus.SAT;
       }
       return LiaSolverStatus.UNKNOWN;
     }
