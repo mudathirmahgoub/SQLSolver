@@ -73,10 +73,10 @@ public class SqlSolverTest
    @Test
   public void example1With4()
   {
-    // y >= x - 4 and y >= 4 - x    
-    var ineq1 = LiaStar.mkLe(false, LiaStar.mkPlus(false, x, cMinus4), y);
-    var minusX = LiaStar.mkMul(false, cMinus1, x);
-    var ineq2 = LiaStar.mkLe(false, LiaStar.mkPlus(false, c4, minusX), y);
+    // y >= x - 4 and y >= 4 - x
+    // y + 4 >= x and y + x >= 4
+    var ineq1 = LiaStar.mkLe(false, x, LiaStar.mkPlus(false, y, c4));    
+    var ineq2 = LiaStar.mkLe(false, c4, LiaStar.mkPlus(false, x, y));
     var body = LiaStar.mkConjunction(false, Arrays.asList(new LiaStar[] {ineq1, ineq2}));
 
     // a = 1
@@ -86,6 +86,7 @@ public class SqlSolverTest
         false, Arrays.asList(new String[] {"a","a"}), Arrays.asList(new String[] {"x", "y"}), body);
     var f = LiaStar.mkConjunction(false, Arrays.asList(new LiaStar[] {aEquals, sum}));
     var result = LiaSolver.solveWithConfig(f, LIA_SOLVER_CONFIGS[1]);
+    System.out.print(f);
     System.out.print(result);
     assertEquals(LiaSolverStatus.UNSAT, result);
   }
