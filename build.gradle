@@ -1,10 +1,17 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.gradle.process.ExecOperations
+import javax.inject.Inject
+
+// Gradle 9 removed Project.exec(); inject ExecOperations instead.
+interface InjectedExecOps {
+    @Inject
+    ExecOperations getExecOps()
+}
 
 plugins {
-    id 'org.javamodularity.moduleplugin' version '1.7.0' apply false
     id 'java-library'
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'com.gradleup.shadow' version '9.4.2'
 }
 
 allprojects {
@@ -14,10 +21,12 @@ allprojects {
 
 subprojects {
     apply plugin: 'java'
-    apply plugin: 'com.github.johnrengelman.shadow'
+    apply plugin: 'com.gradleup.shadow'
 
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    java {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
 
     repositories {
         flatDir { dirs("$rootDir/lib") }
@@ -66,6 +75,7 @@ subprojects {
         testRuntimeOnly('org.junit.vintage:junit-vintage-engine:5.6.2')
     }
 
+    def execOps = project.objects.newInstance(InjectedExecOps).execOps
     ext.download = { String url, java.nio.file.Path path, String mod = null ->
         def wd = path.getParent().toAbsolutePath().toString()
         def fileName = path.getFileName().toString()
@@ -74,14 +84,14 @@ subprojects {
 
             println("downloading $fileName to $wd")
             if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-                exec {
+                execOps.exec {
                     workingDir(wd)
                     commandLine 'powershell', 'Invoke-WebRequest', "'$url'",
                             '-OutFile', "$fileName"
                 }
 
             } else {
-                exec {
+                execOps.exec {
                     workingDir(wd)
                     commandLine 'wget', '-e', 'use_proxy=yes',
                             '--no-check-certificate',
@@ -90,7 +100,7 @@ subprojects {
                 }
 
                 if (mod != null)
-                    exec {
+                    execOps.exec {
                         workingDir(wd)
                         commandLine 'chmod', "$mod", "$fileName"
                     }
@@ -125,7 +135,7 @@ jar {
 task fatJar(type: ShadowJar) {
     manifest.from jar.manifest
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    archivesBaseName = rootProject.name
+    archiveBaseName = rootProject.name
 
     from subprojects.collect { it.sourceSets.main.output }
     from subprojects.collect { it.configurations.compileClasspath }

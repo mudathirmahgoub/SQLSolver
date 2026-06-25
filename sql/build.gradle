@@ -1,4 +1,14 @@
 import org.apache.tools.ant.taskdefs.condition.Os
+import org.gradle.process.ExecOperations
+import javax.inject.Inject
+
+// Gradle 9 removed Project.exec(); inject ExecOperations instead.
+interface InjectedExecOps {
+    @Inject
+    ExecOperations getExecOps()
+}
+
+def execOps = project.objects.newInstance(InjectedExecOps).execOps
 
 dependencies {
     implementation project(':common')
@@ -9,8 +19,8 @@ dependencies {
     implementation('org.apache.calcite:calcite-core:1.36.0')
     implementation('org.apache.calcite.avatica:avatica-core:1.23.0')
     implementation('org.apache.calcite:calcite-babel:1.34.0')
-    compileOnly('org.projectlombok:lombok:1.18.32')
-    annotationProcessor('org.projectlombok:lombok:1.18.32')
+    compileOnly('org.projectlombok:lombok:1.18.46')
+    annotationProcessor('org.projectlombok:lombok:1.18.46')
 }
 
 def mysqlDir = "src/main/java/sqlsolver/sql/mysql/internal"
@@ -23,14 +33,14 @@ task antlrMysql {
         if (!file("$mysqlDir/MySQLLexer.java").exists() || !file("$mysqlDir/MySQLParser.java").exists()) {
             println("generating mysql parser")
             if (Os.isFamily(Os.FAMILY_WINDOWS))
-                exec {
+                execOps.exec {
                     workingDir resourceDir
                     commandLine 'powershell', 'java', '-Xmx1024m', '-jar', "$rootDir\\lib\\antlr-4.8-complete.jar",
                             '-Dlanguage=Java', '-no-listener', '-visitor', '-o', "../../../$genDir",
                             '-package', 'sqlsolver.sql.mysql.internal', 'MySQLLexer.g4', 'MySQLParser.g4'
                 }
             else
-                exec {
+                execOps.exec {
                     workingDir resourceDir
                     commandLine 'java', '-Xmx1024m', '-jar', "$rootDir/lib/antlr-4.8-complete.jar",
                             '-Dlanguage=Java', '-no-listener', '-visitor', '-o', "../../../$genDir",
@@ -47,14 +57,14 @@ task antlrPg {
         if (!file("$pgDir/PGLexer.java").exists() || !file("$pgDir/PGParser.java").exists()) {
             println("generating pg parser")
             if (Os.isFamily(Os.FAMILY_WINDOWS))
-                exec {
+                execOps.exec {
                     workingDir resourceDir
                     commandLine 'powershell', 'java', '-Xmx1024m', '-jar', "$rootDir\\lib\\antlr-4.8-complete.jar",
                             '-Dlanguage=Java', '-no-listener', '-visitor', '-o', "../../../$genDir",
                             '-package', 'sqlsolver.sql.pg.internal', 'PGLexer.g4', 'PGParser.g4'
                 }
             else
-                exec {
+                execOps.exec {
                     workingDir resourceDir
                     commandLine 'java', '-Xmx1024m', '-jar', "$rootDir/lib/antlr-4.8-complete.jar",
                             '-Dlanguage=Java', '-no-listener', '-visitor', '-o', "../../../$genDir",
