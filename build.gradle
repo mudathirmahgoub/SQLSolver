@@ -46,6 +46,7 @@ subprojects {
         modularity.inferModulePath = false
         doFirst {
             environment 'LD_LIBRARY_PATH', "$rootDir/lib/"
+            environment 'DYLD_LIBRARY_PATH', "$rootDir/lib/"
             jvmArgs += ["-Djava.library.path=$rootDir/lib",
                         '--module-path', classpath.asPath,
                         '-Dfile.encoding=UTF-8'
@@ -57,6 +58,7 @@ subprojects {
     tasks.withType(Test) {
         systemProperty('java.library.path', "$rootDir/lib/")
         environment('LD_LIBRARY_PATH', "$rootDir/lib/")
+        environment('DYLD_LIBRARY_PATH', "$rootDir/lib/")
         useJUnitPlatform()
         jvmArgs += ['-Dfile.encoding=UTF-8']
         workingDir(rootDir)
