@@ -31,3 +31,5 @@ target/
 *.properties
 *.tokens
 output.txt
+.vscode/settings.json
+.DS_Store

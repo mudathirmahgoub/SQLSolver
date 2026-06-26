@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static sqlsolver.superopt.uexpr.PredefinedFunctions.MINUS;
+
 public class Cvc5LiaStarSolver
 {
   public static String fileName = "";
@@ -20,6 +22,10 @@ public class Cvc5LiaStarSolver
   public static Path path;
   static Set<String> smtConstants = new HashSet<>();
   static Map<String, LiaFuncImpl> smtFunctions = new HashMap<>();
+  // Fresh, otherwise-unconstrained Int consts introduced for the surplus
+  // (non-outer) point coordinates of int.star-contains; declared at the top.
+  static List<String> freshSumVars = new ArrayList<>();
+  static int freshIndex = 0;
   public static PrintWriter writer = null;
   public static String csvFile = "sqlsolver_results.csv";
   static
@@ -40,6 +46,8 @@ public class Cvc5LiaStarSolver
   {
     smtConstants = new HashSet<>();
     smtFunctions = new HashMap<>();
+    freshSumVars = new ArrayList<>();
+    freshIndex = 0;
     fstar.transformPostOrder(lia -> {
       if (lia instanceof LiaVarImpl var)
       {
@@ -47,10 +55,20 @@ public class Cvc5LiaStarSolver
       }
       if (lia instanceof LiaFuncImpl f)
       {
-        smtFunctions.put(f.funcName + f.vars.size(), f);
+        // MINUS is an interpreted operator (emitted as native subtraction),
+        // so it must not be declared as an uninterpreted function.
+        if (!MINUS.contains(f.funcName, f.vars.size()))
+        {
+          smtFunctions.put(f.funcName + f.vars.size(), f);
+        }
       }
       return lia;
     });
+
+    // Visit the formula first so that the fresh existential variables introduced
+    // by star (int.star-contains) translation are known before declarations.
+    StringBuilder body = new StringBuilder();
+    visit(fstar, body);
 
     StringBuilder builder = new StringBuilder();
     builder.append("(set-logic HO_ALL)\n");
@@ -58,6 +76,10 @@ public class Cvc5LiaStarSolver
     for (String smtConstant : smtConstants)
     {
       builder.append("(declare-const ").append(smtConstant).append(" Int)\n");
+    }
+    for (String freshVar : freshSumVars)
+    {
+      builder.append("(declare-const ").append(freshVar).append(" Int)\n");
     }
     for (Map.Entry<String, LiaFuncImpl> entry : smtFunctions.entrySet())
     {
@@ -69,9 +91,7 @@ public class Cvc5LiaStarSolver
       }
       builder.append(") Int)\n");
     }
-    builder.append("(assert ");
-    visit(fstar, builder);
-    builder.append(")\n");
+    builder.append("(assert ").append(body).append(")\n");
     builder.append("(check-sat)\n");
     if (lastFileName.equals(fileName))
     {
@@ -178,13 +198,26 @@ public class Cvc5LiaStarSolver
     }
     else if (lia instanceof LiaFuncImpl z)
     {
-      builder.append("(").append(z.funcName).append(" ");
-      for (LiaStar v : z.vars)
+      if (MINUS.contains(z.funcName, z.vars.size()))
       {
-        visit(v, builder);
+        // MINUS is interpreted: emit native subtraction, mirroring
+        // LiaFuncImpl.transToSMT (ctx.mkSub), not an uninterpreted function.
+        builder.append("(- ");
+        visit(z.vars.get(0), builder);
         builder.append(" ");
+        visit(z.vars.get(1), builder);
+        builder.append(")");
       }
-      builder.append(")");
+      else
+      {
+        builder.append("(").append(z.funcName).append(" ");
+        for (LiaStar v : z.vars)
+        {
+          visit(v, builder);
+          builder.append(" ");
+        }
+        builder.append(")");
+      }
     }
     else if (lia instanceof LiaSumImpl z)
     {
@@ -213,17 +246,24 @@ public class Cvc5LiaStarSolver
       builder.append(") ");
       visit(z.constraints, builder);
       builder.append(") ");
+      // Point coordinates of int.star-contains, one per lambda dimension.
+      // The first outerVector.size() dimensions are the summed dimensions:
+      // outer[i] = sum over summands of inner[i] (matching the canonical
+      // semantics in LiaSumImpl.expandStarWithK). Every remaining dimension
+      // (surplus inner vars and free constraint vars) is a per-summand
+      // existential that expandStarWithK does NOT tie to any outer value, so it
+      // must map to a FRESH, otherwise-unconstrained variable. Reusing the
+      // bound name (which also denotes a global declared const) would capture
+      // that global and impose a spurious global = sum-of-summands equation.
       for (String v : z.outerVector)
       {
         builder.append(v).append(" ");
       }
-      for (int i = z.outerVector.size(); i < z.innerVector.size(); i++)
+      for (int i = z.outerVector.size(); i < freeVariables.size(); i++)
       {
-        builder.append(z.innerVector.get(i)).append(" ");
-      }
-      for (int i = z.innerVector.size(); i < freeVariables.size(); i++)
-      {
-        builder.append(freeVariables.get(i)).append(" ");
+        final String fresh = "sumFresh" + (freshIndex++);
+        freshSumVars.add(fresh);
+        builder.append(fresh).append(" ");
       }
       builder.append(")");
     }
