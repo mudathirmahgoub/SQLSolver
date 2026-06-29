@@ -1,1 +1,2 @@
-java -jar build/libs/sqlsolver-v1.1.0.jar -sql1=./cvc5/calcite/q1.sql -sql2=./cvc5/calcite/q2.sql -schema=./sqlsolver_data/schemas/calcite_test.base.schema.sql -output=./cvc5/calcite/result.txt -print
+# java -jar build/libs/sqlsolver-v1.1.0.jar -sql1=./cvc5/calcite/q1.sql -sql2=./cvc5/calcite/q2.sql -schema=./sqlsolver_data/schemas/calcite_test.base.schema.sql -output=./cvc5/calcite/result.txt -print
+DYLD_LIBRARY_PATH="$PWD/lib" "$(/usr/libexec/java_home)/bin/java" -Djava.library.path="$PWD/lib" --enable-native-access=ALL-UNNAMED -jar build/libs/sqlsolver-v1.1.0-all.jar -sql1=./cvc5/calcite/q1.sql -sql2=./cvc5/calcite/q2.sql -schema=./sqlsolver_data/schemas/calcite_test.base.schema.sql -output=./cvc5/calcite/result.txt -print

@@ -135,12 +135,16 @@ jar {
 }
 
 task fatJar(type: ShadowJar) {
+    dependsOn subprojects.collect { "${it.name}:classes" }
     manifest.from jar.manifest
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     archiveBaseName = rootProject.name
+    archiveClassifier = 'all'
 
     from subprojects.collect { it.sourceSets.main.output }
-    from subprojects.collect { it.configurations.compileClasspath }
+    // Shadow needs the `configurations` property to actually merge dependency
+    // jar *contents*; a plain `from <configuration>` only copies the jar files.
+    configurations = subprojects.collect { it.configurations.runtimeClasspath }
     zip64 true
     exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
 }
