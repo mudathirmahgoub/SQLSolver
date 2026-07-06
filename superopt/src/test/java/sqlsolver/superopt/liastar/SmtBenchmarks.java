@@ -218,6 +218,30 @@ public class SmtBenchmarks
     assertEquals(LiaSolverStatus.UNSAT, result);
   }
 
+  /**
+   * spark pair #90 (left-join filter pushdown) is truly equivalent, so this counterexample
+   * formula is UNSAT. The dump is faithful only since Cvc5LiaStarSolver.translate started
+   * eliminating star parameters exactly before export; the earlier dump bound the shared
+   * parameters u21/u22 per-summand in the lambda, weakening the formula to SAT.
+   */
+  @Test
+  public void runBenchmarkBapaQuery090WithModel()
+  {
+    String filename = "cvc5/spark/query090-call-2.smt2";
+    LiaSolverStatus result = runSingleBenchmark(filename);
+    System.out.println("result: " + result);
+    assertEquals(LiaSolverStatus.UNSAT, result);
+  }
+
+  @Test
+  public void runBenchmarkQuery048call0()
+  {
+    String filename = "cvc5/spark/query048-call-0.smt2";
+    LiaSolverStatus result = runSingleBenchmark(filename);
+    System.out.println("result: " + result);
+    assertEquals(LiaSolverStatus.UNSAT, result);
+  }
+
   @Test
   public void runAllMapaBenchmarks()
   {
@@ -225,6 +249,16 @@ public class SmtBenchmarks
         "cvc5/sls-reachability/arith/cvc5_mapa", "cvc5/sls-reachability/card/cvc5_mapa"};
     long timeoutSeconds = 100;
     String outputCsv = "sql_mapa.csv";
+
+    runMultipleBenchmarks(directories, outputCsv, timeoutSeconds);
+  }
+
+  @Test
+  public void runAllSqlSolverBenchmarks()
+  {
+    String[] directories = {"cvc5/calcite", "cvc5/spark", "cvc5/tpc-c", "cvc5/tpc-h"};
+    long timeoutSeconds = 100;
+    String outputCsv = "sql_solver.csv";
 
     runMultipleBenchmarks(directories, outputCsv, timeoutSeconds);
   }
@@ -326,5 +360,119 @@ public class SmtBenchmarks
     LiaSolverStatus result = runSingleBenchmark(filename);
     System.out.println("result: " + result);
     assertEquals(LiaSolverStatus.UNSAT, result);
+  }
+
+  /**
+   * Diagnoses why each benchmark under the {@code unsupported/} directory fails in the
+   * SQLSolver pipeline. Records, per file, the phase that threw (translate vs. solve), the
+   * exception class, and — for {@code UnsupportedOperationException} — the offending cvc5 Kind.
+   * Output: unsupported_diagnosis.csv
+   */
+  @Test
+  public void diagnoseUnsupported() throws IOException
+  {
+    Path root = Paths.get("unsupported");
+    List<Path> files = new ArrayList<>();
+    try (Stream<Path> stream = Files.walk(root))
+    {
+      stream.filter(p -> p.toString().endsWith(".smt2"))
+          .sorted(Comparator.naturalOrder())
+          .forEach(files::add);
+    }
+
+    try (PrintWriter writer =
+             new PrintWriter(Files.newBufferedWriter(Paths.get("unsupported_diagnosis.csv"))))
+    {
+      writer.println("filename,phase,exception,kind,detail");
+      writer.flush();
+      for (Path file : files)
+      {
+        String phase = "translate";
+        String exception = "";
+        String kind = "";
+        String detail = "";
+        try
+        {
+          SmtToSqlSolver smtToSqlSolver = new SmtToSqlSolver();
+          LiaStar formula = smtToSqlSolver.translateFile(file.toString());
+          phase = "solve";
+          LiaSolver.solveWithConfig(formula, LIA_SOLVER_CONFIGS[1]);
+          phase = "ok";
+        }
+        catch (Throwable e)
+        {
+          exception = e.getClass().getName();
+          String msg = e.getMessage() == null ? "" : e.getMessage();
+          String marker = "Unsupported Kind: ";
+          if (msg.contains(marker))
+          {
+            String after = msg.substring(msg.indexOf(marker) + marker.length());
+            int idx = after.indexOf(" in term:");
+            kind = idx >= 0 ? after.substring(0, idx) : after;
+            detail = idx >= 0 ? after.substring(idx + " in term:".length()).trim() : "";
+          }
+          else
+          {
+            kind = msg;
+          }
+        }
+        kind = kind.replace(",", " ").replace("\n", " ").replace("\r", " ").trim();
+        detail = detail.replace(",", " ").replace("\n", " ").replace("\r", " ").trim();
+        if (detail.length() > 100)
+          detail = detail.substring(0, 100);
+        String line = String.format("%s,%s,%s,%s,%s", file, phase, exception, kind, detail);
+        System.out.println("DIAG " + line);
+        writer.println(line);
+        writer.flush();
+      }
+    }
+  }
+
+  /**
+   * Diagnoses a soundness discrepancy: files for which the original SQLSolver pipeline
+   * returns UNSAT while cvc5 (liastar) and sls-reachability independently return SAT.
+   * Runs the under- and over-approximation checks separately to localize the wrong UNSAT.
+   */
+  @Test
+  public void diagnoseDiscrepancy() throws Exception
+  {
+    String[] files = {
+        "cvc5/calcite/query026-call-4.smt2",
+    };
+    for (String filename : files)
+    {
+      System.out.println("\n################ DISCREPANCY: " + filename + " ################");
+      SmtToSqlSolver smtToSqlSolver = new SmtToSqlSolver();
+      LiaStar formula = smtToSqlSolver.translateFile(filename);
+      System.out.println(">>> LiaStar formula:\n" + formula);
+      System.out.println(">>> embeddingLayers = " + formula.embeddingLayers());
+
+      LiaSolver solver = new LiaSolver(LIA_SOLVER_CONFIGS[1], formula); // OUTWARD
+      String under;
+      try
+      {
+        under = solver.checkUnderapp();
+      }
+      catch (Throwable t)
+      {
+        under = "THREW: " + t;
+      }
+      System.out.println(">>> checkUnderapp() = " + under);
+
+      String over;
+      try
+      {
+        over = solver.checkOverapp();
+      }
+      catch (Throwable t)
+      {
+        over = "THREW: " + t;
+      }
+      System.out.println(">>> checkOverapp()  = " + over);
+
+      LiaSolverStatus status = LiaSolver.solveWithConfig(formula, LIA_SOLVER_CONFIGS[1]);
+      System.out.println(">>> solve() = " + status);
+      System.out.println("################ END " + filename + " ################");
+    }
   }
 }

@@ -1,3 +1,3 @@
-Fatal failure within static std::vector<std::pair<Node, Node>> cvc5::internal::theory::arith::liastar::LiaStarUtils::removeIntegerItes(cvc5::internal::Node, cvc5::internal::Env *) at /home/mudathir/all/cvc5/liastar/src/theory/arith/liastar/liastar_utils.cpp:520
-Internal error detected Unexpected kind. Node (* u325 u324 u321 u320 u323 u322) has kind: *
+Fatal failure within static std::vector<std::pair<Node, Node>> cvc5::internal::theory::arith::liastar::LiaStarUtils::removeIntegerItes(Node, Env *, LiaStarStatistics *) at /Users/mahgoubyahia/cvc5/liastar/src/theory/arith/liastar/liastar_utils.cpp:538
+Internal error detected Unexpected kind. Node (* u332 u333 u330 u328 u339 u336) has kind: *
 

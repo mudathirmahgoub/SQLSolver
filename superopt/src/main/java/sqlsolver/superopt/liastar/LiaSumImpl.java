@@ -565,9 +565,16 @@ public class LiaSumImpl extends LiaStar
     return !SetSupport.intersects(paramPartVars, noParamPartVars);
   }
 
+  // Set whenever removeParameterFallback fires. The fallback decouples shared
+  // parameters into per-summand inner vars (a lossy over-approximation), so
+  // observers needing an exact transformation (e.g. the smt2 exporter) reset
+  // this before removeParameter() and read it afterwards.
+  public static boolean removeParameterFallbackUsed = false;
+
   // directly replace params with new inner vars
   public LiaStar removeParameterFallback()
   {
+    removeParameterFallbackUsed = true;
     final Set<String> params = collectParamNames();
     final Map<String, String> paramRemap = new HashMap<>();
     for (String param : params)

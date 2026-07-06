@@ -1,7 +1,12 @@
+; WARNING: star parameters [u5, u60, u40, u42, u64, u41, u44, u66, u43, u65, u67, u39, u38, u4] could not be eliminated
+; exactly. They are bound per-summand in the lambda below with fresh
+; unconstrained sums, which WEAKENS the formula: sat of this file does not
+; imply sat of the original (only unsat transfers).
 (set-logic HO_ALL)
 (declare-const u71 Int)
 (declare-const u70 Int)
 (declare-const u73 Int)
+(declare-const u31 Int)
 (declare-const u75 Int)
 (declare-const u74 Int)
 (declare-const u33 Int)
@@ -10,7 +15,6 @@
 (declare-const u76 Int)
 (declare-const u35 Int)
 (declare-const u79 Int)
-(declare-const u34 Int)
 (declare-const u78 Int)
 (declare-const u37 Int)
 (declare-const u36 Int)
@@ -22,11 +26,15 @@
 (declare-const u41 Int)
 (declare-const u44 Int)
 (declare-const u43 Int)
+(declare-const u46 Int)
+(declare-const u45 Int)
 (declare-const u47 Int)
+(declare-const u53 Int)
 (declare-const u55 Int)
 (declare-const u54 Int)
 (declare-const u57 Int)
 (declare-const u56 Int)
+(declare-const u59 Int)
 (declare-const u58 Int)
 (declare-const u0 Int)
 (declare-const u1 Int)
@@ -136,5 +144,5 @@
 (declare-const sumFresh85 Int)
 (declare-const sumFresh86 Int)
 (declare-const sumFresh87 Int)
-(assert (and (not (= (ite (and (not (= u0 0)) (= u6 u1)) 1 0) (ite (and (not (= u2 0)) (= u6 u3)) 1 0))) (int.star-contains (lambda ((u45 Int) (u46 Int) (u35 Int) (u47 Int) (u40 Int) (u42 Int) (u41 Int) (u44 Int) (u33 Int) (u43 Int) (u32 Int) (u34 Int) (u37 Int) (u36 Int) (u39 Int) (u28 Int) (u38 Int) (u27 Int) (u29 Int) (u5 Int) (u54 Int) (u56 Int) (u57 Int) (u55 Int) (u58 Int) (u60 Int) (u61 Int) (u62 Int) (u63 Int) (u64 Int) (u65 Int) (u4 Int) (u67 Int) (u68 Int) (u69 Int) (u66 Int) (u70 Int) (u71 Int) (u73 Int) (u74 Int) (u76 Int) (u78 Int) (u79 Int) (u75 Int) (u77 Int) (u80 Int) ) (and (and (= u35 (ite (and (and (= u39 u40) (= u41 u42)) (and (and (and (and (= u5 u44) (not (= u27 0))) (not (= u28 0))) (not (= u29 0))) (not (= u43 0)))) (* (* u36 u37) u38) 0)) (= u47 (ite (and (and (= u41 u42) (= u39 u40)) (and (and (and (and (= u5 u44) (not (= u32 0))) (not (= u33 0))) (not (= u34 0))) (not (= u43 0)))) (* (* u36 u38) u37) 0))) (int.star-contains (lambda ((u53 Int) (u54 Int) (u58 Int) (u59 Int) (u60 Int) (u65 Int) (u70 Int) (u71 Int) (u55 Int) (u57 Int) (u56 Int) (u62 Int) (u61 Int) (u64 Int) (u63 Int) (u66 Int) (u68 Int) (u67 Int) (u69 Int) (u39 Int) (u40 Int) (u42 Int) (u4 Int) (u41 Int) (u73 Int) (u5 Int) (u44 Int) (u74 Int) (u76 Int) (u78 Int) (u79 Int) (u43 Int) (u75 Int) (u77 Int) (u38 Int) (u80 Int) ) (and (and (and (and (and (and (= u54 (ite (and (= u39 u56) (not (= u57 0))) u55 0)) (= u58 (ite (and (= u56 u40) (not (= u57 0))) u55 0))) (= u60 (ite (and (= u61 u62) (= u63 u42)) u64 0))) (= u65 (ite (and (= u4 u67) (= u68 u69)) u66 0))) (= u70 (ite (and (= u41 u63) (= u62 u61)) u64 0))) (= u71 (ite (and (= u69 u68) (= u4 u67)) u66 0))) (int.star-contains (lambda ((u73 Int) (u80 Int) (u75 Int) (u74 Int) (u77 Int) (u76 Int) (u79 Int) (u78 Int) (u5 Int) (u44 Int) (u4 Int) (u67 Int) (u62 Int) (u69 Int) (u68 Int) (u40 Int) (u42 Int) (u43 Int) (u66 Int) (u38 Int) ) (and (= u73 (ite (and (and (and (and (and (and (= u5 u44) (= u4 u67)) (= u74 u62)) (= u69 u68)) (= u40 u76)) (not (= u78 0))) (= u79 u42)) (* (* (* (* u43 u66) u75) u77) u38) 0)) (= u80 (ite (and (and (and (and (and (and (= u4 u67) (= u5 u44)) (not (= u78 0))) (= u79 u42)) (= u76 u40)) (= u68 u69)) (= u74 u62)) (* (* (* (* u77 u75) u38) u66) u43) 0)))) u59 u53 sumFresh0 sumFresh1 sumFresh2 sumFresh3 sumFresh4 sumFresh5 sumFresh6 sumFresh7 sumFresh8 sumFresh9 sumFresh10 sumFresh11 sumFresh12 sumFresh13 sumFresh14 sumFresh15 sumFresh16 sumFresh17 ))) u45 u29 u32 u46 u33 u34 u27 u28 sumFresh18 sumFresh19 sumFresh20 sumFresh21 sumFresh22 sumFresh23 sumFresh24 sumFresh25 sumFresh26 sumFresh27 sumFresh28 sumFresh29 sumFresh30 sumFresh31 sumFresh32 sumFresh33 sumFresh34 sumFresh35 sumFresh36 sumFresh37 sumFresh38 sumFresh39 sumFresh40 sumFresh41 sumFresh42 sumFresh43 sumFresh44 sumFresh45 ))) u0 u2 u3 u1 sumFresh46 sumFresh47 sumFresh48 sumFresh49 sumFresh50 sumFresh51 sumFresh52 sumFresh53 sumFresh54 sumFresh55 sumFresh56 sumFresh57 sumFresh58 sumFresh59 sumFresh60 sumFresh61 sumFresh62 sumFresh63 sumFresh64 sumFresh65 sumFresh66 sumFresh67 sumFresh68 sumFresh69 sumFresh70 sumFresh71 sumFresh72 sumFresh73 sumFresh74 sumFresh75 sumFresh76 sumFresh77 sumFresh78 sumFresh79 sumFresh80 sumFresh81 sumFresh82 sumFresh83 sumFresh84 sumFresh85 sumFresh86 sumFresh87 )))
+(assert (and (not (= (ite (and (not (= u0 0)) (= u6 u1)) 1 0) (ite (and (not (= u2 0)) (= u6 u3)) 1 0))) (int.star-contains (lambda ((u45 Int) (u35 Int) (u46 Int) (u47 Int) (u40 Int) (u42 Int) (u31 Int) (u41 Int) (u44 Int) (u33 Int) (u43 Int) (u32 Int) (u37 Int) (u36 Int) (u39 Int) (u28 Int) (u38 Int) (u27 Int) (u29 Int) (u4 Int) (u53 Int) (u54 Int) (u56 Int) (u55 Int) (u57 Int) (u58 Int) (u60 Int) (u61 Int) (u59 Int) (u63 Int) (u64 Int) (u65 Int) (u5 Int) (u66 Int) (u67 Int) (u68 Int) (u69 Int) (u71 Int) (u73 Int) (u76 Int) (u77 Int) (u78 Int) (u79 Int) (u74 Int) (u75 Int) (u80 Int) ) (and (and (= u35 (ite (and (and (= u39 u40) (= u41 u42)) (and (and (and (and (= u4 u44) (not (= u27 0))) (not (= u28 0))) (not (= u29 0))) (not (= u43 0)))) (* (* u36 u37) u38) 0)) (= u46 (ite (and (and (= u41 u42) (= u39 u40)) (and (and (and (and (= u4 u44) (not (= u31 0))) (not (= u32 0))) (not (= u33 0))) (not (= u43 0)))) (* (* u36 u38) u37) 0))) (int.star-contains (lambda ((u53 Int) (u57 Int) (u62 Int) (u63 Int) (u68 Int) (u69 Int) (u70 Int) (u71 Int) (u55 Int) (u54 Int) (u56 Int) (u59 Int) (u58 Int) (u60 Int) (u61 Int) (u64 Int) (u66 Int) (u65 Int) (u67 Int) (u40 Int) (u41 Int) (u5 Int) (u42 Int) (u39 Int) (u73 Int) (u4 Int) (u44 Int) (u76 Int) (u77 Int) (u78 Int) (u79 Int) (u74 Int) (u75 Int) (u38 Int) (u43 Int) (u80 Int) ) (and (and (and (and (and (and (= u53 (ite (and (not (= u54 0)) (= u56 u40)) u55 0)) (= u57 (ite (and (= u41 u58) (= u60 u61)) u59 0))) (= u63 (ite (and (= u64 u65) (= u5 u66)) u67 0))) (= u68 (ite (and (= u61 u60) (= u58 u42)) u59 0))) (= u69 (ite (and (= u5 u66) (= u65 u64)) u67 0))) (= u71 (ite (and (not (= u54 0)) (= u39 u56)) u55 0))) (int.star-contains (lambda ((u73 Int) (u80 Int) (u75 Int) (u74 Int) (u77 Int) (u76 Int) (u79 Int) (u78 Int) (u4 Int) (u44 Int) (u5 Int) (u66 Int) (u42 Int) (u40 Int) (u64 Int) (u65 Int) (u60 Int) (u38 Int) (u67 Int) (u43 Int) ) (and (= u73 (ite (and (and (and (and (and (and (= u4 u44) (= u5 u66)) (not (= u76 0))) (= u77 u42)) (= u78 u40)) (= u64 u65)) (= u79 u60)) (* (* (* (* u74 u75) u38) u67) u43) 0)) (= u80 (ite (and (and (and (and (and (and (= u4 u44) (= u5 u66)) (= u79 u60)) (= u65 u64)) (= u40 u78)) (not (= u76 0))) (= u77 u42)) (* (* (* (* u43 u67) u75) u74) u38) 0)))) u62 u70 sumFresh0 sumFresh1 sumFresh2 sumFresh3 sumFresh4 sumFresh5 sumFresh6 sumFresh7 sumFresh8 sumFresh9 sumFresh10 sumFresh11 sumFresh12 sumFresh13 sumFresh14 sumFresh15 sumFresh16 sumFresh17 ))) u31 u27 u45 u33 u32 u28 u47 u29 sumFresh18 sumFresh19 sumFresh20 sumFresh21 sumFresh22 sumFresh23 sumFresh24 sumFresh25 sumFresh26 sumFresh27 sumFresh28 sumFresh29 sumFresh30 sumFresh31 sumFresh32 sumFresh33 sumFresh34 sumFresh35 sumFresh36 sumFresh37 sumFresh38 sumFresh39 sumFresh40 sumFresh41 sumFresh42 sumFresh43 sumFresh44 sumFresh45 ))) u0 u3 u1 u2 sumFresh46 sumFresh47 sumFresh48 sumFresh49 sumFresh50 sumFresh51 sumFresh52 sumFresh53 sumFresh54 sumFresh55 sumFresh56 sumFresh57 sumFresh58 sumFresh59 sumFresh60 sumFresh61 sumFresh62 sumFresh63 sumFresh64 sumFresh65 sumFresh66 sumFresh67 sumFresh68 sumFresh69 sumFresh70 sumFresh71 sumFresh72 sumFresh73 sumFresh74 sumFresh75 sumFresh76 sumFresh77 sumFresh78 sumFresh79 sumFresh80 sumFresh81 sumFresh82 sumFresh83 sumFresh84 sumFresh85 sumFresh86 sumFresh87 )))
 (check-sat)

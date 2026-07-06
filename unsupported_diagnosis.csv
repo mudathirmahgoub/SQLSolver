@@ -1,0 +1,53 @@
+filename,phase,exception,kind,detail
+unsupported/calcite/query029-call-0.smt2,translate,java.lang.UnsupportedOperationException,VARIABLE,u6
+unsupported/calcite/query053-call-0.smt2,translate,java.lang.UnsupportedOperationException,VARIABLE,u23
+unsupported/calcite/query062-call-0.smt2,translate,java.lang.UnsupportedOperationException,VARIABLE,u11
+unsupported/calcite/query062-call-1.smt2,translate,java.lang.UnsupportedOperationException,VARIABLE,u11
+unsupported/calcite/query062-call-2.smt2,translate,java.lang.UnsupportedOperationException,VARIABLE,u11
+unsupported/calcite/query062-call-3.smt2,translate,java.lang.UnsupportedOperationException,VARIABLE,u11
+unsupported/calcite/query065-call-0.smt2,translate,java.lang.UnsupportedOperationException,VARIABLE,u17
+unsupported/calcite/query073-call-0.smt2,translate,java.lang.UnsupportedOperationException,VARIABLE,u9
+unsupported/calcite/query084-call-0.smt2,translate,java.lang.UnsupportedOperationException,VARIABLE,u17
+unsupported/calcite/query116-call-0.smt2,translate,java.lang.UnsupportedOperationException,TO_REAL,(to_real (* u5 u5))
+unsupported/calcite/query153-call-0.smt2,translate,java.lang.UnsupportedOperationException,APPLY_UF,(emp u0)
+unsupported/calcite/query161-call-0.smt2,translate,java.lang.UnsupportedOperationException,VARIABLE,u8
+unsupported/calcite/query162-call-0.smt2,translate,java.lang.UnsupportedOperationException,VARIABLE,u5
+unsupported/calcite/query185-call-0.smt2,translate,java.lang.UnsupportedOperationException,VARIABLE,u8
+unsupported/calcite/query202-call-0.smt2,translate,java.lang.UnsupportedOperationException,APPLY_UF,(emp u0)
+unsupported/calcite/query205-call-0.smt2,translate,java.lang.UnsupportedOperationException,APPLY_UF,(emp u0)
+unsupported/calcite/query215-call-0.smt2,translate,java.lang.UnsupportedOperationException,VARIABLE,u5
+unsupported/calcite/query220-call-0.smt2,translate,java.lang.UnsupportedOperationException,VARIABLE,u14
+unsupported/calcite/query222-call-4.smt2,translate,java.lang.UnsupportedOperationException,VARIABLE,u8
+unsupported/calcite/query222-call-5.smt2,translate,java.lang.UnsupportedOperationException,VARIABLE,u8
+unsupported/calcite/query222-call-6.smt2,translate,java.lang.UnsupportedOperationException,VARIABLE,u6
+unsupported/calcite/query222-call-7.smt2,translate,java.lang.UnsupportedOperationException,VARIABLE,u6
+unsupported/spark/query003-call-0.smt2,translate,java.lang.UnsupportedOperationException,APPLY_UF,(emp u0)
+unsupported/spark/query004-call-0.smt2,translate,java.lang.UnsupportedOperationException,APPLY_UF,(emp u2)
+unsupported/spark/query015-call-0.smt2,translate,java.lang.UnsupportedOperationException,APPLY_UF,(in_list_3 u1 100 50)
+unsupported/spark/query015-call-1.smt2,translate,java.lang.UnsupportedOperationException,APPLY_UF,(in_list_3 u1 100 50)
+unsupported/spark/query015-call-2.smt2,translate,java.lang.UnsupportedOperationException,APPLY_UF,(in_list_3 u1 100 50)
+unsupported/spark/query015-call-3.smt2,translate,java.lang.UnsupportedOperationException,APPLY_UF,(in_list_3 u1 100 50)
+unsupported/spark/query015-call-4.smt2,translate,java.lang.UnsupportedOperationException,APPLY_UF,(in_list_3 u1 100 50)
+unsupported/spark/query015-call-5.smt2,translate,java.lang.UnsupportedOperationException,APPLY_UF,(in_list_3 u1 100 50)
+unsupported/spark/query015-call-6.smt2,translate,java.lang.UnsupportedOperationException,APPLY_UF,(in_list_3 u1 100 50)
+unsupported/spark/query015-call-7.smt2,translate,java.lang.UnsupportedOperationException,APPLY_UF,(in_list_3 u1 100 50)
+unsupported/spark/query055-call-0.smt2,translate,java.lang.UnsupportedOperationException,VARIABLE,u4
+unsupported/spark/query055-call-1.smt2,translate,java.lang.UnsupportedOperationException,VARIABLE,u4
+unsupported/spark/query055-call-10.smt2,translate,java.lang.UnsupportedOperationException,VARIABLE,u4
+unsupported/spark/query055-call-11.smt2,translate,java.lang.UnsupportedOperationException,VARIABLE,u4
+unsupported/spark/query055-call-12.smt2,translate,java.lang.UnsupportedOperationException,VARIABLE,u4
+unsupported/spark/query055-call-13.smt2,translate,java.lang.UnsupportedOperationException,VARIABLE,u4
+unsupported/spark/query055-call-14.smt2,translate,java.lang.UnsupportedOperationException,VARIABLE,u4
+unsupported/spark/query055-call-15.smt2,translate,java.lang.UnsupportedOperationException,VARIABLE,u4
+unsupported/spark/query055-call-16.smt2,translate,java.lang.UnsupportedOperationException,VARIABLE,u4
+unsupported/spark/query055-call-17.smt2,translate,java.lang.UnsupportedOperationException,VARIABLE,u4
+unsupported/spark/query055-call-2.smt2,translate,java.lang.UnsupportedOperationException,VARIABLE,u4
+unsupported/spark/query055-call-3.smt2,translate,java.lang.UnsupportedOperationException,VARIABLE,u4
+unsupported/spark/query055-call-4.smt2,translate,java.lang.UnsupportedOperationException,VARIABLE,u4
+unsupported/spark/query055-call-5.smt2,translate,java.lang.UnsupportedOperationException,VARIABLE,u4
+unsupported/spark/query055-call-6.smt2,translate,java.lang.UnsupportedOperationException,VARIABLE,u4
+unsupported/spark/query055-call-7.smt2,translate,java.lang.UnsupportedOperationException,VARIABLE,u4
+unsupported/spark/query055-call-8.smt2,translate,java.lang.UnsupportedOperationException,VARIABLE,u4
+unsupported/spark/query055-call-9.smt2,translate,java.lang.UnsupportedOperationException,VARIABLE,u4
+unsupported/spark/query090-call-0.smt2,translate,java.lang.UnsupportedOperationException,APPLY_UF,(emp u1)
+unsupported/spark/query090-call-1.smt2,translate,java.lang.UnsupportedOperationException,APPLY_UF,(emp u1)

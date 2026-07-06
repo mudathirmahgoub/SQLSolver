@@ -12,7 +12,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
 import static sqlsolver.superopt.uexpr.PredefinedFunctions.MINUS;
+import sqlsolver.superopt.util.Timeout;
 
 public class Cvc5LiaStarSolver
 {
@@ -28,6 +35,9 @@ public class Cvc5LiaStarSolver
   static int freshIndex = 0;
   public static PrintWriter writer = null;
   public static String csvFile = "sqlsolver_results.csv";
+  // Wall-clock budget for the exact parameter-elimination attempt in
+  // translate(); past it the dump falls back to the WARNING (weakened) form.
+  public static long ELIMINATION_BUDGET_SECONDS = 30;
   static
   {
     try
@@ -44,6 +54,72 @@ public class Cvc5LiaStarSolver
 
   public static void translate(LiaStar fstar) throws IOException
   {
+    // A variable free in a star body (a "parameter") denotes one value shared
+    // by all summands and equal to its occurrences outside the star, but
+    // int.star-contains cannot express that coupling: its lambda must be
+    // closed, so the encoding below binds such vars per-summand. Eliminate
+    // parameters exactly first (pushUpParameter + outward removeParameter,
+    // which asserts the param constraints once outside the star); if only the
+    // lossy per-summand fallback applies, keep the original formula and mark
+    // the file as a weakening.
+    String header = "";
+    final Set<String> starParams = collectStarParams(fstar);
+    if (!starParams.isEmpty())
+    {
+      LiaStar transformed = null;
+      // Deeply nested stars make removeParameter's case-splitting explode
+      // (hours on large tpc-h formulas), so only attempt elimination on
+      // shallow formulas and give the attempt a hard wall-clock budget.
+      if (fstar.embeddingLayers() <= 2)
+      {
+        final LiaStar input = fstar;
+        final ExecutorService executor = Executors.newSingleThreadExecutor(r -> {
+          Thread t = new Thread(r, "cvc5-dump-param-elimination");
+          t.setDaemon(true);
+          return t;
+        });
+        final Future<LiaStar> future = executor.submit(() -> {
+          LiaStar copy = input.deepcopy();
+          copy = copy.pushUpParameter(new HashSet<>());
+          LiaSumImpl.removeParameterFallbackUsed = false;
+          copy = copy.removeParameter();
+          return (!LiaSumImpl.removeParameterFallbackUsed && collectStarParams(copy).isEmpty())
+              ? copy
+              : null;
+        });
+        try
+        {
+          transformed = future.get(ELIMINATION_BUDGET_SECONDS, TimeUnit.SECONDS);
+        }
+        catch (Throwable e)
+        {
+          // best-effort transformation: fall through to the warning path on any
+          // failure or budget expiry, except genuine verification timeouts
+          future.cancel(true);
+          if (e instanceof ExecutionException ee && ee.getCause() != null)
+          {
+            Timeout.bypassTimeout(ee.getCause());
+          }
+        }
+        finally
+        {
+          executor.shutdownNow();
+        }
+      }
+      if (transformed != null)
+      {
+        fstar = transformed;
+        header = "; star parameters " + starParams + " eliminated exactly before export\n";
+      }
+      else
+      {
+        header = "; WARNING: star parameters " + starParams + " could not be eliminated\n"
+            + "; exactly. They are bound per-summand in the lambda below with fresh\n"
+            + "; unconstrained sums, which WEAKENS the formula: sat of this file does not\n"
+            + "; imply sat of the original (only unsat transfers).\n";
+      }
+    }
+
     smtConstants = new HashSet<>();
     smtFunctions = new HashMap<>();
     freshSumVars = new ArrayList<>();
@@ -71,6 +147,7 @@ public class Cvc5LiaStarSolver
     visit(fstar, body);
 
     StringBuilder builder = new StringBuilder();
+    builder.append(header);
     builder.append("(set-logic HO_ALL)\n");
 
     for (String smtConstant : smtConstants)
@@ -104,6 +181,22 @@ public class Cvc5LiaStarSolver
     path = Path.of("cvc5/" + fileName + "-call-" + index + ".smt2");
     lastFileName = fileName;
     Files.writeString(path, builder, StandardCharsets.UTF_8);
+  }
+
+  // Union of collectParamNames over every star in the formula: the free vars
+  // of star bodies, i.e. the variables the closed-lambda encoding would
+  // decouple from their outer occurrences.
+  private static Set<String> collectStarParams(LiaStar f)
+  {
+    final Set<String> params = new HashSet<>();
+    f.transformPostOrder(lia -> {
+      if (lia instanceof LiaSumImpl sum)
+      {
+        params.addAll(sum.collectParamNames());
+      }
+      return lia;
+    });
+    return params;
   }
 
   private static void visit(LiaStar lia, StringBuilder builder)
@@ -221,6 +314,10 @@ public class Cvc5LiaStarSolver
     }
     else if (lia instanceof LiaSumImpl z)
     {
+      // outerVector names are emitted as point coordinates below but are plain
+      // strings, not LiaVarImpl nodes: declare them even when they occur
+      // nowhere else in the formula.
+      smtConstants.addAll(z.outerVector);
       builder.append("(int.star-contains (lambda (");
       List<String> freeVariables = new ArrayList<>();
       for (String v : z.innerVector)
@@ -248,13 +345,14 @@ public class Cvc5LiaStarSolver
       builder.append(") ");
       // Point coordinates of int.star-contains, one per lambda dimension.
       // The first outerVector.size() dimensions are the summed dimensions:
-      // outer[i] = sum over summands of inner[i] (matching the canonical
-      // semantics in LiaSumImpl.expandStarWithK). Every remaining dimension
-      // (surplus inner vars and free constraint vars) is a per-summand
-      // existential that expandStarWithK does NOT tie to any outer value, so it
-      // must map to a FRESH, otherwise-unconstrained variable. Reusing the
-      // bound name (which also denotes a global declared const) would capture
-      // that global and impose a spurious global = sum-of-summands equation.
+      // outer[i] = sum over summands of inner[i]. Surplus innerVector dims are
+      // genuinely per-summand existentials (the solver's expansions rename
+      // only innerVector per summand copy), so their sums map to FRESH,
+      // otherwise-unconstrained variables. Free constraint vars ("parameters")
+      // are NOT per-summand — they share one value across summands and with
+      // their outer occurrences — but this closed-lambda encoding cannot
+      // express that: translate() eliminates them exactly beforehand when
+      // possible and otherwise marks the file with a weakening warning.
       for (String v : z.outerVector)
       {
         builder.append(v).append(" ");

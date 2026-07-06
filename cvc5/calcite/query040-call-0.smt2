@@ -1,3 +1,4 @@
+; star parameters [u2] eliminated exactly before export
 (set-logic HO_ALL)
 (declare-const u5 Int)
 (declare-const u6 Int)
@@ -5,9 +6,9 @@
 (declare-const u0 Int)
 (declare-const u1 Int)
 (declare-const u2 Int)
+(declare-const var1 Int)
 (declare-const u4 Int)
 (declare-const sumFresh0 Int)
 (declare-const sumFresh1 Int)
-(declare-const sumFresh2 Int)
-(assert (and (not (= u0 (ite (= u2 10) u1 0))) (int.star-contains (lambda ((u4 Int) (u7 Int) (u5 Int) (u6 Int) (u2 Int) ) (and (= u4 (ite (and (= u5 10) (not (= u6 0))) 1 0)) (= u7 (ite (and (and (= u5 10) (= u2 10)) (not (= u6 0))) 1 0)))) u1 u0 sumFresh0 sumFresh1 sumFresh2 )))
+(assert (and (not (= u0 (ite (= u2 10) u1 0))) (and (int.star-contains (lambda ((u4 Int) (u7 Int) (u5 Int) (u6 Int) ) (and (= u4 (ite (and (= u5 10) (not (= u6 0))) 1 0)) (= u7 (ite (and (= u5 10) (not (= u6 0))) 1 0)))) u1 var1 sumFresh0 sumFresh1 ) (= u0 (ite (= u2 10) var1 0)))))
 (check-sat)

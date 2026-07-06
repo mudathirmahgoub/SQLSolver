@@ -1,3 +1,7 @@
+; WARNING: star parameters [u11, u13, u12, u14] could not be eliminated
+; exactly. They are bound per-summand in the lambda below with fresh
+; unconstrained sums, which WEAKENS the formula: sat of this file does not
+; imply sat of the original (only unsat transfers).
 (set-logic HO_ALL)
 (declare-const u31 Int)
 (declare-const u30 Int)
