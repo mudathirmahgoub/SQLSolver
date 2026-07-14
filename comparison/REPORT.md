@@ -52,17 +52,22 @@ All three solvers run on the same 360 files, 100 s per file:
 | solver | solved | sat | unsat | timeout | crash | error |
 |---|---|---|---|---|---|---|
 | SQLSolver | **204** | 164 | 40 | 3 | — | 153 |
-| cvc5 (Normaliz) | 68 | 31 | 37 | 1 | **291** | — |
+| cvc5 (Normaliz) | 119 | 71 | 48 | 1 | 240 | — |
 | SLS-reachability | 96 | 89 | 7 | 55 | — | 209 |
 
-cvc5 numbers are from the liastar build `863fc1373-modified` (2026-07-06),
-which fixes the spurious-sat soundness bug found on the previous build
-(§5.2); the fix flipped exactly 4 answers from sat to unsat.
+cvc5 numbers are from the liastar build `a18e71578` (2026-07-06), which fixes
+both bugs found on earlier builds during this comparison: the spurious-sat
+soundness bug (§5.2, fixed in `863fc1373`, flipped 4 answers sat→unsat) and
+the in-fragment crash bug (§5.1, fixed in `a18e71578`, turned 51 crashes into
+50 sound answers + 1 timeout). All 240 remaining crashes are on
+out-of-fragment inputs (non-linear/UF/nested star bodies).
 
 Cactus plots: `cactus_plot.png`, `cactus_plot_log.png`. Per-instance table:
-`comparison.csv`; per-solver counts: `summary.csv`.
+`comparison.csv`; per-solver counts: `summary.csv`. The fragment-restricted
+view (`filter_linear.py`, 114 benchmarks in `cvc5/linear/`): cvc5 solves
+**113/114 with zero crashes**, SQLSolver 99/114, SLS 21/114.
 
-Pairwise agreement where both answered sat/unsat: SQLSolver–cvc5 **48/49**
+Pairwise agreement where both answered sat/unsat: SQLSolver–cvc5 **99/100**
 (the one disagreement is §5.4's `query026-call-4`), SQLSolver–SLS 16/25,
 cvc5–SLS 14/20. Every disagreement is diagnosed in §5.
 
@@ -87,30 +92,31 @@ Scorecard against this ground truth:
 
 ## 5. Bugs found (all reproduced on this corpus)
 
-### 5.1 cvc5-liastar: crashes on 291/360 files (81 %)
+### 5.1 cvc5-liastar: crashes — in-fragment crashes **FIXED in `a18e71578`**
 cvc5's `int.star-contains` supports only *linear* arithmetic in the star
-predicate. Classifying every lambda body in the corpus splits the crashes into
-two very different populations:
+predicate. Classifying every lambda body in the corpus splits the crash
+population in two, with very different fates:
 
-| star bodies in file | files | cvc5 outcome |
+| star bodies in file | files | cvc5 outcome (current build) |
 |---|---|---|
-| non-linear (`(* x y)` products) or UF | 246 | 240 crash (`Fatal failure … LiaStarUtils::removeItes`, `liastar_utils.cpp:361`), 4 unsat, **2 sat (suspect: out-of-fragment)** |
-| linear, no star / one top-level star | 41 | **all solved** (25 sat, 21 unsat, 1 timeout — zero crashes) |
-| linear, multiple stars under `or` | 87 | 26 solved, **61 crash** (18 segfault/abort, 33 silent death, 10 UF-related internal) |
+| linear, no nested stars (`cvc5/linear/`) | 114 | **113 solved, 1 timeout, zero crashes** |
+| non-linear (`(* x y)` products), UF, or nested stars | 246 | 240 crash, 4 unsat, **2 sat (suspect: out-of-fragment)** |
 
-So **~82 % of the crashes are out-of-fragment input**: SQL join semantics
-multiplies tuple multiplicities, so 232/360 files have variable products
-inside star bodies that cvc5 cannot express — it should reject them gracefully
-(`unknown`/error message) instead of an `Unexpected kind` internal fatal.
-The remaining **51 crashes are on purely linear star bodies** — in-fragment
-robustness bugs, perfectly correlated with *multiple stars nested under
-disjunctions* (the shape case-split exports produce); single top-level linear
-stars never crash. This class includes the degenerate-star repros
-(`cvc5_star_bug/min1_single_dim.smt2`, `min3_empty_relation.smt2`) and
-33 files that die with no output at all. Also note the 2 `sat` answers on
-non-linear files (`tpc-h/query018-call-2/3.smt2`): answering instead of
-rejecting out-of-fragment input is itself a bug, and those answers are
-unverifiable.
+Earlier builds crashed on 51 in-fragment (purely linear) files — all with
+multiple stars nested under disjunctions, including the degenerate-star repros
+(`cvc5_star_bug/min1_single_dim.smt2`, `min3_empty_relation.smt2`, two-zero-star
+variants) and 33 silent deaths. Build `a18e71578` fixes all of them: every
+former in-fragment crash now yields a sound answer agreeing with SQLSolver
+(and with the §4 ground truth where applicable).
+
+The 240 remaining crashes are **out-of-fragment input**: SQL join semantics
+multiplies tuple multiplicities, so most files have variable products inside
+star bodies (plus some UFs and nested stars) that cvc5 cannot express. These
+still die as `Fatal failure … LiaStarUtils::removeIntegerItes`
+(`liastar_utils.cpp:543`) rather than being rejected gracefully with an error
+or `unknown`. Also note the 2 `sat` answers on non-linear files
+(`tpc-h/query018-call-2/3.smt2`): answering instead of rejecting
+out-of-fragment input is itself a bug, and those answers are unverifiable.
 
 ### 5.2 cvc5-liastar: spurious `sat` (soundness) — **FIXED in `863fc1373`**
 Found on build `19a8efd6b`, minimized to

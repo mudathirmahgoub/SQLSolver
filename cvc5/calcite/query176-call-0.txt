@@ -1,3 +1,1 @@
-cvc5 suffered a segfault.
-Offending address is 0x1
-Looks like a NULL pointer was dereferenced.
+unsat

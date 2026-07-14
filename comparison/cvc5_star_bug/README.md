@@ -20,22 +20,22 @@ provably UNSAT):
 **Fix:** build with Normaliz — `./configure.sh production --normaliz` (dep already in
 `build/deps/`; then `cmake -DUSE_NORMALIZ=ON build && ninja`).
 
-## Bug 2 — Normaliz path crashes on degenerate / most real inputs
+## Bug 2 — Normaliz path crashes — in-fragment crashes **FIXED in `a18e71578`**
 
-With `USE_NORMALIZ=ON`, `min2` is correctly `unsat`, but the degenerate cases crash:
+On earlier builds (`USE_NORMALIZ=ON`), the degenerate cases crashed
+(`min1_single_dim.smt2` C++ runtime termination, `min3_empty_relation.smt2`
+segfault), and across the 360-dump corpus 51 *purely linear* files crashed
+(multiple stars under `or`; 18 segfault/abort, 33 silent deaths). Build
+`a18e71578` (2026-07-06) fixes all of these: `min1`/`min3` and every former
+in-fragment crasher now answer soundly — the linear, nesting-free set
+(`../../cvc5/linear/`, 114 files) runs with **zero crashes** and 99/100
+agreement with SQLSolver (the one disagreement being SQLSolver's own
+over-approximation bug).
 
-    min1_single_dim.smt2     -> C++ runtime termination
-    min3_empty_relation.smt2 -> segfault
-
-Across the 360-dump corpus, **291 files crash**, in two distinct populations
-(see `../REPORT.md` §5.1): 240 are files with *out-of-fragment* star bodies
-(variable products / UFs inside the lambda — cvc5 only supports linear star
-predicates) that die as `Fatal failure … LiaStarUtils::removeItes
-(liastar_utils.cpp:361) … Unexpected kind` instead of being rejected
-gracefully; **51 are purely linear** — genuine in-fragment robustness bugs,
-all in files with multiple stars nested under `or` (18 segfault/abort incl.
-the degenerate-star repros above, 33 silent deaths with no output). Files
-with a single top-level linear star never crash.
+Still open: 240 *out-of-fragment* files (variable products / UFs / nested
+stars inside the lambda — cvc5 only supports linear star predicates) die as
+`Fatal failure … LiaStarUtils::removeIntegerItes (liastar_utils.cpp:543)`
+instead of being rejected gracefully with an error or `unknown`.
 
 ## Bug 3 — spurious SAT *with* Normaliz (soundness) — **FIXED in `863fc1373`**
 

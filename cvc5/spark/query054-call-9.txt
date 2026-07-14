@@ -1,3 +1,1 @@
-cvc5 was terminated by the C++ runtime.
-Perhaps an exception was thrown during stack unwinding.
-libc++abi: terminating due to uncaught exception of type std::overflow_error: __next_prime overflow
+sat

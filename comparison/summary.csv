@@ -1,4 +1,4 @@
 solver,n,solved,sat,unsat,timeout,crash,error,missing
 SQLSolver,360,204,164,40,3,0,153,0
-cvc5 (Normaliz),360,68,31,37,1,291,0,0
+cvc5 (Normaliz),360,119,71,48,1,240,0,0
 SLS-reachability,360,96,89,7,55,0,209,0

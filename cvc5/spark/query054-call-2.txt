@@ -1,2 +1,1 @@
-cvc5 suffered a segfault.
-Offending address is 0x5f8da8dc141d000a
+sat
