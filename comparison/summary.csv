@@ -1,4 +1,4 @@
 solver,n,solved,sat,unsat,timeout,crash,error,missing
-SQLSolver,114,114,70,44,0,0,0,0
-cvc5 (Normaliz),114,113,69,44,1,0,0,0
-SLS-reachability,114,113,69,44,1,0,0,0
+SQLSolver,70,70,39,31,0,0,0,0
+cvc5 (Normaliz),70,70,39,31,0,0,0,0
+SLS-reachability,70,70,39,31,0,0,0,0

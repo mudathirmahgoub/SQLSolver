@@ -1,7 +1,0 @@
-(set-logic HO_ALL)
-(declare-const u0 Int)
-(declare-const u1 Int)
-(declare-const u2 Int)
-(declare-fun emp (Int ) Int)
-(assert (not (= (ite (< u2 (+ u1 5)) (ite (= u1 10) (emp u0 ) 0) 0) (ite (< u2 15) (ite (= u1 10) (emp u0 ) 0) 0))))
-(check-sat)
