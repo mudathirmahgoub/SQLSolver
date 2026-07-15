@@ -59,17 +59,26 @@ adapter maps `declare-fun` symbols to z3 `Function`s applied at their call
 sites. Inside star bodies UFs remain out of fragment for all solvers and such
 dumps are excluded from the corpus by `filter_linear.py`.
 
-## 3. Results (114 benchmarks, 100 s per file)
+## 3. Results (114 benchmarks, 100 s per file, sequential protocol)
 
-| solver | solved | sat | unsat | timeout |
-|---|---|---|---|---|
-| **SQLSolver (LiaSolver on the corpus)** | **114** | 70 | 44 | — |
-| cvc5 (liastar, Normaliz) | 113 | 69 | 44 | 1 |
-| SLS-reachability | 113 | 69 | 44 | 1 |
+All three solvers process the corpus **sequentially** — one file at a time,
+one solver at a time — so the reported durations are contention-free and
+comparable (`run_all.sh --parallel` and `run_cvc5.py`/`run_sls.py --jobs N`
+give the faster parallel mode; answers are identical, only timings differ).
 
-- Every benchmark is solved by every solver except one timeout each for cvc5
-  and SLS; no crashes, no errors. (Both front-ends accept uninterpreted
-  functions outside star bodies — see §2.)
+| solver | solved | sat | unsat | timeout | total time | median/file | slowest solved |
+|---|---|---|---|---|---|---|---|
+| **SQLSolver (LiaSolver on the corpus)** | **114** | 70 | 44 | — | 4.9 s | 0.01 s | 1.33 s |
+| cvc5 (liastar, Normaliz) | 113 | 69 | 44 | 1 | 105 s | 0.04 s | 0.34 s |
+| SLS-reachability | 113 | 69 | 44 | 1 | 153 s | 0.14 s | 10.0 s |
+
+- Every benchmark is solved by every solver except one timeout each: cvc5 on
+  `calcite-query050-call-0`, SLS on `calcite-query127-call-0` (both solved by
+  the other two). No crashes, no errors. (Both front-ends accept
+  uninterpreted functions outside star bodies — see §2.)
+- Excluding the 100 s timeouts, cvc5 finishes the other 113 files in 5.4 s
+  total and SLS in 53 s; SQLSolver is the fastest overall and the only solver
+  with full coverage.
 - Cactus plots: `cactus_plot.png`, `cactus_plot_log.png`; per-instance table:
   `comparison.csv`; per-solver counts: `summary.csv`.
 
@@ -96,12 +105,13 @@ expansions and report over-approximation SAT as UNKNOWN.
 ## 5. Reproduction
 
 ```
-comparison/run_all.sh              # everything below, in order
+comparison/run_all.sh              # everything below, sequential (default)
+comparison/run_all.sh --parallel   # same, overlapping solvers + 8 workers
 comparison/regenerate_dumps.sh     # pipeline -> per-suite dumps
 comparison/filter_linear.py        # linear corpus -> cvc5/linear/ (prunes dumps)
 comparison/run_roundtrip.sh        # SQLSolver  -> sql_solver.csv
-comparison/run_cvc5.py             # cvc5       -> cvc5_all.csv + .txt
-comparison/run_sls.py              # SLS        -> sls_results.csv
+comparison/run_cvc5.py [--jobs N]  # cvc5       -> cvc5_all.csv + .txt
+comparison/run_sls.py  [--jobs N]  # SLS        -> sls_results.csv
 comparison/starfree_check.py       # ground truth -> starfree_check.csv
 comparison/make_comparison.py      # comparison.csv, summary.csv, cactus plots
 ```

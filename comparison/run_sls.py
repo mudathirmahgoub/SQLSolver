@@ -46,7 +46,8 @@ def run_one(args):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--timeout", type=int, default=100)
-    ap.add_argument("--jobs", type=int, default=8)
+    ap.add_argument("--jobs", type=int, default=1,
+                help="worker processes; 1 = sequential (default, fair timings), N>1 = parallel")
     ap.add_argument("--out", default=os.path.join(REPO, "sls_results.csv"))
     ap.add_argument("suites", nargs="*", default=SUITES)
     args = ap.parse_args()

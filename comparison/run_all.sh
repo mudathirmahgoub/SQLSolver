@@ -9,15 +9,33 @@
 #   4. starfree_check.py     exact-reduction ground-truth cross-check
 #   5. make_comparison.py    comparison.csv / summary.csv / cactus plots
 #
+# By default every solver processes the corpus SEQUENTIALLY (one file at a
+# time, one solver at a time) so the reported durations are contention-free
+# and comparable across solvers. Pass --parallel to overlap the three solver
+# legs and use 8 worker processes inside run_cvc5.py / run_sls.py — much
+# faster wall clock, but per-file timings then include CPU contention.
+#
 # Requires: ./gradlew fatJar done, ~/cvc5/liastar built (binary + python
 # bindings in build-python), ~/sls-reachability checked out.
 set -euo pipefail
 cd "$(dirname "$0")"
+
+PARALLEL=0
+[ "${1:-}" = "--parallel" ] && PARALLEL=1
+
 ./regenerate_dumps.sh
 ./filter_linear.py
-./run_roundtrip.sh &
-./run_cvc5.py &
-./run_sls.py &
-wait
+
+if [ "$PARALLEL" = "1" ]; then
+  ./run_roundtrip.sh &
+  ./run_cvc5.py --jobs 8 &
+  ./run_sls.py --jobs 8 &
+  wait
+else
+  ./run_roundtrip.sh
+  ./run_cvc5.py
+  ./run_sls.py
+fi
+
 ./starfree_check.py
 ./make_comparison.py
