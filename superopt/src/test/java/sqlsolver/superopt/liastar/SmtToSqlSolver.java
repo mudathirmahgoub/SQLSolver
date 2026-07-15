@@ -46,9 +46,14 @@ public class SmtToSqlSolver
 
     System.out.println("Finished parsing commands");
     Map<String, LiaStar> symbols = new HashMap<>();
-    // declare all variables
+    // declare all variables; function symbols (declare-fun with arity > 0)
+    // are translated at their application sites (APPLY_UF) instead
     for (Term t : sm.getDeclaredTerms())
     {
+      if (t.getSort().isFunction())
+      {
+        continue;
+      }
       String name = t.toString();
       symbols.put(name, LiaStar.mkVar(false, name));
     }
@@ -141,6 +146,17 @@ public class SmtToSqlSolver
       {
         return LiaStar.mkAnd(false, formula, star);
       }
+    }
+    if (k == Kind.APPLY_UF)
+    {
+      // uninterpreted function application: child 0 is the function symbol,
+      // the remaining children are its (integer) arguments
+      List<LiaStar> args = new ArrayList<>();
+      for (int i = 1; i < t.getNumChildren(); i++)
+      {
+        args.add(translateTerm(t.getChild(i)));
+      }
+      return LiaStar.mkFunc(false, t.getChild(0).toString(), args, true);
     }
     List<LiaStar> children = new ArrayList<>();
     for (int i = 0; i < t.getNumChildren(); i++)

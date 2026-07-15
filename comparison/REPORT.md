@@ -51,18 +51,25 @@ nonnegative. Example — `y = 3 ∧ y ∈ {(a) | a = 5}*` translates to
 5s, so `y = 3` is unsat. Shapes outside the scheme (stars under negative
 polarity, nested stars) are rejected with an error rather than mistranslated.
 
+**Uninterpreted functions outside star bodies** (table-row functions like
+`emp`, null markers like `IsNull` — 15 corpus files) are accepted by both
+front-ends: SQLSolver's reader (`SmtToSqlSolver`) maps `APPLY_UF` to its
+`LiaFuncImpl` term (solved as a z3 uninterpreted function), and the SLS
+adapter maps `declare-fun` symbols to z3 `Function`s applied at their call
+sites. Inside star bodies UFs remain out of fragment for all solvers and such
+dumps are excluded from the corpus by `filter_linear.py`.
+
 ## 3. Results (114 benchmarks, 100 s per file)
 
-| solver | solved | sat | unsat | timeout | error |
-|---|---|---|---|---|---|
-| **cvc5 (liastar, Normaliz)** | **113** | 69 | 44 | 1 | — |
-| SQLSolver (LiaSolver on the corpus) | 99 | 62 | 37 | — | 15 |
-| SLS-reachability | 98 | 61 | 37 | 1 | 15 |
+| solver | solved | sat | unsat | timeout |
+|---|---|---|---|---|
+| **SQLSolver (LiaSolver on the corpus)** | **114** | 70 | 44 | — |
+| cvc5 (liastar, Normaliz) | 113 | 69 | 44 | 1 |
+| SLS-reachability | 113 | 69 | 44 | 1 |
 
-- Every benchmark is solved by at least one solver; no crashes anywhere.
-- The 15 `error` rows (same files for SQLSolver and SLS) are front-end
-  rejections of files with uninterpreted functions *outside* the stars —
-  a parser-coverage gap, not a solver failure.
+- Every benchmark is solved by every solver except one timeout each for cvc5
+  and SLS; no crashes, no errors. (Both front-ends accept uninterpreted
+  functions outside star bodies — see §2.)
 - Cactus plots: `cactus_plot.png`, `cactus_plot_log.png`; per-instance table:
   `comparison.csv`; per-solver counts: `summary.csv`.
 
@@ -71,8 +78,8 @@ homogeneous-equality star bodies, where membership reduces *exactly* to a
 star-free formula. On those, all three solvers have
 **zero wrong answers** (`starfree_check.csv`).
 
-**Agreement** where both solvers answered: cvc5–SLS **97/97**,
-SQLSolver–cvc5 97/98, SQLSolver–SLS 97/98.
+**Agreement** where both solvers answered: cvc5–SLS **112/112**,
+SQLSolver–cvc5 112/113, SQLSolver–SLS 112/113.
 
 ## 4. The one remaining discrepancy
 
