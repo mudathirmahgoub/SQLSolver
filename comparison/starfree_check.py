@@ -34,7 +34,7 @@ from concurrent.futures import ProcessPoolExecutor
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
 CVC5 = os.path.expanduser("~/cvc5/liastar/build/bin/cvc5")
-SUITES = ["calcite", "spark", "tpc-c", "tpc-h"]
+SUITES = ["linear"]
 SOLVED = {"sat", "unsat"}
 
 
@@ -198,7 +198,7 @@ def main():
     for suite in args.suites:
         d = os.path.join(REPO, "cvc5", suite)
         for fn in sorted(os.listdir(d)):
-            if fn.endswith(".smt2") and fn.startswith("query"):
+            if fn.endswith(".smt2"):
                 work.append((os.path.join(d, fn), f"{suite}/{fn}", args.timeout))
 
     rows, bugs = [], {"cvc5": [], "sqlsolver": [], "sls": []}

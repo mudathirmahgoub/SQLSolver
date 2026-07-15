@@ -142,7 +142,7 @@ def draw(logx, out):
         plt.xscale("log")
     plt.xlabel("Cumulative time (s)" + (" [log]" if logx else ""), fontsize=16)
     plt.ylabel("Number of solved instances", fontsize=16)
-    plt.title(f"Cactus Plot: SQL benchmarks (calcite+spark+tpc-c+tpc-h, {N} instances)",
+    plt.title(f"Cactus Plot: linear LIA* SQL benchmarks ({N} instances)",
               fontsize=15)
     plt.grid(True, which="both", linestyle="--", alpha=0.5)
     plt.legend(fontsize=14, borderpad=1.0, labelspacing=0.8, frameon=True)

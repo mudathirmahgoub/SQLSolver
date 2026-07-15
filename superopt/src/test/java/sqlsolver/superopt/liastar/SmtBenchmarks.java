@@ -115,7 +115,7 @@ public class SmtBenchmarks
   @Test
   public void runSingleBenchmarkQuery151Call0()
   {
-    String filename = "cvc5/calcite/query151-call-0.smt2";
+    String filename = "cvc5/linear/calcite-query151-call-0.smt2";
     LiaSolverStatus result = runSingleBenchmark(filename);
     System.out.println("result: " + result);
   }
@@ -227,7 +227,7 @@ public class SmtBenchmarks
   @Test
   public void runBenchmarkBapaQuery090WithModel()
   {
-    String filename = "cvc5/spark/query090-call-2.smt2";
+    String filename = "cvc5/linear/spark-query090-call-2.smt2";
     LiaSolverStatus result = runSingleBenchmark(filename);
     System.out.println("result: " + result);
     assertEquals(LiaSolverStatus.UNSAT, result);
@@ -256,7 +256,7 @@ public class SmtBenchmarks
   @Test
   public void runAllSqlSolverBenchmarks()
   {
-    String[] directories = {"cvc5/calcite", "cvc5/spark", "cvc5/tpc-c", "cvc5/tpc-h"};
+    String[] directories = {"cvc5/linear"};
     long timeoutSeconds = 100;
     String outputCsv = "sql_solver.csv";
 

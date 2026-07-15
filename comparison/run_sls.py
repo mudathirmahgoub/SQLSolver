@@ -22,7 +22,7 @@ SLS = os.path.expanduser("~/sls-reachability")
 SMT_TO_SLS = os.path.join(SLS, "smt_to_sls.py")
 VENV_PY = os.path.join(SLS, ".venv", "bin", "python3")
 BINDINGS = os.path.expanduser("~/cvc5/liastar/build-python/src/api/python")
-SUITES = ["calcite", "spark", "tpc-c", "tpc-h"]
+SUITES = ["linear"]
 
 
 def run_one(args):
@@ -55,7 +55,7 @@ def main():
     for suite in args.suites:
         d = os.path.join(REPO, "cvc5", suite)
         files += sorted(os.path.join(d, f) for f in os.listdir(d)
-                        if f.endswith(".smt2") and f.startswith("query"))
+                        if f.endswith(".smt2"))
     print(f"{len(files)} files, timeout {args.timeout}s, {args.jobs} workers")
 
     results = {}

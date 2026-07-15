@@ -1,3 +1,0 @@
-Fatal failure within static Node cvc5::internal::theory::arith::liastar::LiaStarUtils::removeItes(Node, Env *, LiaStarStatistics *) at /Users/mahgoubyahia/cvc5/liastar/src/theory/arith/liastar/liastar_utils.cpp:366
-Internal error detected Unexpected kind. Node (int.star-contains (lambda ((BOUND_VARIABLE_2424 Int)) (ite (= BOUND_VARIABLE_2424 0) true false)) var4) has kind: int.star-contains
-

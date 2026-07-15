@@ -1,6 +1,0 @@
-(set-logic HO_ALL)
-(declare-const y Int)
-(declare-const a Int)
-(assert (= y 3))
-(assert (int.star-contains (lambda ((a Int)) (= a 5)) y))
-(check-sat)

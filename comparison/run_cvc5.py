@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Run the liastar cvc5 binary on every dump in the corpus.
 
-For each cvc5/<suite>/queryNNN-call-K.smt2 this writes the raw solver output to
-the sibling queryNNN-call-K.txt and appends a classified row to ../cvc5_all.csv
+For each benchmark in cvc5/linear/ this writes the raw solver output to the
+sibling .txt file and appends a classified row to ../cvc5_all.csv
 (filename,result,duration) with result in
 {sat, unsat, unknown, timeout, crash, parse_error, other}.
 
@@ -19,7 +19,7 @@ from concurrent.futures import ProcessPoolExecutor
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
 CVC5 = os.path.expanduser("~/cvc5/liastar/build/bin/cvc5")
-SUITES = ["calcite", "spark", "tpc-c", "tpc-h"]
+SUITES = ["linear"]
 
 
 def classify(text, returncode):
@@ -75,7 +75,7 @@ def main():
     for suite in args.suites:
         d = os.path.join(REPO, "cvc5", suite)
         files += sorted(os.path.join(d, f) for f in os.listdir(d)
-                        if f.endswith(".smt2") and f.startswith("query"))
+                        if f.endswith(".smt2"))
     print(f"{len(files)} files, timeout {args.timeout}s, {args.jobs} workers")
 
     results = {}
