@@ -25,6 +25,7 @@ PARALLEL=0
 
 ./regenerate_dumps.sh
 ./filter_linear.py
+./dedup_linear.py
 
 if [ "$PARALLEL" = "1" ]; then
   ./run_roundtrip.sh &
