@@ -69,10 +69,10 @@ public class LiaSolver
       String result = checkOverapp();
       if (result.equals("UNSAT"))
         return LiaSolverStatus.UNSAT;
-      if (result.equals("SAT"))
-      {
-        return LiaSolverStatus.SAT;
-      }
+      // if (result.equals("SAT"))
+      // {
+      //   return LiaSolverStatus.SAT;
+      // }
       return LiaSolverStatus.UNKNOWN;
     }
     catch (Exception e)
