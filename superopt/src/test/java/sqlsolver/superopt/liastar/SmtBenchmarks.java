@@ -260,11 +260,28 @@ public class SmtBenchmarks
     long timeoutSeconds = 100;
     String outputCsv = "sql_solver.csv";
 
-    runMultipleBenchmarks(directories, outputCsv, timeoutSeconds);
+    // these benchmarks are fast: run sequentially for accurate timings
+    runMultipleBenchmarks(directories, outputCsv, timeoutSeconds, 1);
   }
 
   private void runMultipleBenchmarks(String[] directories, String outputCsv, long timeoutSeconds)
       throws RuntimeException
+  {
+    // leave two CPUs free for the operating system and the IDE
+    int jobs = Math.max(1, Runtime.getRuntime().availableProcessors() - 2);
+    runMultipleBenchmarks(directories, outputCsv, timeoutSeconds, jobs);
+  }
+
+  /**
+   * Runs every smt2 file in the given directories through the SQLSolver pipeline, at most
+   * {@code jobs} benchmarks concurrently, and writes filename,result,duration rows to
+   * {@code outputCsv} as benchmarks finish (rows are in completion order when jobs > 1).
+   * Each benchmark keeps the sequential version's timeout semantics: it runs on its own
+   * dedicated worker thread, so the {@code timeoutSeconds} budget never counts time spent
+   * waiting in the pool queue.
+   */
+  private void runMultipleBenchmarks(
+      String[] directories, String outputCsv, long timeoutSeconds, int jobs) throws RuntimeException
   {
     List<Path> files = new ArrayList<>();
     for (String dir : directories)
@@ -281,45 +298,65 @@ public class SmtBenchmarks
       }
     }
 
-    ExecutorService executor = Executors.newSingleThreadExecutor();
+    ExecutorService pool = Executors.newFixedThreadPool(jobs);
     try (PrintWriter writer = new PrintWriter(Files.newBufferedWriter(Paths.get(outputCsv))))
     {
       writer.println("filename,result,duration");
       writer.flush();
 
+      List<Future<?>> pending = new ArrayList<>();
       for (Path file : files)
       {
-        String filename = file.getFileName().toString();
-        String result;
-        double duration;
-        long startNs = System.nanoTime();
-        Future<LiaSolverStatus> future = executor.submit(() -> {
-          SmtToSqlSolver smtToSqlSolver = new SmtToSqlSolver();
-          LiaStar formula = smtToSqlSolver.translateFile(file.toString());
-          return LiaSolver.solveWithConfig(formula, LIA_SOLVER_CONFIGS[1]);
-        });
+        pending.add(pool.submit(() -> {
+          String result;
+          double duration;
+          ExecutorService executor = Executors.newSingleThreadExecutor();
+          long startNs = System.nanoTime();
+          Future<LiaSolverStatus> future = executor.submit(() -> {
+            SmtToSqlSolver smtToSqlSolver = new SmtToSqlSolver();
+            LiaStar formula = smtToSqlSolver.translateFile(file.toString());
+            return LiaSolver.solveWithConfig(formula, LIA_SOLVER_CONFIGS[1]);
+          });
+          try
+          {
+            LiaSolverStatus status = future.get(timeoutSeconds, TimeUnit.SECONDS);
+            result = status.toString();
+            duration = (System.nanoTime() - startNs) / 1e9;
+          }
+          catch (TimeoutException e)
+          {
+            future.cancel(true);
+            result = "timeout";
+            duration = timeoutSeconds;
+          }
+          catch (Exception e)
+          {
+            System.out.println(e);
+            result = "error";
+            duration = (System.nanoTime() - startNs) / 1e9;
+          }
+          finally
+          {
+            executor.shutdownNow();
+          }
+          synchronized (writer)
+          {
+            System.out.printf("%s,%s,%.3f%n", file, result, duration);
+            writer.printf("%s,%s,%.3f%n", file, result, duration);
+            writer.flush();
+          }
+        }));
+      }
+      for (Future<?> task : pending)
+      {
         try
         {
-          LiaSolverStatus status = future.get(timeoutSeconds, TimeUnit.SECONDS);
-          result = status.toString();
-          duration = (System.nanoTime() - startNs) / 1e9;
-        }
-        catch (TimeoutException e)
-        {
-          future.cancel(true);
-          result = "timeout";
-          duration = timeoutSeconds;
+          task.get();
         }
         catch (Exception e)
         {
           System.out.println(e);
-          result = "error";
-          duration = (System.nanoTime() - startNs) / 1e9;
         }
-
-        System.out.printf("%s,%s,%.3f%n", file, result, duration);
-        writer.printf("%s,%s,%.3f%n", file, result, duration);
-        writer.flush();
       }
     }
     catch (IOException e)
@@ -328,7 +365,7 @@ public class SmtBenchmarks
     }
     finally
     {
-      executor.shutdownNow();
+      pool.shutdownNow();
     }
   }
 
