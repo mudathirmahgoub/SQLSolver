@@ -254,7 +254,7 @@ public class SmtBenchmarks
   }
 
   @Test
-  public void runAllSqlSolverBenchmarks()
+  public void runLinearSqlSolverBenchmarks()
   {
     String[] directories = {"cvc5/linear"};
     long timeoutSeconds = 100;
