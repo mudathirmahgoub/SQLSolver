@@ -28,6 +28,14 @@ import io.github.cvc5.TermManager;
 
 public class SmtBenchmarks
 {
+  /**
+   * Canonical benchmark set shared by all tools of the fmcad comparison. Tests run with
+   * workingDir = the SQLSolver root (see build.gradle), and in the fmcad layout
+   * (github.com/mudathirmahgoub/fmcad) SQLSolver is cloned next to the benchmarks
+   * directory, so the set is one level up.
+   */
+  private static final String FMCAD26_DIR = "../benchmarks";
+
   private static final Properties[] LIA_SOLVER_CONFIGS;
 
   static
@@ -246,7 +254,7 @@ public class SmtBenchmarks
   public void runAllMapaBenchmarks()
   {
     String[] directories = {
-        "cvc5/sls-reachability/arith/cvc5_mapa", "cvc5/sls-reachability/card/cvc5_mapa"};
+        FMCAD26_DIR + "/arith/cvc5_mapa", FMCAD26_DIR + "/card/cvc5_mapa"};
     long timeoutSeconds = 100;
     String outputCsv = "sql_mapa.csv";
 
@@ -256,7 +264,7 @@ public class SmtBenchmarks
   @Test
   public void runLinearSqlSolverBenchmarks()
   {
-    String[] directories = {"cvc5/linear"};
+    String[] directories = {FMCAD26_DIR + "/sql/linear"};
     long timeoutSeconds = 100;
     String outputCsv = "sql_solver.csv";
 
@@ -373,7 +381,7 @@ public class SmtBenchmarks
   public void runAllBapaBenchmarks()
   {
     String[] directories = {
-        "cvc5/sls-reachability/arith/cvc5_bapa", "cvc5/sls-reachability/card/cvc5_bapa"};
+        FMCAD26_DIR + "/arith/cvc5_bapa", FMCAD26_DIR + "/card/cvc5_bapa"};
     long timeoutSeconds = 100;
     String outputCsv = "sql_bapa.csv";
 
