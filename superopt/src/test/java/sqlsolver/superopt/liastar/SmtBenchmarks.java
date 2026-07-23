@@ -31,7 +31,7 @@ public class SmtBenchmarks
   /**
    * Canonical benchmark set shared by all tools of the fmcad comparison. Tests run with
    * workingDir = the SQLSolver root (see build.gradle), and in the fmcad layout
-   * (github.com/mudathirmahgoub/fmcad) SQLSolver is cloned next to the benchmarks
+   * (github.com/mudathirmahgoub/fmcad26) SQLSolver is cloned next to the benchmarks
    * directory, so the set is one level up.
    */
   private static final String FMCAD26_DIR = "../benchmarks";
