@@ -36,6 +36,18 @@ task run(type: JavaExec) {
     jvmArgs += ['--module-path', classpath.asPath]
 }
 
+// Benchmark runner with configurable per-benchmark timeout and parallelism
+// e.g.:
+//   ./gradlew :superopt:smtBenchmarks -PbenchArgs="bapa --timeout=60 --jobs=8"
+// SmtBenchmarksMain lives in the test source set, next to SmtBenchmarks
+// and the SmtToSqlSolver frontend it uses.
+task smtBenchmarks(type: JavaExec) {
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'sqlsolver.superopt.liastar.SmtBenchmarksMain'
+    modularity.inferModulePath = false
+    args(((findProperty('benchArgs') ?: '') as String).trim().split('\\s+').findAll { !it.isEmpty() })
+}
+
 def libz3Url = "https://drive.google.com/uc?export=download&id=1_qJX15kK0_XEW7vzn4PK8BUzgjRq2dDO"
 def libz3javaUrl = "https://drive.google.com/uc?export=download&id=1_lkOFD_xcd687MksXoV9hhVEls5uJWtm"
 
