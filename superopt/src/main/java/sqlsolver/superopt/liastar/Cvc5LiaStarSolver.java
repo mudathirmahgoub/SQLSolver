@@ -341,8 +341,16 @@ public class Cvc5LiaStarSolver
       });
 
       builder.append(") ");
+      // int.star-contains no longer assumes nonnegative summand vectors
+      // (cvc5's ARITH_LIA_STAR_NONNEGATIVE lemma is gone): the lambda
+      // predicate itself must constrain every bound variable.
+      builder.append("(and ");
+      for (String v : freeVariables)
+      {
+        builder.append("(>= ").append(v).append(" 0) ");
+      }
       visit(z.constraints, builder);
-      builder.append(") ");
+      builder.append(")) ");
       // Point coordinates of int.star-contains, one per lambda dimension.
       // The first outerVector.size() dimensions are the summed dimensions:
       // outer[i] = sum over summands of inner[i]. Surplus innerVector dims are
