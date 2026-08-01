@@ -28,17 +28,20 @@ https://link.springer.com/chapter/10.1007/978-3-540-78163-9_20
 (assert (>= z1 0)) 
 (assert (>= z2 0)) 
 
-(assert (= a 1))
-(assert (= b 0))
+(assert (= b 1))
 (assert (= c 0))
 
-; k1 ≠ k2 − 1 ∧ (k1, k2, 1, 0, 0) ∈ ∑ F(x1, L, x, z1, z2)
+; k1 = k2 − a ∧ (k1, k2, a, 1, 0) ∈ ∑ F(x1, L, x, z1, z2)
+;
+; b = 1, c = 0 forces exactly one summand with z1 = 1 (i.e. x1 ≠ L − x, x ≤ L)
+; while every other summand has x1 = L − x, so k1 ≠ k2 − a; asserting equality
+; makes it unsat.
 
-; k1 ≠ k2 − 1
-(assert 
-  (distinct k1 (- k2 1))) 
+; k1 = k2 − a
+(assert
+  (= k1 (- k2 a)))
 
-;(k1, k2, 1, 0, 0) ∈ ∑ F(x1, L, x, z1, z2)
+;(k1, k2, a, 1, 0) ∈ ∑ F(x1, L, x, z1, z2)
 (assert 
   (int.star-contains 
     (lambda ((x1 Int) (L Int) (x Int) (z1 Int) (z2 Int))
