@@ -10,6 +10,7 @@ https://link.springer.com/chapter/10.1007/978-3-540-78163-9_20
 (set-option :quiet true)
 (declare-fun k1 () Int)
 (declare-fun k2 () Int)
+(declare-fun k3 () Int)
 (declare-fun x1 () Int)
 (declare-fun L () Int)
 (declare-fun x () Int)
@@ -17,31 +18,31 @@ https://link.springer.com/chapter/10.1007/978-3-540-78163-9_20
 (declare-fun z2 () Int)
 (declare-fun a () Int)
 (declare-fun b () Int)
-(declare-fun c () Int)
 
 ; non negative
 (assert (>= k1 0)) 
 (assert (>= k2 0)) 
+(assert (>= k3 0)) 
 (assert (>= x1 0)) 
 (assert (>= L 0)) 
 (assert (>= x 0)) 
 (assert (>= z1 0)) 
 (assert (>= z2 0)) 
 
-(assert (= b 1))
-(assert (= c 0))
+(assert (= a 1))
+(assert (= b 0))
 
-; k1 = k2 − a ∧ (k1, k2, a, 1, 0) ∈ ∑ F(x1, L, x, z1, z2)
+; k1 = k2 − a ∧ (k1, k2, k3, 1, 0) ∈ ∑ F(x1, L, x, z1, z2)
 ;
-; b = 1, c = 0 forces exactly one summand with z1 = 1 (i.e. x1 ≠ L − x, x ≤ L)
+; a = 1, b = 0 forces exactly one summand with z1 = 1 (i.e. x1 ≠ L − x, x ≤ L)
 ; while every other summand has x1 = L − x, so k1 ≠ k2 − a; asserting equality
 ; makes it unsat.
 
-; k1 = k2 − a
+; k1 = k2 − k3
 (assert
-  (= k1 (- k2 a)))
+  (= k1 (- k2 k3)))
 
-;(k1, k2, a, 1, 0) ∈ ∑ F(x1, L, x, z1, z2)
+;(k1, k2, k3, 1, 0) ∈ ∑ F(x1, L, x, z1, z2)
 (assert 
   (int.star-contains 
     (lambda ((x1 Int) (L Int) (x Int) (z1 Int) (z2 Int))
@@ -52,6 +53,6 @@ https://link.springer.com/chapter/10.1007/978-3-540-78163-9_20
               (ite (<= L x) 0 (- L x))) 0 1)) 
         (= z2 (ite (<= x L) 0 1)))
     )
-    k1 k2 a b c))
+    k1 k2 k3 a b))
         
 (check-sat) 
