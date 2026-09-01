@@ -17,6 +17,7 @@ We also provide an online [demo](https://sqlsolver.systems/sqlsolver/home) and y
     - [Example](#example) 
 - [API](#api)
 - [Benchmark](#benchmark)
+- [LIA* backend: SQLSolver or cvc5](#lia-backend-sqlsolver-or-cvc5)
 - [File Structure](#file-structure)
 - [Citation](#citation)
 - [Contact](#contact)
@@ -30,8 +31,8 @@ We also provide an online [demo](https://sqlsolver.systems/sqlsolver/home) and y
 - z3 4.8.9 (SMT solver)
 - antlr 4.8 (Generate tokenizer and parser for SQL AST)
 - Python 3
-- Java 17
-- Gradle 7.3.3
+- JDK 21 or newer (the main sources target Java 17, `superopt`'s tests target Java 21)
+- Gradle 9.6.0 — no separate install needed, the Gradle wrapper (`./gradlew`) downloads it
 
 z3 and antlr library have been put in `lib/` off-the-shelf.
 
@@ -47,33 +48,37 @@ sudo apt install python3
 
 #### Install Java and Gradle
 
-If you do not have Java or Gradle installed, you may refer to these instructions:
+Gradle itself does not have to be installed: the repository ships the Gradle wrapper
+(`gradlew`, `gradlew.bat` and `gradle/wrapper/`), which downloads and runs the exact
+version the build is pinned to — Gradle 9.6.0, see
+[`gradle/wrapper/gradle-wrapper.properties`](gradle/wrapper/gradle-wrapper.properties).
+Use `./gradlew` (`gradlew.bat` on Windows) in place of `gradle` in every command below.
+
+Only a JDK is required. Install JDK 21 or newer and make it the default, e.g.:
 
 ```shell
-# Installing Java 17
-sudo add-apt-repository ppa:linuxuprising/java
+# Installing JDK 21 (Debian/Ubuntu)
 sudo apt update
-sudo apt-get install -y oracle-java17-installer oracle-java17-set-default
+sudo apt install -y openjdk-21-jdk
+sudo update-alternatives --config java   # if an older JDK is still the default
 
-# Installing Gradle 7.3.3
-wget https://services.gradle.org/distributions/gradle-7.3.3-bin.zip -P /tmp
-sudo unzip -d /opt/gradle /tmp/gradle-7.3.3-bin.zip
-sudo touch /etc/profile.d/gradle.sh
-sudo chmod a+wx /etc/profile.d/gradle.sh
-sudo echo -e "export GRADLE_HOME=/opt/gradle/gradle-7.3.3 \nexport PATH=\${GRADLE_HOME}/bin:\${PATH}" >> /etc/profile.d/gradle.sh
-source /etc/profile
+java -version                            # should report 21 or newer
 ```
+
+A JDK older than 21 fails with `error: invalid source release: 21` while compiling
+`superopt`'s tests.
 
 ## Quick Start
 
 ### Compile 
 
-We use Gradle as the project build tool.
+We use Gradle as the project build tool, invoked through the wrapper so that the
+pinned Gradle 9.6.0 is used regardless of what is installed on the machine.
 After all the above dependencies are installed, you can compile the SQLSolver project
 with the following command.
 
 ```shell
-gradle compileJava
+./gradlew compileJava
 ```
 
 ### Building the JAR file
@@ -81,7 +86,7 @@ gradle compileJava
 After Compilation, you can build a JAR file using the following command.
 
 ```shell
-gradle fatjar
+./gradlew fatJar
 ```
 
 The JAR file will be generated in the `build/libs/` directory relative
@@ -232,6 +237,47 @@ For example, the first query is equivalent to the second query in each file.
 | Spark SQL | [Spark SQL Schema](/sqlsolver_data/schemas/calcite_test.base.schema.sql) | [Spark SQL Test Set](sqlsolver_data/db_rule_instances/spark_tests) |
 | TPC-C     | [TPC-C Schema](/sqlsolver_data/schemas/tpcc.base.schema.sql)             | [TPC-C Test Set](sqlsolver_data/prepared/rules.tpcc.spark.txt)     |
 | TPC-H     | [TPC-H Schema](/sqlsolver_data/schemas/tpch.base.schema.sql)             | [TPC-H Test Set](sqlsolver_data/prepared/rules.tpch.spark.txt)     |
+
+## LIA* backend: SQLSolver or cvc5
+
+SQLSolver's star solver supports more than cvc5's LIA* fragment does — uninterpreted
+functions, multiplication, nested stars, and variables that occur free inside a star body
+("parameters"). Its pipeline reduces all of that away before solving: parameters are pushed
+up and removed, and multiplications are abstracted into fresh variables
+(`LiaSolver.checkOverapp`). What remains at that point is a LIA* formula with linear,
+closed star bodies — precisely what cvc5 accepts as `int.star-contains`.
+
+From there the two backends differ:
+
+| backend | how the linear LIA* formula is decided |
+|---|---|
+| `sqlsolver` (default) | SQLSolver eliminates each star itself, computing a semi-linear set (`LiaStar.expandStar` → `LiaTransformer`), and gives the resulting plain LIA formula to z3. The construction falls back to an over-approximation whenever the equivalent one fails, so only *unsat* is conclusive — a "sat" is discarded as unknown. |
+| `cvc5` | The formula is handed to cvc5 as-is, encoded with `int.star-contains` by `Cvc5LiaStarSolver.toSmt2Script` — the same encoder that writes the exported cvc5 benchmark files. cvc5 decides the star formula, so *sat* is conclusive too (`Cvc5LiaStarBackend`). |
+
+Everything before that point is identical under both backends, including the
+under-approximation attempt that can settle *sat* early.
+
+Select the backend on the benchmark runner:
+
+```bash
+./gradlew :superopt:smtBenchmarks -PbenchArgs="bapa --timeout=100 --jobs=1 --backend=cvc5"
+```
+
+or, for any other entry point into the pipeline (e.g. the query-equivalence driver), with a
+system property:
+
+```bash
+-Dsqlsolver.liastar.backend=cvc5 [-Dsqlsolver.liastar.cvc5.tlimit=100000]
+```
+
+`sqlsolver.liastar.cvc5.tlimit` bounds one cvc5 query in millis (0 = no limit). The
+benchmark runner sets it from `--timeout` automatically: a cvc5 check runs in native code,
+where an interrupt from the runner's watchdog would not reach it.
+
+Soundness note: *unsat* from the cvc5 backend always transfers back to the input formula.
+*Sat* is reported only when the encoding is exact — a star that still has a free variable
+has to be bound per-summand under a closed lambda, which weakens the formula, and such a sat
+is downgraded to unknown.
 
 ## File Structure
 

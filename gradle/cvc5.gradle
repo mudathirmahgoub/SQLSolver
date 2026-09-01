@@ -1,0 +1,127 @@
+// Fetches and builds the cvc5 that the LIA* backend uses, so a fresh checkout on Linux or
+// macOS needs one command:
+//
+//     ./gradlew setupCvc5
+//
+// It clones github.com/mudathirmahgoub/cvc5 (branch `lazy` by default), builds it with its
+// java bindings, installs the jar and native libraries into lib/, and leaves the executable
+// where Cvc5LiaStarBackend looks for it. Re-running is cheap: each step is skipped when its
+// output is already in place, and `-Pcvc5Rebuild` forces a rebuild.
+//
+// Overridable:
+//     -Pcvc5Repo=<url>     -Pcvc5Branch=<branch>     -Pcvc5Dir=<path>     -Pcvc5Jobs=<N>
+
+ext {
+    cvc5Repo = findProperty('cvc5Repo') ?: 'https://github.com/mudathirmahgoub/cvc5.git'
+    cvc5Branch = findProperty('cvc5Branch') ?: 'lazy'
+    cvc5Dir = file(findProperty('cvc5Dir') ?: "$rootDir/cvc5-build")
+    cvc5Install = file("${cvc5Dir}/build/install")
+    // the jar is installed under the name build.gradle's flatDir dependency expects
+    cvc5JarName = 'cvc5-1.3.4.jar'
+    cvc5Exe = org.gradle.internal.os.OperatingSystem.current().isWindows() ? 'cvc5.exe' : 'cvc5'
+}
+
+/** Clone on first run, otherwise fetch and hard-reset onto the requested branch. */
+tasks.register('cvc5Clone') {
+    group = 'cvc5'
+    description = "Clone or update ${cvc5Repo} (branch ${cvc5Branch}) into ${cvc5Dir}"
+    outputs.upToDateWhen { false }
+    doLast {
+        if (!file("${cvc5Dir}/.git").exists()) {
+            cvc5Dir.parentFile.mkdirs()
+            logger.lifecycle("cloning ${cvc5Repo} (${cvc5Branch}) into ${cvc5Dir}")
+            providers.exec {
+                commandLine 'git', 'clone', '--branch', cvc5Branch, '--single-branch',
+                            cvc5Repo, cvc5Dir.absolutePath
+            }.result.get().assertNormalExitValue()
+        } else {
+            logger.lifecycle("updating ${cvc5Dir} to ${cvc5Branch}")
+            providers.exec {
+                workingDir cvc5Dir
+                commandLine 'git', 'fetch', 'origin', cvc5Branch
+            }.result.get().assertNormalExitValue()
+            providers.exec {
+                workingDir cvc5Dir
+                commandLine 'git', 'checkout', '-B', cvc5Branch, "origin/${cvc5Branch}"
+            }.result.get().assertNormalExitValue()
+        }
+    }
+}
+
+/**
+ * Configure and build cvc5. --auto-download lets cvc5 fetch its own dependencies, so the
+ * host only needs a C++ toolchain, cmake, ninja, python3 and a JDK. --all-bindings produces
+ * the java bindings the smt2 front end uses; --normaliz is required by the LIA* solver.
+ */
+tasks.register('cvc5Build') {
+    group = 'cvc5'
+    description = 'Build cvc5 and install it under cvc5-build/build/install'
+    dependsOn 'cvc5Clone'
+    onlyIf {
+        final built = file("${cvc5Install}/bin/${cvc5Exe}").exists()
+        if (built && !project.hasProperty('cvc5Rebuild')) {
+            logger.lifecycle("cvc5 already built at ${cvc5Install}/bin/${cvc5Exe} " +
+                             "(use -Pcvc5Rebuild to rebuild)")
+        }
+        !built || project.hasProperty('cvc5Rebuild')
+    }
+    doLast {
+        final jobs = (findProperty('cvc5Jobs') ?: Runtime.runtime.availableProcessors()) as String
+        logger.lifecycle("configuring cvc5 (this downloads its dependencies and takes a while)")
+        providers.exec {
+            workingDir cvc5Dir
+            commandLine './configure.sh', 'production', '--prefix=build/install',
+                        '--ninja', '--auto-download', '--all-bindings', '--normaliz'
+        }.result.get().assertNormalExitValue()
+        logger.lifecycle("building cvc5 with ${jobs} jobs")
+        providers.exec {
+            workingDir file("${cvc5Dir}/build")
+            commandLine 'ninja', 'install', '-j', jobs
+        }.result.get().assertNormalExitValue()
+    }
+}
+
+/**
+ * Copy the built java bindings into lib/: the jar under the name the flatDir dependency
+ * expects, plus every shared library next to it so java.library.path finds them. Symlinks
+ * are copied as links, matching how cvc5 installs its versioned .so/.dylib names.
+ */
+tasks.register('cvc5InstallBindings') {
+    group = 'cvc5'
+    description = 'Install the built cvc5 jar and native libraries into lib/'
+    dependsOn 'cvc5Build'
+    doLast {
+        final lib = file("$rootDir/lib")
+        lib.mkdirs()
+        final jar = file("${cvc5Install}/share/java/cvc5.jar")
+        if (!jar.exists()) {
+            throw new GradleException("cvc5 jar not found at ${jar}; was cvc5 built with " +
+                                      "--all-bindings?")
+        }
+        java.nio.file.Files.copy(jar.toPath(), file("${lib}/${cvc5JarName}").toPath(),
+                java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+        logger.lifecycle("installed ${jar.name} as lib/${cvc5JarName}")
+        int copied = 0
+        file("${cvc5Install}/lib").listFiles()?.each { src ->
+            if (src.name ==~ /.*\.(dylib|so)(\.\d+)*$/) {
+                final dst = file("${lib}/${src.name}").toPath()
+                java.nio.file.Files.deleteIfExists(dst)
+                java.nio.file.Files.copy(src.toPath(), dst,
+                        java.nio.file.StandardCopyOption.REPLACE_EXISTING,
+                        java.nio.file.LinkOption.NOFOLLOW_LINKS)
+                copied++
+            }
+        }
+        logger.lifecycle("installed ${copied} native libraries into lib/")
+    }
+}
+
+tasks.register('setupCvc5') {
+    group = 'cvc5'
+    description = 'Fetch, build and install cvc5 for the LIA* backend'
+    dependsOn 'cvc5InstallBindings'
+    doLast {
+        logger.lifecycle("cvc5 ready: ${cvc5Install}/bin/${cvc5Exe}")
+        logger.lifecycle("run the benchmarks with -Dsqlsolver.liastar.backend=cvc5")
+    }
+}

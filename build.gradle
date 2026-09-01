@@ -62,6 +62,14 @@ subprojects {
         useJUnitPlatform()
         jvmArgs += ['-Dfile.encoding=UTF-8']
         workingDir(rootDir)
+        // let every -Dsqlsolver.* on the gradle command line reach the test JVM (the LIA*
+        // backend selection and its options are read from system properties), rather than
+        // forwarding a hand-maintained list that silently drops anything added later
+        System.properties.each { key, value ->
+            if (key.toString().startsWith('sqlsolver.')) systemProperty(key.toString(), value)
+        }
+        testLogging { showStandardStreams = true }
+        outputs.upToDateWhen { false }
     }
 
     dependencies {

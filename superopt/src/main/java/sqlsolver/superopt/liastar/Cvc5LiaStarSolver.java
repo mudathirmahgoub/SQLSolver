@@ -38,8 +38,19 @@ public class Cvc5LiaStarSolver
   // Wall-clock budget for the exact parameter-elimination attempt in
   // translate(); past it the dump falls back to the WARNING (weakened) form.
   public static long ELIMINATION_BUDGET_SECONDS = 30;
-  static
+  private static boolean csvInitialized = false;
+
+  /**
+   * Truncates the results csv and writes its header, once per JVM. Called from
+   * {@link #translate}, the dump path whose caller appends rows to that csv, rather than from
+   * a static initializer: {@link #toSmt2Script} shares this class, and merely encoding a
+   * formula should not leave a results file behind.
+   */
+  private static synchronized void initCsv()
   {
+    if (csvInitialized)
+      return;
+    csvInitialized = true;
     try
     {
       writer = new PrintWriter(csvFile);
@@ -54,6 +65,7 @@ public class Cvc5LiaStarSolver
 
   public static void translate(LiaStar fstar) throws IOException
   {
+    initCsv();
     // A variable free in a star body (a "parameter") denotes one value shared
     // by all summands and equal to its occurrences outside the star, but
     // int.star-contains cannot express that coupling: its lambda must be
@@ -120,6 +132,40 @@ public class Cvc5LiaStarSolver
       }
     }
 
+    StringBuilder builder = new StringBuilder();
+    builder.append(header);
+    builder.append(toSmt2Script(fstar));
+    if (lastFileName.equals(fileName))
+    {
+      index++;
+    }
+    else
+    {
+      index = 0;
+    }
+    path = Path.of("cvc5/" + fileName + "-call-" + index + ".smt2");
+    lastFileName = fileName;
+    Files.writeString(path, builder, StandardCharsets.UTF_8);
+  }
+
+  /**
+   * Encode {@code fstar} as a self-contained SMT2 script (declarations, one
+   * assert, check-sat) in cvc5's LIA* fragment, using {@code int.star-contains}
+   * for stars -- the same encoding {@link #translate} dumps to the benchmark
+   * files, so a formula solved through this script is the formula the exported
+   * benchmarks pose.
+   *
+   * <p>The encoding is exact only for a parameter-free formula: a variable free
+   * in a star body cannot be expressed by the closed lambda of
+   * int.star-contains and is bound per-summand instead, which weakens the
+   * formula (see {@link #translate}). Callers that act on <em>sat</em> must
+   * check {@link #collectStarParams} first; unsat transfers either way.
+   *
+   * <p>Synchronized because the declaration collections below are static state
+   * shared with {@link #translate}.
+   */
+  public static synchronized String toSmt2Script(LiaStar fstar)
+  {
     smtConstants = new HashSet<>();
     smtFunctions = new HashMap<>();
     freshSumVars = new ArrayList<>();
@@ -147,7 +193,6 @@ public class Cvc5LiaStarSolver
     visit(fstar, body);
 
     StringBuilder builder = new StringBuilder();
-    builder.append(header);
     builder.append("(set-logic HO_ALL)\n");
 
     for (String smtConstant : smtConstants)
@@ -170,23 +215,13 @@ public class Cvc5LiaStarSolver
     }
     builder.append("(assert ").append(body).append(")\n");
     builder.append("(check-sat)\n");
-    if (lastFileName.equals(fileName))
-    {
-      index++;
-    }
-    else
-    {
-      index = 0;
-    }
-    path = Path.of("cvc5/" + fileName + "-call-" + index + ".smt2");
-    lastFileName = fileName;
-    Files.writeString(path, builder, StandardCharsets.UTF_8);
+    return builder.toString();
   }
 
   // Union of collectParamNames over every star in the formula: the free vars
   // of star bodies, i.e. the variables the closed-lambda encoding would
   // decouple from their outer occurrences.
-  private static Set<String> collectStarParams(LiaStar f)
+  public static Set<String> collectStarParams(LiaStar f)
   {
     final Set<String> params = new HashSet<>();
     f.transformPostOrder(lia -> {

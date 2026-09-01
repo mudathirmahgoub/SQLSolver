@@ -30,6 +30,28 @@ public class LiaSolver
   public static final String CONFIG_VALUE_PARAM_REMOVAL_MODE_INWARD = "INWARD";
   public static final String CONFIG_VALUE_PARAM_REMOVAL_MODE_OUTWARD = "OUTWARD";
 
+  /**
+   * Which solver decides the linear LIA* formula that {@link #checkOverapp} arrives at:
+   * {@link #CONFIG_VALUE_BACKEND_SQLSOLVER} (the default) eliminates the stars in SQLSolver
+   * itself and calls z3, {@link #CONFIG_VALUE_BACKEND_CVC5} hands the star formula to cvc5.
+   * Unset falls back to the {@value #PROPERTY_BACKEND} system property, so callers that do
+   * not build the configuration themselves can still select the backend.
+   */
+  public static final String CONFIG_KEY_BACKEND = "LIASTAR_BACKEND";
+  public static final String CONFIG_VALUE_BACKEND_SQLSOLVER = "SQLSOLVER";
+  public static final String CONFIG_VALUE_BACKEND_CVC5 = "CVC5";
+  public static final String PROPERTY_BACKEND = "sqlsolver.liastar.backend";
+
+  /**
+   * Wall-clock budget in millis for one cvc5 query, passed on as cvc5's own {@code tlimit}.
+   * A cvc5 check runs in native code where an interrupt from the caller's watchdog does not
+   * reach it, so without this a hard formula keeps a core busy after its benchmark was
+   * abandoned. Unset falls back to the {@value #PROPERTY_CVC5_TLIMIT} system property, and
+   * then to no limit.
+   */
+  public static final String CONFIG_KEY_CVC5_TLIMIT_MILLIS = "CVC5_TLIMIT_MILLIS";
+  public static final String PROPERTY_CVC5_TLIMIT = "sqlsolver.liastar.cvc5.tlimit";
+
   private final Properties config;
   private final LiaStar liaFormula;
 
@@ -52,6 +74,30 @@ public class LiaSolver
     liaFormula = f;
   }
 
+  /** Whether this solver decides the linear LIA* formula with cvc5 rather than with
+   * SQLSolver's own star elimination; see {@link #CONFIG_KEY_BACKEND}. */
+  private boolean useCvc5Backend()
+  {
+    final String backend =
+        config.getProperty(CONFIG_KEY_BACKEND, System.getProperty(PROPERTY_BACKEND, ""));
+    return backend.equalsIgnoreCase(CONFIG_VALUE_BACKEND_CVC5);
+  }
+
+  /** The cvc5 tlimit in millis; see {@link #CONFIG_KEY_CVC5_TLIMIT_MILLIS}. */
+  private long cvc5TimeoutMillis()
+  {
+    final String millis = config.getProperty(
+        CONFIG_KEY_CVC5_TLIMIT_MILLIS, System.getProperty(PROPERTY_CVC5_TLIMIT, "0"));
+    try
+    {
+      return Long.parseLong(millis.trim());
+    }
+    catch (NumberFormatException e)
+    {
+      return 0;
+    }
+  }
+
   public LiaSolverStatus solve()
   {
     try
@@ -69,10 +115,13 @@ public class LiaSolver
       String result = checkOverapp();
       if (result.equals("UNSAT"))
         return LiaSolverStatus.UNSAT;
-      // if (result.equals("SAT"))
-      // {
-      //   return LiaSolverStatus.SAT;
-      // }
+      // SQLSolver's own star elimination may over-approximate, so a "SAT" from it says
+      // nothing about the input formula and is dropped. cvc5 decides the star formula
+      // itself, and the cvc5 path reports sat only when both the encoding and the steps
+      // that produced the formula preserve satisfiability (see isSatPreserving), so there
+      // the model is genuine.
+      if (result.equals("SAT") && useCvc5Backend())
+        return LiaSolverStatus.SAT;
       return LiaSolverStatus.UNKNOWN;
     }
     catch (Exception e)
@@ -126,7 +175,175 @@ public class LiaSolver
     if (LogicSupport.dumpLiaFormulas)
       Printer.output.println("remove multiplication: " + tmpFormula);
 
+    // Parameters are gone, so every star body is closed, and multiplications have been
+    // abstracted into fresh variables. One thing still separates the formula from cvc5's
+    // fragment: int.star-contains takes a star whose body is star-free linear arithmetic, so
+    // a star nested inside another star's body is not expressible. Reduce the nesting with
+    // SQLSolver's own elimination first, leaving single star constraints -- any number of
+    // sibling stars is fine -- and hand those to cvc5.
+    if (useCvc5Backend())
+    {
+      // Nesting is the one thing SQLSolver can cheaply remove for cvc5: eliminating the inner
+      // stars leaves single star constraints, which is the shape int.star-contains takes.
+      LiaStar candidate = tmpFormula;
+      final boolean nested = candidate.embeddingLayers() > 1;
+      if (nested)
+      {
+        // measured to validate the fragment test: without this reduction, would the
+        // whitelist below have rejected the formula?
+        Cvc5LiaStarBackend.countNestingReduced();
+        if (!isInCvc5Fragment(candidate))
+          Cvc5LiaStarBackend.countOutOfFragmentBeforeReduction();
+        candidate = flattenNestedStars(candidate);
+        if (LogicSupport.dumpLiaFormulas)
+          Printer.output.println("nested stars eliminated: " + candidate);
+      }
+      // cvc5 is only consulted on formulas it can actually take; anything else stays with
+      // SQLSolver, so switching the backend can add answers but never remove them.
+      if (isInCvc5Fragment(candidate))
+      {
+        // the nesting elimination reuses the semi-linear-set construction, which falls back
+        // to an over-approximation, so where nesting was present only unsat carries back
+        final LiaSolverStatus status = Cvc5LiaStarBackend.solve(
+            candidate, cvc5TimeoutMillis(), isSatPreserving(liaFormula) && !nested);
+        if (status == LiaSolverStatus.UNSAT)
+          return "UNSAT";
+        if (status == LiaSolverStatus.SAT)
+          return "SAT";
+        // cvc5 could not decide it: fall through and let SQLSolver try
+        Cvc5LiaStarBackend.countUndecided();
+      }
+      else
+      {
+        Cvc5LiaStarBackend.countOutOfFragment();
+        if (LogicSupport.dumpLiaFormulas)
+          Printer.output.println("outside cvc5's fragment; solving with SQLSolver");
+      }
+    }
+
     return solveNestedLiastar(tmpFormula);
+  }
+
+  /**
+   * Whether cvc5 can take this formula. cvc5 decides a star by translating its lambda body,
+   * and that translation only covers linear integer arithmetic: at the boolean level
+   * {@code AND OR NOT ITE} and the comparisons, at the term level variables, integer
+   * constants, negation, addition, subtraction and multiplication by a constant
+   * ({@code LiaStarUtils::removeItes} / {@code removeIntegerItes}). Anything else in a star
+   * body -- another star, an uninterpreted function, a division, or a product of two
+   * non-constant terms -- makes cvc5 abort with "Unexpected kind", so such a formula is left
+   * to SQLSolver's own solver. Outside star bodies nothing is restricted: cvc5's arithmetic
+   * and UF solvers handle the surrounding formula.
+   */
+  private static boolean isInCvc5Fragment(LiaStar f)
+  {
+    final boolean[] ok = {true};
+    f.transformPostOrder(lia -> {
+      if (lia instanceof LiaSumImpl sum && !isLinearStarBody(sum.constraints))
+        ok[0] = false;
+      return lia;
+    });
+    return ok[0];
+  }
+
+  /** Whether a star body stays inside the linear fragment described on
+   * {@link #isInCvc5Fragment}; a whitelist, so an unforeseen node type is treated as
+   * unsupported rather than crashing cvc5. */
+  private static boolean isLinearStarBody(LiaStar body)
+  {
+    final boolean[] ok = {true};
+    body.transformPostOrder(lia -> {
+      if (lia instanceof LiaConstImpl || lia instanceof LiaVarImpl || lia instanceof LiaAndImpl
+          || lia instanceof LiaOrImpl || lia instanceof LiaNotImpl || lia instanceof LiaEqImpl
+          || lia instanceof LiaLeImpl || lia instanceof LiaLtImpl || lia instanceof LiaPlusImpl
+          || lia instanceof LiaIteImpl)
+      {
+        return lia;
+      }
+      if (lia instanceof LiaMulImpl mul)
+      {
+        // only multiplication by a constant is linear
+        if (!(mul.operand1 instanceof LiaConstImpl) && !(mul.operand2 instanceof LiaConstImpl))
+          ok[0] = false;
+        return lia;
+      }
+      if (lia instanceof LiaFuncImpl func)
+      {
+        // MINUS is emitted as native subtraction; every other function is uninterpreted
+        if (!PredefinedFunctions.MINUS.contains(func.funcName, func.vars.size()))
+          ok[0] = false;
+        return lia;
+      }
+      // nested star, division, string, or anything unforeseen
+      ok[0] = false;
+      return lia;
+    });
+    return ok[0];
+  }
+
+  /**
+   * Eliminates stars that sit inside another star's body, so that every remaining star has a
+   * star-free (linear) body -- the shape {@code int.star-contains} accepts. Sibling stars are
+   * left in place; only nesting is outside cvc5's fragment.
+   *
+   * <p>The elimination is {@code LiaStar.expandStar}, the same semi-linear-set construction
+   * SQLSolver's own backend applies to every star, and it falls back to an over-approximation
+   * when the equivalent construction fails -- hence the caller only trusts unsat for a formula
+   * that needed this.
+   */
+  private static LiaStar flattenNestedStars(LiaStar f)
+  {
+    return f.transformPostOrder(lia -> {
+      if (lia instanceof LiaSumImpl sum && !sum.constraints.isLia())
+      {
+        sum.constraints = sum.constraints.expandStar();
+      }
+      return lia;
+    });
+  }
+
+  /**
+   * Whether the steps {@link #checkOverapp} takes before handing the formula over preserve
+   * satisfiability, so that a model cvc5 finds is a model of {@code original} too. Unsat needs
+   * no such check: every step only ever weakens the formula, so unsat always transfers back --
+   * which is exactly why this path is named after an over-approximation and why SQLSolver's own
+   * backend discards its "sat".
+   *
+   * <p>Two of the steps weaken. {@code removeParameter} can fall back to decoupling a shared
+   * parameter into per-summand inner vars ({@code LiaSumImpl.removeParameterFallback}, "a lossy
+   * over-approximation"), and {@code simplifyMult}/{@code mergeMult} abstract a nonlinear term
+   * into a fresh variable constrained only by a few implications. Both are ruled out here by the
+   * absence of their trigger in the input -- no star parameter, no nonlinear term -- which is
+   * cheaper and thread-safe, unlike reading the transformations' own static fallback flag.
+   */
+  private static boolean isSatPreserving(LiaStar original)
+  {
+    return Cvc5LiaStarSolver.collectStarParams(original).isEmpty()
+        && !containsNonLinearTerm(original);
+  }
+
+  /**
+   * Whether the formula multiplies or divides two non-constant terms. Such a term is what
+   * {@code mergeMult}/{@code simplifyMult} abstract away; division counts as well because
+   * {@link #solveLia} additionally constrains it to be exact (see
+   * {@link #appendMultipleConditions}) where the cvc5 encoding does not.
+   */
+  private static boolean containsNonLinearTerm(LiaStar f)
+  {
+    final boolean[] found = {false};
+    f.transformPostOrder(lia -> {
+      if (lia instanceof LiaDivImpl)
+      {
+        found[0] = true;
+      }
+      else if (lia instanceof LiaMulImpl mul && !(mul.operand1 instanceof LiaConstImpl)
+          && !(mul.operand2 instanceof LiaConstImpl))
+      {
+        found[0] = true;
+      }
+      return lia;
+    });
+    return found[0];
   }
 
   /** forall t1 t2. ((isnull(t1)<>0) /\ (isnull(t2)<>0)) -> t1 = t2 */

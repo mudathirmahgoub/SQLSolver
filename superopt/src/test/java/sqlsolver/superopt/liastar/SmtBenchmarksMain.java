@@ -23,6 +23,7 @@ import java.util.stream.Stream;
  * <pre>
  *   SmtBenchmarksMain &lt;bapa|mapa|sql&gt; [--timeout=SECONDS] [--jobs=N]
  *                     [--output=FILE] [--benchmarks=DIR] [--files=NAME[,NAME...]]
+ *                     [--backend=sqlsolver|cvc5]
  * </pre>
  *
  * Defaults: timeout 100 seconds; jobs = all processors but two for bapa/mapa, and 1 — i.e.
@@ -30,6 +31,12 @@ import java.util.stream.Stream;
  * {@code ../benchmarks} (the fmcad26 layout, relative to the SQLSolver root that the gradle
  * task runs in); output {@code sql_bapa.csv} / {@code sql_mapa.csv} / {@code sql_solver.csv}
  * in the SQLSolver root, matching the JUnit tests.
+ *
+ * <p>{@code --backend} selects what decides the linear LIA* formula the pipeline arrives
+ * at (see {@link LiaSolver#CONFIG_KEY_BACKEND}): {@code sqlsolver}, the default, eliminates
+ * the stars in SQLSolver itself and calls z3; {@code cvc5} hands the star formula to cvc5.
+ * Under {@code cvc5} the per-benchmark {@code --timeout} is passed on as cvc5's own tlimit,
+ * because a cvc5 check runs in native code that the runner's watchdog cannot interrupt.
  *
  * <p>{@code --files} restricts the run to the named benchmarks of the suite: each name is
  * matched against the file's basename or as a whole-component path suffix (e.g.
@@ -44,13 +51,16 @@ import java.util.stream.Stream;
  */
 public class SmtBenchmarksMain
 {
-  private static final Properties LIA_SOLVER_CONFIG;
-
-  static
+  /** Built per run so that --backend and --timeout reach {@link LiaSolver}. */
+  private static Properties liaSolverConfig(String backend, long timeoutSeconds)
   {
-    LIA_SOLVER_CONFIG = new Properties();
-    LIA_SOLVER_CONFIG.setProperty(
+    final Properties config = new Properties();
+    config.setProperty(
         LiaSolver.CONFIG_KEY_PARAM_REMOVAL_MODE, LiaSolver.CONFIG_VALUE_PARAM_REMOVAL_MODE_OUTWARD);
+    config.setProperty(LiaSolver.CONFIG_KEY_BACKEND, backend);
+    config.setProperty(
+        LiaSolver.CONFIG_KEY_CVC5_TLIMIT_MILLIS, Long.toString(timeoutSeconds * 1000));
+    return config;
   }
 
   public static void main(String[] args)
@@ -61,6 +71,7 @@ public class SmtBenchmarksMain
     String output = null;
     String benchmarksDir = "../benchmarks";
     String[] files = null;
+    String backend = LiaSolver.CONFIG_VALUE_BACKEND_SQLSOLVER;
 
     for (String arg : args)
     {
@@ -76,6 +87,8 @@ public class SmtBenchmarksMain
         benchmarksDir = arg.substring("--benchmarks=".length());
       else if (arg.startsWith("--files="))
         files = arg.substring("--files=".length()).split(",");
+      else if (arg.startsWith("--backend="))
+        backend = arg.substring("--backend=".length()).toUpperCase();
       else
         usage("unknown argument: " + arg);
     }
@@ -83,6 +96,9 @@ public class SmtBenchmarksMain
       usage("no suite given");
     if (timeoutSeconds <= 0)
       usage("--timeout must be positive");
+    if (!backend.equals(LiaSolver.CONFIG_VALUE_BACKEND_SQLSOLVER)
+        && !backend.equals(LiaSolver.CONFIG_VALUE_BACKEND_CVC5))
+      usage("--backend must be sqlsolver or cvc5");
 
     String[] directories;
     switch (suite)
@@ -110,10 +126,11 @@ public class SmtBenchmarksMain
           ? 1
           : Math.max(1, Runtime.getRuntime().availableProcessors() - 2);
 
-    System.out.printf("suite=%s timeout=%ds jobs=%d benchmarks=%s output=%s%s%n",
-        suite, timeoutSeconds, jobs, benchmarksDir, output,
+    System.out.printf("suite=%s timeout=%ds jobs=%d backend=%s benchmarks=%s output=%s%s%n",
+        suite, timeoutSeconds, jobs, backend, benchmarksDir, output,
         files == null ? "" : " files=" + String.join(",", files));
-    runMultipleBenchmarks(directories, files, output, timeoutSeconds, jobs);
+    runMultipleBenchmarks(directories, files, output, timeoutSeconds, jobs,
+        liaSolverConfig(backend, timeoutSeconds));
   }
 
   /** Whether {@code path} names one of {@code files}: basename equality or a
@@ -138,11 +155,13 @@ public class SmtBenchmarksMain
     System.err.println(
         "                         [--output=FILE] [--benchmarks=DIR] [--files=NAME[,NAME...]]");
     System.err.println(
+        "                         [--backend=sqlsolver|cvc5]");
+    System.err.println(
         "defaults: --timeout=100; --jobs = processors-2 (bapa/mapa) or 1 (sql);");
     System.err.println(
         "          --benchmarks=../benchmarks; --output = sql_<suite>.csv;");
     System.err.println(
-        "          --files = all smt2 files of the suite");
+        "          --files = all smt2 files of the suite; --backend=sqlsolver");
     System.exit(2);
   }
 
@@ -157,7 +176,7 @@ public class SmtBenchmarksMain
    */
   private static void runMultipleBenchmarks(
       String[] directories, String[] filesFilter, String outputCsv, long timeoutSeconds,
-      int jobs)
+      int jobs, Properties liaSolverConfig)
       throws RuntimeException
   {
     List<Path> files = new ArrayList<>();
@@ -196,7 +215,7 @@ public class SmtBenchmarksMain
           Future<LiaSolverStatus> future = executor.submit(() -> {
             SmtToSqlSolver smtToSqlSolver = new SmtToSqlSolver();
             LiaStar formula = smtToSqlSolver.translateFile(file.toString());
-            return LiaSolver.solveWithConfig(formula, LIA_SOLVER_CONFIG);
+            return LiaSolver.solveWithConfig(formula, liaSolverConfig);
           });
           try
           {
